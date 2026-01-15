@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
 import requests
@@ -22,6 +23,21 @@ def _coerce_json(text: str) -> Dict[str, Any]:
         raise LLMError(f"Failed to parse model JSON output: {e}\nRaw:\n{text[:2000]}") from e
 
 
+_RETRY_AFTER_HINT_RE = re.compile(r"try again in\s+([0-9]+(?:\.[0-9]+)?)s", re.IGNORECASE)
+
+
+def _parse_retry_after_seconds(msg: str) -> Optional[float]:
+    if not msg:
+        return None
+    m = _RETRY_AFTER_HINT_RE.search(msg)
+    if not m:
+        return None
+    try:
+        return float(m.group(1))
+    except Exception:
+        return None
+
+
 @dataclass(frozen=True)
 class OpenAIChatClient:
     """Small OpenAI client using plain HTTP (no extra dependency).
@@ -34,6 +50,10 @@ class OpenAIChatClient:
     base_url: str = "https://api.openai.com/v1"
     timeout_s: int = 120
     max_retries: int = 3
+    # Throttle to avoid RPM limits (defaults match low-tier limits like 3 RPM).
+    rate_limit_rpm: Optional[float] = 3.0
+    # Mutable single-element list used for tracking last call time even in frozen dataclass.
+    _last_call_ts: list[float] = field(default_factory=list, repr=False)
 
     def _key(self) -> str:
         k = self.api_key or get_openai_api_key()
@@ -60,6 +80,17 @@ class OpenAIChatClient:
         max_output_tokens: int = 1200,
     ) -> Dict[str, Any]:
         """Call Chat Completions and require strict JSON output."""
+        # Best-effort client-side RPM throttle
+        if self.rate_limit_rpm and self.rate_limit_rpm > 0:
+            min_interval = 60.0 / float(self.rate_limit_rpm)
+            now = time.time()
+            if self._last_call_ts and (now - self._last_call_ts[0]) < min_interval:
+                time.sleep(min_interval - (now - self._last_call_ts[0]) + 0.05)
+            if self._last_call_ts:
+                self._last_call_ts[0] = time.time()
+            else:
+                self._last_call_ts.append(time.time())
+
         payload = {
             "model": self.model,
             "temperature": temperature,
@@ -77,6 +108,14 @@ class OpenAIChatClient:
         for attempt in range(1, self.max_retries + 1):
             try:
                 r = s.post(url, data=json.dumps(payload), timeout=self.timeout_s)
+                if r.status_code == 429:
+                    # Honor server hint if present, otherwise exponential backoff.
+                    hint = _parse_retry_after_seconds(r.text)
+                    sleep_s = (hint + 0.5) if hint is not None else (1.5 * (2 ** (attempt - 1)))
+                    if attempt < self.max_retries:
+                        time.sleep(sleep_s)
+                        continue
+                    raise LLMError(f"OpenAI HTTP 429: {r.text[:2000]}")
                 if r.status_code >= 400:
                     raise LLMError(f"OpenAI HTTP {r.status_code}: {r.text[:2000]}")
                 data = r.json()
