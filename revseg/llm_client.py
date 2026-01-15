@@ -16,9 +16,29 @@ class LLMError(RuntimeError):
     pass
 
 
+_FENCE_RE = re.compile(r"^```(?:json)?\s*|\s*```$", re.IGNORECASE | re.MULTILINE)
+
+
+def _extract_json_text(text: str) -> str:
+    """Best-effort extraction of a JSON object from model output."""
+    t = (text or "").strip()
+    if not t:
+        return t
+    # Strip markdown fences if present
+    if "```" in t:
+        t = _FENCE_RE.sub("", t).strip()
+    # If model added leading prose, try to slice to first/last braces
+    if "{" in t and "}" in t:
+        a = t.find("{")
+        b = t.rfind("}")
+        if a != -1 and b != -1 and b > a:
+            t = t[a : b + 1]
+    return t.strip()
+
+
 def _coerce_json(text: str) -> Dict[str, Any]:
     try:
-        return json.loads(text)
+        return json.loads(_extract_json_text(text))
     except Exception as e:
         raise LLMError(f"Failed to parse model JSON output: {e}\nRaw:\n{text[:2000]}") from e
 
@@ -52,6 +72,8 @@ class OpenAIChatClient:
     max_retries: int = 3
     # Throttle to avoid RPM limits (defaults match low-tier limits like 3 RPM).
     rate_limit_rpm: Optional[float] = 3.0
+    # Prefer OpenAI JSON mode when available.
+    use_response_format_json: bool = True
     # Mutable single-element list used for tracking last call time even in frozen dataclass.
     _last_call_ts: list[float] = field(default_factory=list, repr=False)
 
@@ -100,6 +122,9 @@ class OpenAIChatClient:
                 {"role": "user", "content": user},
             ],
         }
+        if self.use_response_format_json:
+            # OpenAI JSON mode: forces the assistant message to be a JSON object.
+            payload["response_format"] = {"type": "json_object"}
 
         url = f"{self.base_url}/chat/completions"
         s = self._session()
@@ -126,7 +151,43 @@ class OpenAIChatClient:
                 )
                 if not content or not isinstance(content, str):
                     raise LLMError(f"OpenAI returned empty content: {data}")
-                return _coerce_json(content.strip())
+                try:
+                    return _coerce_json(content.strip())
+                except LLMError as parse_err:
+                    # One-shot repair: ask model to output valid JSON ONLY for the same payload.
+                    if attempt < self.max_retries:
+                        repair_payload = {
+                            "model": self.model,
+                            "temperature": 0.0,
+                            "max_tokens": max_output_tokens,
+                            "messages": [
+                                {
+                                    "role": "system",
+                                    "content": "You are a JSON repair tool. Output ONLY a valid JSON object, no markdown, no prose.",
+                                },
+                                {
+                                    "role": "user",
+                                    "content": json.dumps(
+                                        {
+                                            "invalid_output": content[:12000],
+                                            "instruction": "Fix the JSON so it parses. Keep the same keys and values; do not invent new content.",
+                                        }
+                                    ),
+                                },
+                            ],
+                        }
+                        if self.use_response_format_json:
+                            repair_payload["response_format"] = {"type": "json_object"}
+                        rr = s.post(url, data=json.dumps(repair_payload), timeout=self.timeout_s)
+                        if rr.status_code == 429:
+                            hint = _parse_retry_after_seconds(rr.text)
+                            time.sleep((hint + 0.5) if hint is not None else 2.0)
+                            continue
+                        if rr.status_code >= 400:
+                            raise parse_err
+                        repaired = rr.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+                        return _coerce_json(str(repaired or "").strip())
+                    raise parse_err
             except Exception as e:
                 last_err = e
                 if attempt < self.max_retries:
