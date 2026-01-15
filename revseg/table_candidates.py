@@ -57,6 +57,40 @@ DEFAULT_KEYWORDS = [
 ]
 
 
+def detect_units_multiplier(text: str) -> int:
+    """Return multiplier based on units hint text (best-effort)."""
+    if not text:
+        return 1
+    t = text.lower()
+    if "billion" in t:
+        return 1_000_000_000
+    if "million" in t:
+        return 1_000_000
+    if "thousand" in t:
+        return 1_000
+    return 1
+
+
+def parse_money_to_int(value: str) -> Optional[int]:
+    """Parse common 10-K numeric strings like '$ 98,435', '(1,234)', '72'."""
+    if value is None:
+        return None
+    t = _clean_text(value)
+    if t in {"", "-", "—", "–"}:
+        return None
+    neg = False
+    if t.startswith("(") and t.endswith(")"):
+        neg = True
+        t = t[1:-1]
+    t = t.replace("$", "").replace(",", "").strip()
+    try:
+        v = float(t)
+        out = int(round(v))
+        return -out if neg else out
+    except Exception:
+        return None
+
+
 @dataclass
 class TableCandidate:
     table_id: str
@@ -422,6 +456,87 @@ def extract_table_candidates_from_html(
 
     return candidates
 
+
+# ----------------------------
+# Selected-table extraction (normalized grid)
+# ----------------------------
+
+def _table_index_from_id(table_id: str) -> int:
+    if not table_id.startswith("t"):
+        raise ValueError(f"Invalid table_id: {table_id}")
+    return int(table_id[1:])
+
+
+def extract_table_grid_normalized(
+    html_path: Path,
+    table_id: str,
+    *,
+    max_rows: int = 250,
+) -> List[List[str]]:
+    """Extract a normalized cell grid for a specific table_id.
+
+    Unlike the candidate preview, this attempts basic rowspan/colspan handling,
+    which is important for downstream deterministic numeric extraction.
+    """
+    html = html_path.read_text(encoding="utf-8", errors="ignore")
+    soup = BeautifulSoup(html, "lxml")
+    tables = soup.find_all("table")
+
+    idx = _table_index_from_id(table_id)
+    if idx < 0 or idx >= len(tables):
+        raise IndexError(f"table_id {table_id} out of range: {idx} (n_tables={len(tables)})")
+    table = tables[idx]
+
+    rows = table.find_all("tr")
+    grid: List[List[str]] = []
+    spans: Dict[Tuple[int, int], Tuple[str, int]] = {}  # (r,c)->(text, remaining_rows)
+
+    for r_i, tr in enumerate(rows[:max_rows]):
+        out_row: List[str] = []
+        col = 0
+
+        def _drain_span_row(c: int) -> int:
+            nonlocal out_row
+            if (r_i, c) not in spans:
+                return c
+            txt, remaining = spans[(r_i, c)]
+            out_row.append(txt)
+            spans.pop((r_i, c), None)
+            if remaining > 1:
+                spans[(r_i + 1, c)] = (txt, remaining - 1)
+            return c + 1
+
+        # Drain spans at start
+        while (r_i, col) in spans:
+            col = _drain_span_row(col)
+
+        for cell in tr.find_all(["th", "td"]):
+            while (r_i, col) in spans:
+                col = _drain_span_row(col)
+
+            txt = _clean_text(cell.get_text(" ", strip=True))
+            rowspan = int(cell.get("rowspan") or 1)
+            colspan = int(cell.get("colspan") or 1)
+            if colspan < 1:
+                colspan = 1
+            if rowspan < 1:
+                rowspan = 1
+
+            for _ in range(colspan):
+                out_row.append(txt)
+                if rowspan > 1:
+                    spans[(r_i + 1, col)] = (txt, rowspan - 1)
+                col += 1
+
+        while (r_i, col) in spans:
+            col = _drain_span_row(col)
+
+        # Trim trailing empties
+        while out_row and out_row[-1] == "":
+            out_row.pop()
+        grid.append(out_row)
+
+    return grid
 
 # ----------------------------
 # Step 2: JSON serialization

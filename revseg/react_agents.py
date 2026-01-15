@@ -1,0 +1,422 @@
+from __future__ import annotations
+
+import json
+import re
+from dataclasses import asdict
+from pathlib import Path
+from typing import Any, Dict, Iterable, List, Optional, Tuple
+
+from bs4 import BeautifulSoup
+
+from revseg.llm_client import OpenAIChatClient
+from revseg.table_candidates import TableCandidate, extract_table_grid_normalized
+
+
+_WS_RE = re.compile(r"\s+")
+_MONEY_CLEAN_RE = re.compile(r"[^0-9.\-]")
+_ITEM8_RE = re.compile(
+    r"\bitem\s*8\b|\bfinancial statements\b|\bnotes to (?:the )?financial statements\b",
+    re.IGNORECASE,
+)
+_ITEM7_RE = re.compile(r"\bitem\s*7\b|\bmanagement['’]s discussion\b|\bmd&a\b", re.IGNORECASE)
+_SEGMENT_NOTE_RE = re.compile(r"\bsegment(s)?\b|\breportable segment(s)?\b", re.IGNORECASE)
+
+
+def _clean(s: str) -> str:
+    return _WS_RE.sub(" ", (s or "").strip())
+
+
+def _parse_number(s: str) -> Optional[float]:
+    if s is None:
+        return None
+    t = _clean(s)
+    if t in {"", "-", "—", "–"}:
+        return None
+    # Handle parentheses negatives
+    neg = False
+    if t.startswith("(") and t.endswith(")"):
+        neg = True
+        t = t[1:-1]
+    t = t.replace("$", "").replace(",", "").strip()
+    try:
+        v = float(t)
+        return -v if neg else v
+    except Exception:
+        return None
+
+
+def _parse_money_to_int(s: str) -> Optional[int]:
+    v = _parse_number(s)
+    if v is None:
+        return None
+    return int(round(v))
+
+
+def rank_candidates_for_financial_tables(candidates: List[TableCandidate]) -> List[TableCandidate]:
+    return sorted(
+        candidates,
+        key=lambda c: (
+            float(guess_item8_score(c)),
+            bool(getattr(c, "has_year_header", False)),
+            bool(getattr(c, "has_units_marker", False)),
+            float(getattr(c, "money_cell_ratio", 0.0)),
+            float(getattr(c, "numeric_cell_ratio", 0.0)),
+            len(getattr(c, "keyword_hits", []) or []),
+            int(getattr(c, "n_rows", 0)) * int(getattr(c, "n_cols", 0)),
+        ),
+        reverse=True,
+    )
+
+
+def guess_item8_score(c: TableCandidate) -> float:
+    """Soft signal: does the local context look like Item 8 / Notes / Segment Note?"""
+    blob = " ".join(
+        [
+            str(getattr(c, "heading_context", "") or ""),
+            str(getattr(c, "caption_text", "") or ""),
+            str(getattr(c, "nearby_text_context", "") or ""),
+        ]
+    )
+    blob = _clean(blob)
+    score = 0.0
+    if _ITEM8_RE.search(blob):
+        score += 3.0
+    if _SEGMENT_NOTE_RE.search(blob):
+        score += 1.0
+    # If it looks like Item 7/MD&A, slightly downweight (soft preference, not exclusion)
+    if _ITEM7_RE.search(blob):
+        score -= 1.0
+    return score
+
+
+def extract_keyword_windows(
+    html_path: Path,
+    *,
+    keywords: List[str],
+    window_chars: int = 2500,
+    max_windows: int = 12,
+) -> List[str]:
+    """Deterministically extract short text windows around keywords for LLM context."""
+    html = html_path.read_text(encoding="utf-8", errors="ignore")
+    soup = BeautifulSoup(html, "lxml")
+    text = soup.get_text(" ", strip=True)
+    text = _clean(text)
+    low = text.lower()
+
+    windows: List[str] = []
+    for kw in keywords:
+        k = kw.lower()
+        start = 0
+        while True:
+            i = low.find(k, start)
+            if i == -1:
+                break
+            a = max(0, i - window_chars // 3)
+            b = min(len(text), i + window_chars)
+            snippet = _clean(text[a:b])
+            if snippet and snippet not in windows:
+                windows.append(snippet)
+            start = i + max(1, len(k))
+            if len(windows) >= max_windows:
+                return windows
+    return windows
+
+
+def document_scout(html_path: Path, *, max_headings: int = 80) -> Dict[str, Any]:
+    """Lightweight scan of headings to help the LLM orient itself."""
+    html = html_path.read_text(encoding="utf-8", errors="ignore")
+    soup = BeautifulSoup(html, "lxml")
+    headings: List[str] = []
+    for tag in soup.find_all(["h1", "h2", "h3", "b", "strong"]):
+        txt = _clean(tag.get_text(" ", strip=True))
+        if 5 <= len(txt) <= 180 and txt not in headings:
+            headings.append(txt)
+        if len(headings) >= max_headings:
+            break
+    return {"headings": headings}
+
+
+def _candidate_summary(c: TableCandidate) -> Dict[str, Any]:
+    return {
+        "table_id": c.table_id,
+        "n_rows": c.n_rows,
+        "n_cols": c.n_cols,
+        "detected_years": c.detected_years,
+        "keyword_hits": c.keyword_hits,
+        "item8_score": guess_item8_score(c),
+        "has_year_header": getattr(c, "has_year_header", False),
+        "has_units_marker": getattr(c, "has_units_marker", False),
+        "units_hint": getattr(c, "units_hint", ""),
+        "money_cell_ratio": getattr(c, "money_cell_ratio", 0.0),
+        "numeric_cell_ratio": getattr(c, "numeric_cell_ratio", 0.0),
+        "row_label_preview": getattr(c, "row_label_preview", [])[:12],
+        "caption_text": getattr(c, "caption_text", "")[:200],
+        "heading_context": getattr(c, "heading_context", "")[:200],
+        "nearby_text_context": getattr(c, "nearby_text_context", "")[:280],
+    }
+
+
+def select_segment_revenue_table(
+    llm: OpenAIChatClient,
+    *,
+    ticker: str,
+    company_name: str,
+    candidates: List[TableCandidate],
+    scout: Dict[str, Any],
+    snippets: List[str],
+    max_candidates: int = 80,
+) -> Dict[str, Any]:
+    ranked = rank_candidates_for_financial_tables(candidates)[:max_candidates]
+    payload = [_candidate_summary(c) for c in ranked]
+
+    system = (
+        "You are a financial filings analyst. You select the single best HTML table candidate "
+        "that represents REVENUE BY REPORTABLE SEGMENT (or equivalent business segments) for the latest fiscal year. "
+        "Prefer tables from Item 8 / Notes to Financial Statements when possible, but you may select other sections if they clearly match and are consistent. "
+        "Output must be STRICT JSON ONLY."
+    )
+    user = json.dumps(
+        {
+            "ticker": ticker,
+            "company_name": company_name,
+            "objective": "Find the reportable segment revenue table (e.g., segments with revenue totals).",
+            "headings": scout.get("headings", [])[:40],
+            "retrieved_snippets": snippets[:10],
+            "table_candidates": payload,
+            "output_schema": {
+                "table_id": "string like t0071",
+                "confidence": "number 0..1",
+                "kind": "string, use 'segment_revenue' or 'not_found'",
+                "rationale": "short string",
+            },
+        },
+        ensure_ascii=False,
+    )
+    out = llm.json_call(system=system, user=user, max_output_tokens=700)
+    return out
+
+
+def select_other_revenue_tables(
+    llm: OpenAIChatClient,
+    *,
+    ticker: str,
+    company_name: str,
+    candidates: List[TableCandidate],
+    scout: Dict[str, Any],
+    snippets: List[str],
+    exclude_table_ids: Iterable[str],
+    max_tables: int = 3,
+    max_candidates: int = 120,
+) -> Dict[str, Any]:
+    ranked = rank_candidates_for_financial_tables(candidates)[:max_candidates]
+    payload = [_candidate_summary(c) for c in ranked if c.table_id not in set(exclude_table_ids)]
+
+    system = (
+        "You are a financial filings analyst. Identify up to N additional REVENUE tables (not the main segments table), "
+        "such as revenue by product/service offering, geography, customer type, or disaggregation. "
+        "Prefer Item 8 / Notes sources when available; otherwise select the best matching revenue disclosures. "
+        "Output must be STRICT JSON ONLY."
+    )
+    user = json.dumps(
+        {
+            "ticker": ticker,
+            "company_name": company_name,
+            "objective": "Find other revenue tables (product/service offerings etc.)",
+            "N": max_tables,
+            "headings": scout.get("headings", [])[:40],
+            "retrieved_snippets": snippets[:10],
+            "table_candidates": payload,
+            "output_schema": {
+                "tables": [
+                    {
+                        "table_id": "tXXXX",
+                        "kind": "revenue_by_product_service | revenue_by_geography | other_revenue",
+                        "confidence": "0..1",
+                        "rationale": "short string",
+                    }
+                ]
+            },
+        },
+        ensure_ascii=False,
+    )
+    return llm.json_call(system=system, user=user, max_output_tokens=900)
+
+
+def extract_table_grid_normalized_with_fallback(
+    html_path: Path, table_id: str, *, max_rows: int = 250
+) -> List[List[str]]:
+    # Wrapper in case we want to add fallbacks later (e.g., pandas.read_html)
+    return extract_table_grid_normalized(html_path, table_id, max_rows=max_rows)
+
+
+def infer_table_layout(
+    llm: OpenAIChatClient,
+    *,
+    ticker: str,
+    company_name: str,
+    table_id: str,
+    candidate: TableCandidate,
+    grid: List[List[str]],
+    max_rows_for_llm: int = 30,
+) -> Dict[str, Any]:
+    """Ask the LLM to identify label/year columns and which rows are data."""
+    preview = grid[:max_rows_for_llm]
+    system = (
+        "You analyze HTML tables from SEC 10-K filings. "
+        "Your job: identify which column contains row labels and which columns correspond to fiscal years. "
+        "Output STRICT JSON ONLY."
+    )
+    user = json.dumps(
+        {
+            "ticker": ticker,
+            "company_name": company_name,
+            "table_id": table_id,
+            "candidate_summary": _candidate_summary(candidate),
+            "table_grid_preview": preview,
+            "output_schema": {
+                "label_col": "int",
+                "year_cols": {"YYYY": "int column index"},
+                "header_rows": "list[int] (rows to ignore as header, from the preview)",
+                "skip_row_regex": "string regex for rows to skip (e.g., totals, separators) or empty",
+                "units_multiplier": "int (1, 1000, 1000000, 1000000000) inferred from units_hint if possible",
+                "notes": "short string",
+            },
+        },
+        ensure_ascii=False,
+    )
+    return llm.json_call(system=system, user=user, max_output_tokens=900)
+
+
+def extract_revenue_rows_from_grid(
+    grid: List[List[str]],
+    *,
+    layout: Dict[str, Any],
+    target_year: Optional[int] = None,
+) -> Tuple[int, Dict[str, int]]:
+    """Return (year, {label -> revenue_usd_scaled}). Values are scaled by units_multiplier."""
+    label_col = int(layout["label_col"])
+    year_cols_raw = layout.get("year_cols") or {}
+    year_cols: Dict[int, int] = {int(y): int(ci) for y, ci in year_cols_raw.items()}
+    if not year_cols:
+        raise ValueError("No year_cols detected")
+
+    year = target_year or max(year_cols.keys())
+    if year not in year_cols:
+        year = max(year_cols.keys())
+    value_col = year_cols[year]
+
+    header_rows = set(int(i) for i in (layout.get("header_rows") or []))
+    skip_row_re = layout.get("skip_row_regex") or ""
+    skip_pat = re.compile(skip_row_re, re.IGNORECASE) if skip_row_re else None
+    mult = int(layout.get("units_multiplier") or 1)
+    if mult <= 0:
+        mult = 1
+
+    out: Dict[str, int] = {}
+    for r_i, row in enumerate(grid):
+        if r_i in header_rows:
+            continue
+        if label_col >= len(row) or value_col >= len(row):
+            continue
+        label = _clean(row[label_col])
+        if not label:
+            continue
+        if skip_pat and skip_pat.search(label):
+            continue
+        if label.lower() in {"total", "total revenue", "revenues", "net sales"}:
+            continue
+
+        val = _parse_money_to_int(row[value_col])
+        if val is None:
+            continue
+        out[label] = int(val) * mult
+
+    return year, out
+
+
+def summarize_segment_descriptions(
+    llm: OpenAIChatClient,
+    *,
+    ticker: str,
+    company_name: str,
+    sec_doc_url: str,
+    html_text: str,
+    segment_names: List[str],
+    max_chars_per_segment: int = 3500,
+) -> Dict[str, Any]:
+    """Produce CSV2-style rows via LLM from extracted filing text snippets."""
+    snippets: Dict[str, str] = {}
+    t = html_text
+    low = t.lower()
+    for seg in segment_names:
+        key = seg
+        idx = low.find(seg.lower())
+        if idx == -1:
+            snippets[key] = ""
+            continue
+        start = max(0, idx - max_chars_per_segment // 3)
+        end = min(len(t), idx + max_chars_per_segment)
+        snippets[key] = _clean(t[start:end])
+
+    system = (
+        "You summarize company business segments from SEC 10-K text. "
+        "For each segment, write a concise description and a list of key products/services keywords. "
+        "Output STRICT JSON ONLY."
+    )
+    user = json.dumps(
+        {
+            "ticker": ticker,
+            "company_name": company_name,
+            "sec_doc_url": sec_doc_url,
+            "segments": [{"segment": s, "text_snippet": snippets.get(s, "")} for s in segment_names],
+            "output_schema": {
+                "rows": [
+                    {
+                        "segment": "string",
+                        "segment_description": "string",
+                        "key_products_services": "list[string] (keywords/phrases)",
+                        "primary_source": "string short",
+                    }
+                ]
+            },
+        },
+        ensure_ascii=False,
+    )
+    return llm.json_call(system=system, user=user, max_output_tokens=1400)
+
+
+def expand_key_items_per_segment(
+    llm: OpenAIChatClient,
+    *,
+    ticker: str,
+    company_name: str,
+    sec_doc_url: str,
+    segment_rows: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    """Produce CSV3 rows: key items per segment with short + long description."""
+    system = (
+        "You expand segment descriptions into key product/service items. "
+        "Return 5-10 items per segment when possible. Output STRICT JSON ONLY."
+    )
+    user = json.dumps(
+        {
+            "ticker": ticker,
+            "company_name": company_name,
+            "sec_doc_url": sec_doc_url,
+            "segments": segment_rows,
+            "output_schema": {
+                "rows": [
+                    {
+                        "segment": "string",
+                        "business_item": "string",
+                        "business_item_short_description": "string",
+                        "business_item_long_description": "string",
+                        "primary_source": "string short",
+                    }
+                ]
+            },
+        },
+        ensure_ascii=False,
+    )
+    return llm.json_call(system=system, user=user, max_output_tokens=1800)
+
