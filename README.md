@@ -63,6 +63,18 @@ import os
 os.environ["SEC_USER_AGENT"] = "YourApp/0.1 (your.email@domain.com)"
 ```
 
+## OpenAI API key (for ReAct pipeline)
+
+The ReAct pipeline uses the OpenAI API and expects `OPENAI_API_KEY` in your environment.
+
+**Windows PowerShell:**
+
+```powershell
+$env:OPENAI_API_KEY="your_key_here"
+```
+
+Important: do not commit API keys into notebooks or source files.
+
 ## Usage
 
 See `Base.ipynb` for example usage. The notebook demonstrates:
