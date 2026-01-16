@@ -98,12 +98,12 @@ def validate_segment_table(
     sum_segments = int(sum(int(v) for v in segment_revenues_usd.values() if v is not None))
     if total_revenue_usd is None:
         return RevenueValidation(
-            ok=True,
+            ok=False,
             total_revenue_usd=None,
             sum_segments_usd=sum_segments,
             abs_delta_usd=None,
             pct_delta=None,
-            notes="No total revenue reference available; validated by internal sum only.",
+            notes="No total revenue reference available; cannot validate segments-to-total.",
         )
 
     abs_delta = int(abs(sum_segments - int(total_revenue_usd)))

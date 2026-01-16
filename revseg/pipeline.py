@@ -127,6 +127,17 @@ def _pick_income_statement_candidate(candidates: List[TableCandidate]) -> Option
 def _has_negative(values: Dict[str, int]) -> bool:
     return any((v is not None and int(v) < 0) for v in values.values())
 
+def _is_nonempty_revenue_set(values: Dict[str, int], *, min_rows: int = 2) -> bool:
+    if not values:
+        return False
+    if len(values) < min_rows:
+        return False
+    try:
+        s = sum(int(v) for v in values.values())
+    except Exception:
+        return False
+    return s > 0
+
 
 def _pick_best_by_kind(
     classifications: Dict[str, Any],
@@ -154,12 +165,8 @@ def _pick_best_by_kind(
     scored.sort(reverse=True)
     ordered = [tid for _, tid in scored]
 
-    # Backfill with fallback ranked ids (no kind guarantee, but helps if classifier is empty)
-    for c in fallback_ranked:
-        if c.table_id in exclude:
-            continue
-        if c.table_id not in ordered:
-            ordered.append(c.table_id)
+    # IMPORTANT: Do NOT backfill with non-classified tables. If classifier returns none for a kind,
+    # the caller should fall back to a dedicated selector, not guess via generic ranking.
     return ordered
 
 def _extract_row_value_for_year(
@@ -374,6 +381,18 @@ def run_pipeline(
                 _trace_append(t_art, {"stage": "segment_layout", "iter": it, "table_id": table_id, "layout": seg_layout})
 
                 seg_year, seg_values = extract_revenue_rows_from_grid(grid, layout=seg_layout)
+                if not _is_nonempty_revenue_set(seg_values, min_rows=2):
+                    _trace_append(
+                        t_art,
+                        {
+                            "stage": "segment_reject",
+                            "iter": it,
+                            "table_id": table_id,
+                            "reason": "empty_or_zero_extraction",
+                        },
+                    )
+                    ambiguous = True
+                    continue
                 # Hard validator: revenue tables must not be negative
                 if _has_negative(seg_values):
                     _trace_append(
@@ -429,9 +448,11 @@ def run_pipeline(
             if not seg_values or seg_year is None:
                 per["errors"].append("Failed to extract segment revenues")
                 continue
-            # If we could not validate after retries, mark ambiguous and skip emitting CSV outputs for this ticker.
-            if validation is not None and not validation.ok:
-                per["errors"].append("Validation failed after retries; marking ambiguous and skipping CSV outputs for this ticker.")
+            # Require total revenue reconciliation for CSV1
+            if validation is None or not validation.ok:
+                per["errors"].append(
+                    "Segments did not reconcile to total revenue; marking ambiguous and skipping CSV outputs for this ticker."
+                )
                 per["ambiguous"] = True
                 continue
 
