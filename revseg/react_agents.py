@@ -413,12 +413,18 @@ def extract_disaggregation_rows_from_grid(
         if exclude_re.search(item) or exclude_re.search(seg):
             continue
 
+        # Some tables put a currency symbol column before the number (e.g., '$', '209,586').
         raw_val = _parse_money_to_int(row[val_col])
+        if raw_val is None and (val_col + 1) < len(row):
+            raw_val = _parse_money_to_int(row[val_col + 1])
+        if raw_val is None and (val_col + 2) < len(row):
+            raw_val = _parse_money_to_int(row[val_col + 2])
         if raw_val is None:
             continue
         val = int(raw_val) * mult
 
-        if total_re.search(item) or total_re.search(seg):
+        # Total row detection: match across the row, not just item/segment cell.
+        if total_re.search(item) or total_re.search(seg) or any(total_re.search(_clean(c)) for c in row if c):
             total_val = val
             continue
 

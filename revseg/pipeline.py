@@ -390,87 +390,113 @@ def run_pipeline(
                 segments=segments,
                 keyword_hints=_keyword_hints_for_ticker(ticker),
             )
-            table_id = str(choice.get("table_id") or "")
             (t_art / "disagg_choice.json").write_text(json.dumps(choice, indent=2, ensure_ascii=False), encoding="utf-8")
             _trace_append(t_art, {"stage": "disagg_select", "choice": choice})
-            if not table_id:
+            preferred_table_id = str(choice.get("table_id") or "")
+            if not preferred_table_id:
                 per["errors"].append("No disaggregation table selected")
                 continue
 
-            cand = next((c for c in candidates if c.table_id == table_id), None)
-            if cand is None:
-                per["errors"].append(f"Selected disaggregation table_id not found: {table_id}")
-                continue
+            # Build a ranked fallback list by keyword hits in candidate context
+            hints = [h.lower() for h in _keyword_hints_for_ticker(ticker)]
+            def _hint_score(c: TableCandidate) -> int:
+                blob = " ".join(
+                    [
+                        " ".join([" ".join(r) for r in (c.preview or [])]),
+                        str(getattr(c, "caption_text", "") or ""),
+                        str(getattr(c, "heading_context", "") or ""),
+                        str(getattr(c, "nearby_text_context", "") or ""),
+                    ]
+                ).lower()
+                return sum(1 for h in hints if h and h in blob)
 
-            grid = extract_table_grid_normalized(html_path, table_id)
-            layout = infer_disaggregation_layout(
-                llm,
-                ticker=ticker,
-                company_name=company_name,
-                table_id=table_id,
-                candidate=cand,
-                grid=grid,
-                business_lines=segments,
-            )
-            layout = _override_layout_with_heuristics(grid=grid, layout=layout, segments=segments + include_optional)
-            (t_art / "disagg_layout.json").write_text(json.dumps(layout, indent=2, ensure_ascii=False), encoding="utf-8")
-            _trace_append(t_art, {"stage": "disagg_layout", "layout": layout})
+            ranked_by_hints = sorted(candidates, key=_hint_score, reverse=True)
+            candidate_table_ids = [preferred_table_id] + [
+                c.table_id for c in ranked_by_hints[:15] if c.table_id != preferred_table_id
+            ]
 
-            extracted = extract_disaggregation_rows_from_grid(
-                grid,
-                layout=layout,
-                business_lines=segments + include_optional,
-            )
-            (t_art / "disagg_extracted.json").write_text(json.dumps(extracted, indent=2, ensure_ascii=False), encoding="utf-8")
-            _trace_append(t_art, {"stage": "disagg_extract", "summary": {"n_rows": len(extracted.get("rows", [])), "total_value": extracted.get("total_value")}})
+            year = None
+            rows: List[Dict[str, Any]] = []
+            seg_totals: Dict[str, int] = {}
+            validation = None
+            table_id = ""
 
-            year = int(extracted["year"])
-            rows = extracted.get("rows") or []
-            table_total = extracted.get("total_value")
+            for attempt_id in candidate_table_ids:
+                cand = next((c for c in candidates if c.table_id == attempt_id), None)
+                if cand is None:
+                    continue
+                grid = extract_table_grid_normalized(html_path, attempt_id)
+                layout = infer_disaggregation_layout(
+                    llm,
+                    ticker=ticker,
+                    company_name=company_name,
+                    table_id=attempt_id,
+                    candidate=cand,
+                    grid=grid,
+                    business_lines=segments,
+                )
+                layout = _override_layout_with_heuristics(grid=grid, layout=layout, segments=segments + include_optional)
 
-            if not rows:
+                extracted = extract_disaggregation_rows_from_grid(
+                    grid,
+                    layout=layout,
+                    business_lines=segments + include_optional,
+                )
+                attempt_rows = extracted.get("rows") or []
+                attempt_total = extracted.get("total_value")
+                attempt_year = int(extracted["year"])
+
+                if not attempt_rows:
+                    continue
+                # Allow negatives only for optional/corporate adjustments; otherwise reject.
+                bad = False
+                for r in attempt_rows:
+                    segv = str(r.get("segment") or "").strip()
+                    if int(r.get("value") or 0) < 0 and (segv not in include_optional and segv.lower() != "corporate"):
+                        bad = True
+                        break
+                if bad:
+                    continue
+
+                # Aggregate segment totals
+                attempt_seg_totals: Dict[str, int] = {}
+                if str(discovery.get("dimension")) == "product_category":
+                    for r in attempt_rows:
+                        s = str(r.get("item") or "").strip()
+                        if s:
+                            attempt_seg_totals[s] = attempt_seg_totals.get(s, 0) + int(r.get("value") or 0)
+                else:
+                    for r in attempt_rows:
+                        s = str(r.get("segment") or "").strip() or "Other"
+                        attempt_seg_totals[s] = attempt_seg_totals.get(s, 0) + int(r.get("value") or 0)
+
+                total_rev = int(attempt_total) if attempt_total is not None else None
+                if total_rev is None:
+                    total_rev = fetch_companyfacts_total_revenue_usd(cik, attempt_year)
+                attempt_validation = validate_segment_table(
+                    segment_revenues_usd=attempt_seg_totals,
+                    total_revenue_usd=total_rev,
+                    tolerance_pct=validation_tolerance_pct,
+                )
+                if not attempt_validation.ok:
+                    continue
+
+                # Accept this table
+                table_id = attempt_id
+                year = attempt_year
+                rows = attempt_rows
+                seg_totals = attempt_seg_totals
+                validation = attempt_validation
+                (t_art / "disagg_layout.json").write_text(json.dumps(layout, indent=2, ensure_ascii=False), encoding="utf-8")
+                (t_art / "disagg_extracted.json").write_text(json.dumps(extracted, indent=2, ensure_ascii=False), encoding="utf-8")
+                break
+
+            if not rows or year is None or validation is None:
                 per["errors"].append("No rows extracted from disaggregation table")
                 continue
-            # Allow negatives only for optional/corporate adjustments; otherwise reject.
-            for r in rows:
-                seg = str(r.get("segment") or "").strip()
-                if int(r.get("value") or 0) < 0 and (seg not in include_optional and seg.lower() != "corporate"):
-                    per["errors"].append("Negative revenue rows extracted in non-corporate segment; rejecting")
-                    rows = []
-                    break
-            if not rows:
-                continue
 
-            # Aggregate to CSV1 segments:
-            seg_totals: Dict[str, int] = {}
-            if str(discovery.get("dimension")) == "product_category":
-                # For AAPL-style, item column is the business line. Segment column may be blank.
-                for r in rows:
-                    seg = str(r.get("item") or "").strip()
-                    if not seg:
-                        continue
-                    seg_totals[seg] = seg_totals.get(seg, 0) + int(r.get("value") or 0)
-            else:
-                for r in rows:
-                    seg = str(r.get("segment") or "").strip() or "Other"
-                    seg_totals[seg] = seg_totals.get(seg, 0) + int(r.get("value") or 0)
-
-            # Validate against table total first; fallback to companyfacts if missing
-            total_rev = int(table_total) if table_total is not None else None
-            if total_rev is None:
-                total_rev = fetch_companyfacts_total_revenue_usd(cik, year)
-
-            validation = validate_segment_table(
-                segment_revenues_usd=seg_totals,
-                total_revenue_usd=total_rev,
-                tolerance_pct=validation_tolerance_pct,
-            )
             (t_art / "csv1_validation.json").write_text(json.dumps(asdict(validation), indent=2), encoding="utf-8")
-            _trace_append(t_art, {"stage": "csv1_validate", "validation": asdict(validation)})
-            if not validation.ok:
-                per["errors"].append(f"CSV1 failed validation: {validation.notes}")
-                per["ambiguous"] = True
-                continue
+            _trace_append(t_art, {"stage": "csv1_validate", "validation": asdict(validation), "table_id": table_id})
 
             total_for_pct = validation.total_revenue_usd or sum(seg_totals.values())
             for seg, rev in sorted(seg_totals.items(), key=lambda kv: kv[1], reverse=True):
