@@ -123,8 +123,9 @@ def _override_layout_with_heuristics(
                     hits += 1
         return hits
 
-    # Fix item_col: choose col among first 3 with max segment-name hits (works for AAPL)
-    cand_cols = list(range(0, min(3, max_len)))
+    # Fix item_col: choose col among early columns with max segment-name hits (works for AAPL).
+    # Some filings include leading empty columns due to layout/colspans.
+    cand_cols = list(range(0, min(20, max_len)))
     if cand_cols:
         best = max(cand_cols, key=score_col_for_values)
         if score_col_for_values(best) > 0:
@@ -149,6 +150,34 @@ def _override_layout_with_heuristics(
     if len(year_cols) >= 2:
         layout["year_cols"] = year_cols
     return layout
+
+
+def _keyword_hints_for_ticker(ticker: str) -> List[str]:
+    t = ticker.upper()
+    if t == "AAPL":
+        return ["net sales", "total net sales", "category", "product / service"]
+    if t == "MSFT":
+        return [
+            "significant product and service offerings",
+            "server products and cloud services",
+            "microsoft 365",
+            "gaming",
+            "linkedin",
+            "windows and devices",
+            "search and news advertising",
+            "dynamics products and cloud services",
+        ]
+    if t == "GOOGL":
+        return [
+            "disaggregation of revenue",
+            "google search & other",
+            "youtube ads",
+            "google network",
+            "subscriptions, platforms, and devices",
+            "hedging gains",
+            "total revenues",
+        ]
+    return []
 
 
 def _pick_income_statement_candidate(candidates: List[TableCandidate]) -> Optional[TableCandidate]:
@@ -359,6 +388,7 @@ def run_pipeline(
                 scout=scout,
                 snippets=snippets,
                 segments=segments,
+                keyword_hints=_keyword_hints_for_ticker(ticker),
             )
             table_id = str(choice.get("table_id") or "")
             (t_art / "disagg_choice.json").write_text(json.dumps(choice, indent=2, ensure_ascii=False), encoding="utf-8")

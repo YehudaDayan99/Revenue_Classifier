@@ -277,6 +277,7 @@ def select_revenue_disaggregation_table(
     scout: Dict[str, Any],
     snippets: List[str],
     segments: List[str],
+    keyword_hints: Optional[List[str]] = None,
     max_candidates: int = 80,
 ) -> Dict[str, Any]:
     """Select the most granular revenue disaggregation table that includes a Total row."""
@@ -297,6 +298,7 @@ def select_revenue_disaggregation_table(
             "ticker": ticker,
             "company_name": company_name,
             "business_lines": segments,
+            "keyword_hints": keyword_hints or [],
             "headings": scout.get("headings", [])[:40],
             "retrieved_snippets": snippets[:10],
             "table_candidates": payload,
