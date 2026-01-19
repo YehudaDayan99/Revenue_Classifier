@@ -400,6 +400,7 @@ def extract_disaggregation_rows_from_grid(
 
     rows: List[Dict[str, Any]] = []
     total_val: Optional[int] = None
+    last_seg: str = ""
 
     for r_i, row in enumerate(grid):
         if r_i in header_rows:
@@ -407,6 +408,12 @@ def extract_disaggregation_rows_from_grid(
         if item_col >= len(row) or val_col >= len(row):
             continue
         seg = _clean(row[seg_col]) if seg_col is not None and seg_col < len(row) else ""
+        if seg_col is not None:
+            if seg:
+                last_seg = seg
+            else:
+                # iXBRL often blanks repeated segment labels; fill down.
+                seg = last_seg
         item = _clean(row[item_col])
         if not item:
             continue
@@ -435,6 +442,80 @@ def extract_disaggregation_rows_from_grid(
         rows.append({"segment": seg, "item": item, "value": val, "year": year})
 
     return {"year": year, "rows": rows, "total_value": total_val}
+
+
+def extract_segment_revenue_from_segment_results_grid(
+    grid: List[List[str]],
+    *,
+    segments: List[str],
+    target_year: Optional[int] = None,
+) -> Dict[str, Any]:
+    """Extract segment revenues from a 'segment results of operations' style table.
+
+    Shape example (MSFT t0071):
+      - segment header rows: 'Productivity and Business Processes'
+      - metric rows under each segment: 'Revenue', 'Cost of revenue', ...
+      - final 'Total' section with 'Revenue'
+    """
+    import re
+
+    # Pad rows to a common width
+    max_len = max((len(r) for r in grid), default=0)
+    if max_len > 0:
+        grid = [list(r) + [""] * (max_len - len(r)) for r in grid]
+
+    year_re = re.compile(r"\b(20\d{2})\b")
+    year_cols: dict[int, int] = {}
+    for r in grid[:15]:
+        for ci, cell in enumerate(r):
+            m = year_re.search(str(cell or ""))
+            if not m:
+                continue
+            y = int(m.group(1))
+            if 2015 <= y <= 2100:
+                year_cols.setdefault(y, ci)
+    if not year_cols:
+        raise ValueError("No year columns detected in segment results grid")
+
+    year = target_year or max(year_cols.keys())
+    if year not in year_cols:
+        year = max(year_cols.keys())
+    val_col = year_cols[year]
+
+    seg_norm = {s.lower(): s for s in segments}
+    current_seg = ""
+    out: dict[str, int] = {}
+    total_value: Optional[int] = None
+
+    for row in grid:
+        if not row:
+            continue
+        first = _clean(row[0] or "")
+        if not first:
+            continue
+
+        # Segment header row
+        if first.lower() in seg_norm or first.lower() == "total":
+            current_seg = seg_norm.get(first.lower(), "Total")
+            continue
+
+        # Metric row under current segment
+        if first.lower() == "revenue" and current_seg:
+            raw = _parse_money_to_int(row[val_col])
+            if raw is None and (val_col + 1) < len(row):
+                raw = _parse_money_to_int(row[val_col + 1])
+            if raw is None and (val_col + 2) < len(row):
+                raw = _parse_money_to_int(row[val_col + 2])
+            if raw is None:
+                continue
+            if current_seg == "Total":
+                total_value = int(raw)
+            else:
+                out[current_seg] = int(raw)
+
+    if not out:
+        raise ValueError("No segment revenues extracted from segment results grid")
+    return {"year": year, "segment_totals": out, "total_value": total_value}
 
 
 def classify_table_candidates(

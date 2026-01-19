@@ -536,6 +536,39 @@ def extract_table_grid_normalized(
             out_row.pop()
         grid.append(out_row)
 
+    # Post-process: merge common iXBRL split patterns (currency symbol in its own cell, etc.)
+    # This improves downstream money parsing and reduces false "empty extraction".
+    def _looks_numeric_like(x: str) -> bool:
+        if not x:
+            return False
+        t = x.strip()
+        if t in {"-", "—", "–"}:
+            return False
+        # common numeric patterns
+        return bool(re.match(r"^\d{1,3}(?:,\d{3})*(?:\.\d+)?$", t) or re.match(r"^\d+(?:\.\d+)?$", t))
+
+    for r in grid:
+        if not r:
+            continue
+        i = 0
+        while i < len(r) - 1:
+            cur = (r[i] or "").strip()
+            nxt = (r[i + 1] or "").strip()
+            # "$" split column
+            if cur == "$" and _looks_numeric_like(nxt):
+                r[i + 1] = "$" + nxt
+                r[i] = ""
+                i += 2
+                continue
+            # Parentheses negative split like "(", "1,234", ")"
+            if cur == "(" and _looks_numeric_like(nxt) and (i + 2) < len(r) and (r[i + 2] or "").strip() == ")":
+                r[i + 1] = f"({nxt})"
+                r[i] = ""
+                r[i + 2] = ""
+                i += 3
+                continue
+            i += 1
+
     return grid
 
 # ----------------------------
