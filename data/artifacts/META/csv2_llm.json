@@ -1,0 +1,58 @@
+{
+  "rows": [
+    {
+      "segment": "Family of Apps",
+      "segment_description": "Provides a suite of social media and communication applications that enable users to connect, share content, and engage with communities, while generating revenue primarily through advertising placements.",
+      "key_products_services": [
+        "Facebook",
+        "Instagram",
+        "Messenger",
+        "Threads",
+        "Advertising placements",
+        "Feed",
+        "Reels",
+        "Stories",
+        "Groups",
+        "Marketplace",
+        "Private messaging",
+        "Content discovery",
+        "Generative AI experiences",
+        "Meta AI assistant"
+      ],
+      "primary_source": "Meta 10-K 2024 Family of Apps segment"
+    },
+    {
+      "segment": "Reality Labs",
+      "segment_description": "Focuses on developing the next computing platform through virtual, mixed, and augmented reality devices, software, and foundational technologies, including AI and neural interfaces, with revenue from consumer hardware, software, and content sales.",
+      "key_products_services": [
+        "Virtual reality devices",
+        "Mixed reality devices",
+        "Augmented reality devices",
+        "Software for social platforms",
+        "Neural interfaces",
+        "Consumer hardware products",
+        "Software",
+        "Content",
+        "Metaverse development",
+        "Wearables",
+        "Generative AI"
+      ],
+      "primary_source": "Meta 10-K 2024 Reality Labs segment"
+    },
+    {
+      "segment": "Other revenue",
+      "segment_description": "Includes various competitive and market factors affecting the company’s ability to generate revenue, focusing on challenges in advertising effectiveness, user engagement, and competition from other platforms and technologies.",
+      "key_products_services": [
+        "Advertising effectiveness",
+        "User engagement",
+        "Marketing campaigns",
+        "Competitive platforms",
+        "Ad targeting and measurement",
+        "Developer and publisher integration",
+        "Customer service and support",
+        "Monetization strategies"
+      ],
+      "primary_source": "Meta 10-K 2024 Other revenue discussion"
+    }
+  ]
+}

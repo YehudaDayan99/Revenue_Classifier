@@ -1,0 +1,8 @@
+{"stage": "candidates", "n_candidates": 90, "income_guess": "t0073"}
+{"stage": "scout", "n_headings": 0, "n_snippets": 12}
+{"stage": "candidates", "n_candidates": 90, "income_guess": "t0073"}
+{"stage": "scout", "n_headings": 0, "n_snippets": 12}
+{"stage": "segment_select_request", "iter": 1}
+{"stage": "segment_select", "iter": 1, "choice": {"table_id": "t0014", "confidence": 0.95, "kind": "segment_revenue", "rationale": "This table clearly presents Net Revenue by Segment for the latest fiscal years 2025 and 2024, with segment names Semiconductor solutions and Infrastructure software, and a total net revenue line. It includes year headers and units in millions, consistent with Item 8 financial statements and notes context."}}
+{"stage": "segment_layout", "iter": 1, "table_id": "t0014", "layout": {"label_col": 0, "year_cols": {"2025": 6, "2024": 12}, "header_rows": [0, 1, 2, 3, 4], "skip_row_regex": "(?i)total", "units_multiplier": 1000000, "notes": "Row labels in first column; fiscal year columns at indices 6 and 12 corresponding to 2025 and 2024; units in millions"}}
+{"stage": "segment_validate", "iter": 1, "year": 2025, "validation": {"ok": true, "total_revenue_usd": null, "sum_segments_usd": 100000000, "abs_delta_usd": null, "pct_delta": null, "notes": "No total revenue reference available; validated by internal sum only."}}

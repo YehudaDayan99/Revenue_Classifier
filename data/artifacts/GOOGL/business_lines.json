@@ -1,0 +1,12 @@
+{
+  "dimension": "reportable_segments",
+  "segments": [
+    "Google Services",
+    "Google Cloud",
+    "Other Bets"
+  ],
+  "include_segments_optional": [
+    "Corporate"
+  ],
+  "notes": "Alphabet reports Google in two segments, Google Services and Google Cloud, and all non-Google businesses as Other Bets. Corporate adjustments are included under Corporate."
+}

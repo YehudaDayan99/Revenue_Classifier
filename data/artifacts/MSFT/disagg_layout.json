@@ -1,0 +1,16 @@
+{
+  "segment_col": null,
+  "item_col": 0,
+  "year_cols": {
+    "2025": 2,
+    "2024": 6
+  },
+  "header_rows": [
+    4,
+    5
+  ],
+  "total_row_regex": "^Total$",
+  "exclude_row_regex": "",
+  "units_multiplier": 1000000,
+  "notes": "Segment and Item are in the same first column; years 2025 and 2024 identified from header; Total row labeled exactly 'Total'."
+}

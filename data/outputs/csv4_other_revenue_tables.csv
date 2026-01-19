@@ -1,0 +1,15 @@
+Year,Company,Ticker,Associated segment,Item,Revenue $,Table kind,Table id,Primary source,Link
+2025,Apple Inc.,AAPL,,iPhone,209586000000,revenue_disaggregation,t0027,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2025,Apple Inc.,AAPL,,Mac,33708000000,revenue_disaggregation,t0027,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2025,Apple Inc.,AAPL,,iPad,28023000000,revenue_disaggregation,t0027,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2025,Apple Inc.,AAPL,,"Wearables, Home and Accessories",35686000000,revenue_disaggregation,t0027,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2025,Apple Inc.,AAPL,,Services (1),109158000000,revenue_disaggregation,t0027,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2025,Apple Inc.,AAPL,,Portion of total net sales that was included in deferred revenue as of the beginning of the period,8229000000,revenue_disaggregation,t0027,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2024,Alphabet Inc.,GOOGL,,Google Search & other,198084000000,revenue_disaggregation,t0048,10-K revenue disaggregation table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,,YouTube ads,36147000000,revenue_disaggregation,t0048,10-K revenue disaggregation table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,,Google Network,30359000000,revenue_disaggregation,t0048,10-K revenue disaggregation table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,,Google advertising,264590000000,revenue_disaggregation,t0048,10-K revenue disaggregation table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,,"Google subscriptions, platforms, and devices",40340000000,revenue_disaggregation,t0048,10-K revenue disaggregation table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,,Google Services total,304930000000,revenue_disaggregation,t0048,10-K revenue disaggregation table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,,Google Cloud,43229000000,revenue_disaggregation,t0048,10-K revenue disaggregation table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,,Other Bets,1648000000,revenue_disaggregation,t0048,10-K revenue disaggregation table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm

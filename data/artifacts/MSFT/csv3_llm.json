@@ -1,0 +1,179 @@
+{
+  "rows": [
+    {
+      "segment": "Cost of revenue",
+      "business_item": "Windows operating systems",
+      "business_item_short_description": "Licenses for Windows OS",
+      "business_item_long_description": "Costs associated with licensing and delivering Windows operating systems to PC manufacturers and end users.",
+      "primary_source": "Business model competition and cost factors"
+    },
+    {
+      "segment": "Cost of revenue",
+      "business_item": "PC operating system licenses",
+      "business_item_short_description": "Licensing fees for PC OS",
+      "business_item_long_description": "Expenses related to licensing Windows OS for personal computers, including OEM agreements and volume licensing.",
+      "primary_source": "Business model competition and cost factors"
+    },
+    {
+      "segment": "Cost of revenue",
+      "business_item": "Vertically-integrated hardware and software products",
+      "business_item_short_description": "Costs for integrated hardware/software",
+      "business_item_long_description": "Costs incurred in producing and delivering Microsoft’s hardware products integrated with proprietary software, such as Surface devices.",
+      "primary_source": "Business model competition and cost factors"
+    },
+    {
+      "segment": "Cost of revenue",
+      "business_item": "Cloud-based services",
+      "business_item_short_description": "Costs for cloud service delivery",
+      "business_item_long_description": "Expenses related to operating and maintaining cloud infrastructure and services including Azure and other cloud offerings.",
+      "primary_source": "Business model competition and cost factors"
+    },
+    {
+      "segment": "Cost of revenue",
+      "business_item": "Artificial intelligence (AI) capabilities",
+      "business_item_short_description": "AI infrastructure and development costs",
+      "business_item_long_description": "Investments and operational costs for AI technologies integrated into Microsoft products and cloud services.",
+      "primary_source": "Business model competition and cost factors"
+    },
+    {
+      "segment": "Cost of revenue",
+      "business_item": "Content and application marketplaces",
+      "business_item_short_description": "Marketplace content delivery costs",
+      "business_item_long_description": "Costs related to operating content and application marketplaces, including licensing fees and platform maintenance.",
+      "primary_source": "Business model competition and cost factors"
+    },
+    {
+      "segment": "Operating Income",
+      "business_item": "Operating income",
+      "business_item_short_description": "Income from core operations",
+      "business_item_long_description": "Net income generated from Microsoft’s core business operations after deducting operating expenses and costs.",
+      "primary_source": "Risks related to taxation and intellectual property"
+    },
+    {
+      "segment": "Operating Income",
+      "business_item": "International taxation",
+      "business_item_short_description": "Tax impacts on income",
+      "business_item_long_description": "Effects of international tax laws, audits, and adjustments on Microsoft’s operating income.",
+      "primary_source": "Risks related to taxation and intellectual property"
+    },
+    {
+      "segment": "Operating Income",
+      "business_item": "Intellectual property protection",
+      "business_item_short_description": "Protection of software and patents",
+      "business_item_long_description": "Costs and risks associated with protecting Microsoft’s intellectual property including software source code and patents.",
+      "primary_source": "Risks related to taxation and intellectual property"
+    },
+    {
+      "segment": "Operating Income",
+      "business_item": "Source code security",
+      "business_item_short_description": "Security of proprietary code",
+      "business_item_long_description": "Measures and costs related to securing Microsoft’s proprietary source code from unauthorized access or infringement.",
+      "primary_source": "Risks related to taxation and intellectual property"
+    },
+    {
+      "segment": "Operating Income",
+      "business_item": "Royalty-bearing licensing agreements",
+      "business_item_short_description": "Licensing revenue and costs",
+      "business_item_long_description": "Income and expenses related to licensing Microsoft’s technology under royalty agreements with third parties.",
+      "primary_source": "Risks related to taxation and intellectual property"
+    },
+    {
+      "segment": "Operating Income",
+      "business_item": "Legal settlements",
+      "business_item_short_description": "Income/expenses from legal disputes",
+      "business_item_long_description": "Financial impacts from legal settlements, disputes, and intellectual property litigation.",
+      "primary_source": "Risks related to taxation and intellectual property"
+    },
+    {
+      "segment": "Operating expenses",
+      "business_item": "Cloud engineering investments",
+      "business_item_short_description": "Investment in cloud infrastructure",
+      "business_item_long_description": "Expenses related to engineering and developing Microsoft’s cloud infrastructure and services.",
+      "primary_source": "Summary results of operations and segment expenses"
+    },
+    {
+      "segment": "Operating expenses",
+      "business_item": "AI engineering investments",
+      "business_item_short_description": "Investment in AI development",
+      "business_item_long_description": "Costs associated with research, development, and deployment of artificial intelligence technologies.",
+      "primary_source": "Summary results of operations and segment expenses"
+    },
+    {
+      "segment": "Operating expenses",
+      "business_item": "Gaming operations",
+      "business_item_short_description": "Costs related to gaming business",
+      "business_item_long_description": "Operating expenses for Xbox, game development, and gaming platform services.",
+      "primary_source": "Summary results of operations and segment expenses"
+    },
+    {
+      "segment": "Operating expenses",
+      "business_item": "Activision Blizzard acquisition",
+      "business_item_short_description": "Acquisition-related expenses",
+      "business_item_long_description": "Costs and investments related to the acquisition and integration of Activision Blizzard.",
+      "primary_source": "Summary results of operations and segment expenses"
+    },
+    {
+      "segment": "Operating expenses",
+      "business_item": "Commercial sales expenses",
+      "business_item_short_description": "Costs for commercial sales activities",
+      "business_item_long_description": "Expenses incurred in sales, marketing, and distribution for commercial products and services.",
+      "primary_source": "Summary results of operations and segment expenses"
+    },
+    {
+      "segment": "Productivity and Business Processes",
+      "business_item": "Microsoft 365 Commercial cloud",
+      "business_item_short_description": "Cloud productivity services for businesses",
+      "business_item_long_description": "Revenue and income from Microsoft 365 cloud services targeted at commercial customers.",
+      "primary_source": "Segment results of operations"
+    },
+    {
+      "segment": "Productivity and Business Processes",
+      "business_item": "Microsoft 365 Consumer cloud",
+      "business_item_short_description": "Cloud productivity services for consumers",
+      "business_item_long_description": "Revenue and income from Microsoft 365 cloud services targeted at individual consumers.",
+      "primary_source": "Segment results of operations"
+    },
+    {
+      "segment": "Productivity and Business Processes",
+      "business_item": "LinkedIn",
+      "business_item_short_description": "Professional networking platform",
+      "business_item_long_description": "Revenue and operating income generated from LinkedIn’s professional networking and advertising services.",
+      "primary_source": "Segment results of operations"
+    },
+    {
+      "segment": "Productivity and Business Processes",
+      "business_item": "Dynamics 365",
+      "business_item_short_description": "Enterprise resource planning and CRM cloud services",
+      "business_item_long_description": "Revenue and income from Dynamics 365 cloud-based business applications and services.",
+      "primary_source": "Segment results of operations"
+    },
+    {
+      "segment": "Productivity and Business Processes",
+      "business_item": "Office 2024",
+      "business_item_short_description": "Latest Office productivity suite",
+      "business_item_long_description": "Revenue and income from sales and subscriptions of Office 2024 productivity software.",
+      "primary_source": "Segment results of operations"
+    },
+    {
+      "segment": "Intelligent Cloud",
+      "business_item": "Azure cloud services",
+      "business_item_short_description": "Cloud computing platform services",
+      "business_item_long_description": "Revenue and operating income from Microsoft Azure cloud platform and related services.",
+      "primary_source": "Segment results of operations"
+    },
+    {
+      "segment": "Intelligent Cloud",
+      "business_item": "Server products",
+      "business_item_short_description": "Server software products",
+      "business_item_long_description": "Revenue from sales and licenses of Microsoft server products including SQL Server and Windows Server.",
+      "primary_source": "Segment results of operations"
+    },
+    {
+      "segment": "Intelligent Cloud",
+      "business_item": "Enterprise Support Services",
+      "business_item_short_description": "",
+      "business_item_long_description": "",
+      "primary_source": ""
+    }
+  ]
+}

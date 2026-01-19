@@ -1,0 +1,5 @@
+{
+  "table_id": "t0057",
+  "confidence": 0.95,
+  "rationale": "Table t0057 disaggregates revenue by the specified business lines: 'Productivity and Business Processes', 'Intelligent Cloud', and 'More Personal Computing', and includes a 'Total' row. It is from Item 8 / Notes, contains recent fiscal years (2023, 2024, 2025), and is presented in millions, meeting all constraints."
+}

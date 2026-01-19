@@ -1,0 +1,12 @@
+{
+  "dimension": "product_category",
+  "segments": [
+    "iPhone",
+    "Mac",
+    "iPad",
+    "Wearables, Home and Accessories",
+    "Services"
+  ],
+  "include_segments_optional": [],
+  "notes": "Apple's primary business lines are categorized by product types as per the filing."
+}

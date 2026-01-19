@@ -1,0 +1,51 @@
+{
+  "tickers": {
+    "AAPL": {
+      "ok": true,
+      "errors": [],
+      "artifacts_dir": "C:\\Users\\yehud\\Business Classification\\data\\artifacts\\AAPL",
+      "html_path": "C:\\Users\\yehud\\Business Classification\\data\\10k\\AAPL\\2025-10-31_000032019325000079\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+      "income_statement_table_id_guess": "t0037",
+      "segment_year": 2025,
+      "n_segments": 5,
+      "validation": {
+        "ok": true,
+        "total_revenue_usd": 416161000000,
+        "sum_segments_usd": 416161000000,
+        "abs_delta_usd": 0,
+        "pct_delta": 0.0,
+        "notes": "OK"
+      }
+    },
+    "MSFT": {
+      "ok": false,
+      "errors": [
+        "No rows extracted from disaggregation table"
+      ],
+      "artifacts_dir": "C:\\Users\\yehud\\Business Classification\\data\\artifacts\\MSFT",
+      "html_path": "C:\\Users\\yehud\\Business Classification\\data\\10k\\MSFT\\2025-07-30_000095017025100235\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm",
+      "income_statement_table_id_guess": "t0013"
+    },
+    "GOOGL": {
+      "ok": true,
+      "errors": [],
+      "artifacts_dir": "C:\\Users\\yehud\\Business Classification\\data\\artifacts\\GOOGL",
+      "html_path": "C:\\Users\\yehud\\Business Classification\\data\\10k\\GOOGL\\2025-02-05_000165204425000014\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm",
+      "income_statement_table_id_guess": "t0046",
+      "segment_year": 2024,
+      "n_segments": 3,
+      "validation": {
+        "ok": true,
+        "total_revenue_usd": 350018000000,
+        "sum_segments_usd": 349807000000,
+        "abs_delta_usd": 211000000,
+        "pct_delta": 0.0006028261403699238,
+        "notes": "OK"
+      }
+    }
+  },
+  "outputs_dir": "C:\\Users\\yehud\\Business Classification\\data\\outputs_rerun"
+}

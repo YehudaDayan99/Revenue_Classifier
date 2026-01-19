@@ -1,0 +1,54 @@
+{
+  "year": 2024,
+  "rows": [
+    {
+      "segment": "",
+      "item": "Google Search & other",
+      "value": 198084000000,
+      "year": 2024
+    },
+    {
+      "segment": "",
+      "item": "YouTube ads",
+      "value": 36147000000,
+      "year": 2024
+    },
+    {
+      "segment": "",
+      "item": "Google Network",
+      "value": 30359000000,
+      "year": 2024
+    },
+    {
+      "segment": "",
+      "item": "Google advertising",
+      "value": 264590000000,
+      "year": 2024
+    },
+    {
+      "segment": "",
+      "item": "Google subscriptions, platforms, and devices",
+      "value": 40340000000,
+      "year": 2024
+    },
+    {
+      "segment": "",
+      "item": "Google Services total",
+      "value": 304930000000,
+      "year": 2024
+    },
+    {
+      "segment": "",
+      "item": "Google Cloud",
+      "value": 43229000000,
+      "year": 2024
+    },
+    {
+      "segment": "",
+      "item": "Other Bets",
+      "value": 1648000000,
+      "year": 2024
+    }
+  ],
+  "total_value": 350018000000
+}

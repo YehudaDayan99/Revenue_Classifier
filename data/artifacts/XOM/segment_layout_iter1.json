@@ -1,0 +1,16 @@
+{
+  "label_col": 0,
+  "year_cols": {
+    "2024": 9,
+    "2023": 15,
+    "2022": 21
+  },
+  "header_rows": [
+    0,
+    1,
+    2
+  ],
+  "skip_row_regex": "^(Total|The information|\\(millions of dollars\\))",
+  "units_multiplier": 1000000,
+  "notes": "Row labels are in the first column; fiscal year data columns start at indices 9, 15, and 21 for years 2024, 2023, and 2022 respectively. Units are millions of dollars."
+}

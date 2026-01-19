@@ -1,0 +1,14 @@
+{"stage": "candidates", "n_candidates": 71, "income_guess": "t0010"}
+{"stage": "scout", "n_headings": 0, "n_snippets": 12}
+{"stage": "candidates", "n_candidates": 71, "income_guess": "t0010"}
+{"stage": "scout", "n_headings": 0, "n_snippets": 12}
+{"stage": "segment_select_request", "iter": 1}
+{"stage": "segment_select", "iter": 1, "choice": {"table_id": "t0031", "confidence": 0.95, "kind": "segment_revenue", "rationale": "Table t0031 contains revenue data by reportable segments 'Family of Apps' and 'Reality Labs' for the years 2022, 2023, and 2024, with total revenue figures, consistent with segment revenue disclosure in Item 8 financial statements."}}
+{"stage": "segment_layout", "iter": 1, "table_id": "t0031", "layout": {"label_col": 0, "year_cols": {"2024": 3, "2023": 9, "2022": 15}, "header_rows": [0, 1, 2], "skip_row_regex": "", "units_multiplier": 1000000, "notes": "Row labels in first column; fiscal years in columns 3, 9, and 15; units in millions as per units_hint."}}
+{"stage": "segment_validate", "iter": 1, "year": 2024, "validation": {"ok": true, "total_revenue_usd": null, "sum_segments_usd": 166223000000, "abs_delta_usd": null, "pct_delta": null, "notes": "No total revenue reference available; validated by internal sum only."}}
+{"stage": "candidates", "n_candidates": 71, "income_guess": "t0010"}
+{"stage": "scout", "n_headings": 0, "n_snippets": 12}
+{"stage": "segment_select_request", "iter": 1}
+{"stage": "segment_select", "iter": 1, "choice": {"table_id": "t0031", "confidence": 0.95, "kind": "segment_revenue", "rationale": "Table t0031 contains revenue data disaggregated by reportable segments 'Family of Apps' and 'Reality Labs' for the years 2022, 2023, and 2024, with total revenue figures. It is from Item 8 / Financial Statements and Supplementary Data, includes units in millions, and clearly matches the objective of reportable segment revenue for the latest fiscal year."}}
+{"stage": "segment_layout", "iter": 1, "table_id": "t0031", "layout": {"label_col": 0, "year_cols": {"2024": 3, "2023": 9, "2022": 15}, "header_rows": [1, 2], "skip_row_regex": "", "units_multiplier": 1000000, "notes": "Row labels in first column; fiscal years 2024, 2023, 2022 in columns 3, 9, 15 respectively; units in millions"}}
+{"stage": "segment_validate", "iter": 1, "year": 2024, "validation": {"ok": true, "total_revenue_usd": null, "sum_segments_usd": 166223000000, "abs_delta_usd": null, "pct_delta": null, "notes": "No total revenue reference available; validated by internal sum only."}}

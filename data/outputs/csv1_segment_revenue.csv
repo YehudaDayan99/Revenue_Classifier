@@ -1,0 +1,9 @@
+Year,Company,Ticker,Segment,Income $,Income %,Primary source,Link
+2025,Apple Inc.,AAPL,iPhone,209586000000,50.3618,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2025,Apple Inc.,AAPL,Services,109158000000,26.2298,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2025,Apple Inc.,AAPL,"Wearables, Home and Accessories",35686000000,8.575,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2025,Apple Inc.,AAPL,Mac,33708000000,8.0997,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2025,Apple Inc.,AAPL,iPad,28023000000,6.7337,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2024,Alphabet Inc.,GOOGL,Google Services,304930000000,87.1184,10-K revenue disaggregation table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,Google Cloud,43229000000,12.3505,10-K revenue disaggregation table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,Other Bets,1648000000,0.4708,10-K revenue disaggregation table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm

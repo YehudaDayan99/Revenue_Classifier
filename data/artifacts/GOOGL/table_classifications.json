@@ -1,0 +1,10 @@
+{
+  "tables": [
+    {
+      "table_id": "t0059",
+      "table_kind": "segment_results_of_operations",
+      "confidence": 0.95,
+      "rationale": "Table shows operating income (loss) by segments Google Services, Google Cloud, and Other Bets, which corresponds to segment results of operations."
+    }
+  ]
+}

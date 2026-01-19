@@ -1,0 +1,81 @@
+{
+  "rows": [
+    {
+      "segment": "Mac",
+      "segment_description": "Apple's line of personal computers featuring laptops and desktops, designed with macOS operating system for various user needs.",
+      "key_products_services": [
+        "MacBook Air",
+        "MacBook Pro",
+        "iMac",
+        "Mac mini",
+        "Mac Studio",
+        "Mac Pro",
+        "macOS"
+      ],
+      "primary_source": "Apple 2025 10-K Item 1 Business Products section"
+    },
+    {
+      "segment": "Services",
+      "segment_description": "Apple's portfolio of digital and support services including advertising, cloud, digital content, payment, and technical support offerings.",
+      "key_products_services": [
+        "Advertising services",
+        "AppleCare",
+        "Cloud Services",
+        "App Store",
+        "Apple Arcade",
+        "Apple Fitness+",
+        "Apple Music",
+        "Apple News+",
+        "Apple TV",
+        "Apple Card",
+        "Apple Pay"
+      ],
+      "primary_source": "Apple 2025 10-K Item 1 Business Services section"
+    },
+    {
+      "segment": "Wearables, Home and Accessories",
+      "segment_description": "Apple's products including smartwatches, wireless headphones, spatial computers, media streaming devices, smart speakers, and accessories.",
+      "key_products_services": [
+        "Apple Watch Series 11",
+        "Apple Watch SE 3",
+        "Apple Watch Ultra 3",
+        "AirPods",
+        "AirPods Pro",
+        "AirPods Max",
+        "Beats products",
+        "Apple Vision Pro",
+        "Apple TV 4K",
+        "HomePod",
+        "HomePod mini",
+        "Apple-branded accessories",
+        "Third-party accessories"
+      ],
+      "primary_source": "Apple 2025 10-K Item 1 Business Products section"
+    },
+    {
+      "segment": "iPad",
+      "segment_description": "Apple's line of multipurpose tablets designed with iPadOS, catering to various user needs from casual to professional use.",
+      "key_products_services": [
+        "iPad Pro",
+        "iPad Air",
+        "iPad",
+        "iPad mini",
+        "iPadOS"
+      ],
+      "primary_source": "Apple 2025 10-K Item 1 Business Products section"
+    },
+    {
+      "segment": "iPhone",
+      "segment_description": "Apple's line of smartphones based on iOS operating system, offering a range of models with advanced features and technology.",
+      "key_products_services": [
+        "iPhone 17 Pro",
+        "iPhone Air",
+        "iPhone 17",
+        "iPhone 16",
+        "iPhone 16e",
+        "iOS"
+      ],
+      "primary_source": "Apple 2025 10-K Item 1 Business Products section"
+    }
+  ]
+}

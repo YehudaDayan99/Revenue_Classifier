@@ -1,0 +1,10 @@
+{
+  "label_col": 0,
+  "year_cols": {},
+  "header_rows": [
+    0
+  ],
+  "skip_row_regex": "",
+  "units_multiplier": 1,
+  "notes": "Table contains index to financial statements with page numbers, no fiscal year columns detected."
+}

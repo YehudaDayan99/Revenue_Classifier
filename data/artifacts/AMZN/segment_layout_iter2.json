@@ -1,0 +1,14 @@
+{
+  "label_col": 0,
+  "year_cols": {
+    "2023": 3,
+    "2024": 9
+  },
+  "header_rows": [
+    1,
+    2
+  ],
+  "skip_row_regex": "(?i)year-over-year|net sales mix",
+  "units_multiplier": 1000000,
+  "notes": "Row labels are in the first column; fiscal years 2023 and 2024 are in columns 3 and 9 respectively; header rows 1 and 2 contain year ended and year info; units are in millions."
+}

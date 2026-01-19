@@ -1,0 +1,6 @@
+{
+  "table_id": "t0055",
+  "confidence": 0.95,
+  "kind": "segment_revenue",
+  "rationale": "This table contains detailed revenue data by reportable segments for the latest fiscal year ended January 26, 2025, includes segment names such as Compute & Networking and Graphics, has units in millions, and is located in the Item 8 / Notes to Financial Statements section as indicated by the nearby text context. It has a high item8_score and relevant keyword hits indicating segment revenue data."
+}

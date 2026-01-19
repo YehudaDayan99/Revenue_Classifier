@@ -1,0 +1,76 @@
+{
+  "rows": [
+    {
+      "segment": "Cost of revenue",
+      "segment_description": "Costs related to delivering diverse software and hardware solutions, including licenses of Windows OS, cloud services, and vertically-integrated hardware/software products. Includes expenses from competing platforms, content and application marketplaces, and investments in AI and cloud infrastructure.",
+      "key_products_services": [
+        "Windows operating systems",
+        "PC operating system licenses",
+        "Vertically-integrated hardware and software products",
+        "Cloud-based services",
+        "Artificial intelligence (AI) capabilities",
+        "Content and application marketplaces"
+      ],
+      "primary_source": "Business model competition and cost factors"
+    },
+    {
+      "segment": "Operating Income",
+      "segment_description": "Income generated from operations after accounting for costs, affected by international taxation, intellectual property risks, and legal disputes. Includes impacts from audits, tax adjustments, and protection of proprietary software and patents.",
+      "key_products_services": [
+        "Operating income",
+        "International taxation",
+        "Intellectual property protection",
+        "Source code security",
+        "Royalty-bearing licensing agreements",
+        "Legal settlements"
+      ],
+      "primary_source": "Risks related to taxation and intellectual property"
+    },
+    {
+      "segment": "Operating expenses",
+      "segment_description": "Expenses incurred from investments in cloud and AI engineering, gaming, and commercial sales, including costs related to acquisitions. Reflects growth in Microsoft Cloud and AI infrastructure scaling.",
+      "key_products_services": [
+        "Cloud engineering investments",
+        "AI engineering investments",
+        "Gaming operations",
+        "Activision Blizzard acquisition",
+        "Commercial sales expenses"
+      ],
+      "primary_source": "Summary results of operations and segment expenses"
+    },
+    {
+      "segment": "Productivity and Business Processes",
+      "segment_description": "Revenue and operating income from Microsoft 365 Commercial and Consumer products, LinkedIn, and Dynamics products and cloud services. Growth driven by cloud services, subscriber growth, and new product launches.",
+      "key_products_services": [
+        "Microsoft 365 Commercial cloud",
+        "Microsoft 365 Consumer cloud",
+        "LinkedIn",
+        "Dynamics 365",
+        "Office 2024"
+      ],
+      "primary_source": "Segment results of operations"
+    },
+    {
+      "segment": "Intelligent Cloud",
+      "segment_description": "Revenue and operating income from server products and cloud services, primarily Azure, and enterprise and partner services. Growth driven by demand for cloud services despite decline in transactional server product purchases.",
+      "key_products_services": [
+        "Azure cloud services",
+        "Server products",
+        "Enterprise Support Services",
+        "Industry Solutions"
+      ],
+      "primary_source": "Segment results of operations"
+    },
+    {
+      "segment": "More Personal Computing",
+      "segment_description": "Revenue and operating income from gaming, search and news advertising, and other personal computing products. Growth driven by gaming and advertising revenue increases.",
+      "key_products_services": [
+        "Gaming",
+        "Search advertising",
+        "News advertising",
+        "Personal computing devices"
+      ],
+      "primary_source": "Segment results of operations"
+    }
+  ]
+}

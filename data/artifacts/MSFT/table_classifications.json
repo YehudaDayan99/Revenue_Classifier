@@ -1,0 +1,166 @@
+{
+  "tables": [
+    {
+      "table_id": "t0024",
+      "table_kind": "other",
+      "confidence": 0.9,
+      "rationale": "Table shows net income and comprehensive income items, not segment or product revenue."
+    },
+    {
+      "table_id": "t0023",
+      "table_kind": "other",
+      "confidence": 0.8,
+      "rationale": "Table includes revenue and cost of revenue but not broken down by segment or product/service specifically."
+    },
+    {
+      "table_id": "t0019",
+      "table_kind": "other",
+      "confidence": 0.9,
+      "rationale": "Table shows unearned revenue by quarter, not segment or product revenue."
+    },
+    {
+      "table_id": "t0020",
+      "table_kind": "other",
+      "confidence": 0.9,
+      "rationale": "Table summarizes contractual obligations and payments, not revenue or segment results."
+    },
+    {
+      "table_id": "t0075",
+      "table_kind": "other",
+      "confidence": 0.95,
+      "rationale": "Index to financial statements, not financial data."
+    },
+    {
+      "table_id": "t0076",
+      "table_kind": "other",
+      "confidence": 0.95,
+      "rationale": "Exhibit numbers list, not financial data."
+    },
+    {
+      "table_id": "t0021",
+      "table_kind": "other",
+      "confidence": 0.95,
+      "rationale": "List of executive officers, not financial data."
+    },
+    {
+      "table_id": "t0057",
+      "table_kind": "segment_revenue",
+      "confidence": 0.9,
+      "rationale": "Table shows unearned revenue by reportable segments, consistent with segment revenue classification."
+    },
+    {
+      "table_id": "t0074",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows revenue by geography, not by segment or product/service."
+    },
+    {
+      "table_id": "t0071",
+      "table_kind": "segment_results_of_operations",
+      "confidence": 0.9,
+      "rationale": "Table includes segment revenue, cost of revenue, operating expenses, and operating income by segment."
+    },
+    {
+      "table_id": "t0014",
+      "table_kind": "segment_results_of_operations",
+      "confidence": 0.9,
+      "rationale": "Table shows segment revenue, cost of revenue, operating expenses, and operating income by segment."
+    },
+    {
+      "table_id": "t0043",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows purchase price allocation of assets and liabilities, not revenue or segment results."
+    },
+    {
+      "table_id": "t0044",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows intangible assets acquired, not revenue or segment results."
+    },
+    {
+      "table_id": "t0012",
+      "table_kind": "other",
+      "confidence": 0.8,
+      "rationale": "Table shows revenue growth metrics but not detailed revenue by segment or product/service."
+    },
+    {
+      "table_id": "t0011",
+      "table_kind": "other",
+      "confidence": 0.8,
+      "rationale": "Table shows revenue growth metrics, not detailed revenue by segment or product/service."
+    },
+    {
+      "table_id": "t0029",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows other income (expense) details, not segment or product revenue."
+    },
+    {
+      "table_id": "t0056",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows unrecognized tax benefits, not segment or product revenue."
+    },
+    {
+      "table_id": "t0027",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows stockholders' equity changes, not segment or product revenue."
+    },
+    {
+      "table_id": "t0026",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows cash flow adjustments, not segment or product revenue."
+    },
+    {
+      "table_id": "t0050",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows debt issuance by calendar year, not segment or product revenue."
+    },
+    {
+      "table_id": "t0067",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows stock-based compensation expense, not segment or product revenue."
+    },
+    {
+      "table_id": "t0070",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows shares purchased and average price, not segment or product revenue."
+    },
+    {
+      "table_id": "t0013",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows revenue and earnings per share, not broken down by segment or product/service."
+    },
+    {
+      "table_id": "t0025",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows balance sheet items, not segment or product revenue."
+    },
+    {
+      "table_id": "t0037",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows derivative instruments, not segment or product revenue."
+    },
+    {
+      "table_id": "t0066",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows derivatives and related gains/losses, not segment or product revenue."
+    },
+    {
+      "table_id": "t0064",
+      "table_kind": "other",
+      "confidence": 0.85,
+      "rationale": "Table shows quarterly revenue totals, not broken down by segment or product/service."
+    }
+  ]
+}

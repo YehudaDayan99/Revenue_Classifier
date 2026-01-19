@@ -1,0 +1,16 @@
+{
+  "label_col": 0,
+  "year_cols": {
+    "2025": 6,
+    "2024": 12,
+    "2023": 18
+  },
+  "header_rows": [
+    1,
+    2,
+    4
+  ],
+  "skip_row_regex": "(?i)total|unallocated|^$",
+  "units_multiplier": 1000000,
+  "notes": "Row labels are in the first column; fiscal years 2023, 2024, 2025 appear in columns 18, 12, and 6 respectively; units are in millions."
+}

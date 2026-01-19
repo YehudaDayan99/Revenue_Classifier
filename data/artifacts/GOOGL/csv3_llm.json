@@ -1,0 +1,137 @@
+{
+  "rows": [
+    {
+      "segment": "Google Cloud",
+      "business_item": "Google Cloud Platform",
+      "business_item_short_description": "Comprehensive cloud computing services",
+      "business_item_long_description": "Google Cloud Platform offers a suite of cloud computing services including computing, data storage, data analytics, and machine learning, enabling organizations to build, deploy, and scale applications efficiently.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Cloud",
+      "business_item": "Google Workspace",
+      "business_item_short_description": "Productivity and collaboration tools",
+      "business_item_long_description": "Google Workspace provides cloud-based productivity and collaboration tools such as Gmail, Docs, Drive, Calendar, and Meet, designed to enhance business communication and teamwork.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Cloud",
+      "business_item": "AI-optimized infrastructure",
+      "business_item_short_description": "Infrastructure tailored for AI workloads",
+      "business_item_long_description": "Google Cloud offers AI-optimized infrastructure including specialized hardware and software designed to accelerate machine learning and artificial intelligence applications for enterprises.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Cloud",
+      "business_item": "AI development platform",
+      "business_item_short_description": "Tools and frameworks for AI development",
+      "business_item_long_description": "The AI development platform provides developers with tools, APIs, and frameworks to build, train, and deploy AI models and applications efficiently on Google Cloud.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Cloud",
+      "business_item": "Assistive agents",
+      "business_item_short_description": "AI-powered virtual assistants",
+      "business_item_long_description": "Assistive agents are AI-driven virtual assistants and chatbots that help businesses automate customer service, improve user engagement, and streamline operations.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Cloud",
+      "business_item": "Cloud applications",
+      "business_item_short_description": "Software applications hosted on the cloud",
+      "business_item_long_description": "Google Cloud offers a variety of cloud-hosted applications that support business functions such as data analytics, security, and application development.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Cloud",
+      "business_item": "AI models",
+      "business_item_short_description": "Pre-trained and customizable AI models",
+      "business_item_long_description": "Google Cloud provides access to pre-trained AI models and tools to customize models for specific business needs, enabling faster deployment of AI solutions.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Cloud",
+      "business_item": "Business productivity tools",
+      "business_item_short_description": "Tools to enhance workplace productivity",
+      "business_item_long_description": "Google Cloud offers a range of business productivity tools designed to improve efficiency, collaboration, and workflow automation within organizations.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Services",
+      "business_item": "Google Search",
+      "business_item_short_description": "Web search engine",
+      "business_item_long_description": "Google Search is a widely used web search engine that organizes and makes information universally accessible and useful to users worldwide.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Services",
+      "business_item": "YouTube",
+      "business_item_short_description": "Online video sharing and streaming platform",
+      "business_item_long_description": "YouTube is a platform for uploading, sharing, and viewing videos, offering entertainment, education, and user-generated content globally.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Services",
+      "business_item": "Android",
+      "business_item_short_description": "Mobile operating system",
+      "business_item_long_description": "Android is an open-source mobile operating system used by a wide range of smartphones and devices, providing access to apps and services.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Services",
+      "business_item": "Chrome",
+      "business_item_short_description": "Web browser",
+      "business_item_long_description": "Chrome is a fast, secure, and widely used web browser that enables users to access the internet and web applications.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Services",
+      "business_item": "Gmail",
+      "business_item_short_description": "Email service",
+      "business_item_long_description": "Gmail is a free email service offering robust spam protection, integration with other Google services, and a user-friendly interface.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Services",
+      "business_item": "Maps",
+      "business_item_short_description": "Mapping and navigation service",
+      "business_item_long_description": "Google Maps provides mapping, navigation, and location-based services to help users find places, get directions, and explore the world.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Services",
+      "business_item": "Play Store",
+      "business_item_short_description": "Digital distribution platform for apps and media",
+      "business_item_long_description": "Google Play Store is a digital marketplace for downloading and purchasing apps, games, movies, books, and other digital content for Android devices.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Google Services",
+      "business_item": "YouTube Partner Program",
+      "business_item_short_description": "Monetization program for content creators",
+      "business_item_long_description": "The YouTube Partner Program enables content creators to monetize their videos through ads, channel memberships, and other revenue streams.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Other Bets",
+      "business_item": "Moonshot projects",
+      "business_item_short_description": "Ambitious, high-risk innovation projects",
+      "business_item_long_description": "Moonshot projects are experimental initiatives aimed at developing breakthrough technologies and solutions to solve large-scale problems beyond core Google services.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Other Bets",
+      "business_item": "Innovative technologies",
+      "business_item_short_description": "Advanced technology development",
+      "business_item_long_description": "Other Bets focuses on creating and advancing innovative technologies that have the potential to transform industries and improve lives.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Other Bets",
+      "business_item": "Non-Google businesses",
+      "business_item_short_description": "Subsidiaries outside Google core operations",
+      "business_item_long_description": "Other Bets includes various subsidiaries and ventures that operate independently from Google's main business, exploring new markets and technologies.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "year": 2025,
+  "rows": [
+    {
+      "segment": "",
+      "item": "iPhone",
+      "value": 209586000000,
+      "year": 2025
+    },
+    {
+      "segment": "",
+      "item": "Mac",
+      "value": 33708000000,
+      "year": 2025
+    },
+    {
+      "segment": "",
+      "item": "iPad",
+      "value": 28023000000,
+      "year": 2025
+    },
+    {
+      "segment": "",
+      "item": "Wearables, Home and Accessories",
+      "value": 35686000000,
+      "year": 2025
+    },
+    {
+      "segment": "",
+      "item": "Services (1)",
+      "value": 109158000000,
+      "year": 2025
+    },
+    {
+      "segment": "",
+      "item": "Portion of total net sales that was included in deferred revenue as of the beginning of the period",
+      "value": 8229000000,
+      "year": 2025
+    }
+  ],
+  "total_value": 416161000000
+}

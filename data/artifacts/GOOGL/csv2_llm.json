@@ -1,0 +1,44 @@
+{
+  "rows": [
+    {
+      "segment": "Google Cloud",
+      "segment_description": "Google Cloud provides AI-optimized infrastructure, development platforms, and cloud services to help organizations solve business challenges, improve productivity, reduce costs, and drive growth through innovative AI-powered tools and applications.",
+      "key_products_services": [
+        "Google Cloud Platform",
+        "Google Workspace",
+        "AI-optimized infrastructure",
+        "AI development platform",
+        "assistive agents",
+        "cloud applications",
+        "AI models",
+        "business productivity tools"
+      ],
+      "primary_source": "Alphabet Inc. 10-K 2024, Business Overview section"
+    },
+    {
+      "segment": "Google Services",
+      "segment_description": "Google Services includes consumer-facing products that organize the world’s information and make it universally accessible and useful, helping people find information, get things done, and access entertainment and learning opportunities.",
+      "key_products_services": [
+        "Google Search",
+        "YouTube",
+        "Android",
+        "Chrome",
+        "Gmail",
+        "Maps",
+        "Play Store",
+        "YouTube Partner Program"
+      ],
+      "primary_source": "Alphabet Inc. 10-K 2024, Business Overview section"
+    },
+    {
+      "segment": "Other Bets",
+      "segment_description": "Other Bets comprises non-Google businesses within Alphabet that focus on innovative and moonshot projects aimed at solving big problems and advancing new technologies beyond Google’s core services.",
+      "key_products_services": [
+        "moonshot projects",
+        "innovative technologies",
+        "non-Google businesses"
+      ],
+      "primary_source": "Alphabet Inc. 10-K 2024, Business Overview section"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "segment_col": null,
+  "item_col": 0,
+  "year_cols": {
+    "2023": 9,
+    "2024": 15
+  },
+  "header_rows": [
+    1,
+    2
+  ],
+  "total_row_regex": "(?i)^Total revenues$",
+  "exclude_row_regex": "(?i)Hedging gains",
+  "units_multiplier": 1000000,
+  "notes": "No explicit segment column; item/product names in first column; years 2023 and 2024 in columns 9 and 15; total row labeled 'Total revenues'; exclude hedging gains row; units in millions."
+}

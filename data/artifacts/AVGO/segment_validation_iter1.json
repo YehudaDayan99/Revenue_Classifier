@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "total_revenue_usd": null,
+  "sum_segments_usd": 100000000,
+  "abs_delta_usd": null,
+  "pct_delta": null,
+  "notes": "No total revenue reference available; validated by internal sum only."
+}

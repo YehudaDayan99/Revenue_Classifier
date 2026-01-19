@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "total_revenue_usd": 349585000000,
+  "sum_segments_usd": 783122000000,
+  "abs_delta_usd": 433537000000,
+  "pct_delta": 1.2401476035871104,
+  "notes": "Delta 124.015% exceeds tolerance 2.00%"
+}

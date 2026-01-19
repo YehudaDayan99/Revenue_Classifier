@@ -1,0 +1,22 @@
+{
+  "tables": [
+    {
+      "table_id": "t0027",
+      "kind": "revenue_by_product_service",
+      "confidence": 0.95,
+      "rationale": "Table shows net sales by product categories including iPhone, Mac, iPad, Wearables, Home and Accessories, and Services for fiscal years 2023-2025, with amounts in millions, from Item 8 / Notes."
+    },
+    {
+      "table_id": "t0052",
+      "kind": "revenue_by_geography",
+      "confidence": 0.9,
+      "rationale": "Table discloses net sales by geography (U.S., China, Other countries) for fiscal years 2023-2025, with amounts in millions, providing geographic revenue disaggregation."
+    },
+    {
+      "table_id": "t0018",
+      "kind": "revenue_by_product_service",
+      "confidence": 0.85,
+      "rationale": "Table presents gross margin and gross margin percentage by Products and Services for fiscal years 2023-2025, offering additional revenue-related financial detail by product/service."
+    }
+  ]
+}

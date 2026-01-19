@@ -1,0 +1,5 @@
+{
+  "table_id": "t0015",
+  "confidence": 0.95,
+  "rationale": "Table t0015 disaggregates revenue by business lines matching the provided segments: iPhone, Mac, iPad, Wearables, Home and Accessories, Services, and includes a Total net sales row. It covers recent fiscal years 2023, 2024, and 2025, is from Item 8 / Notes context, and is not geography-only."
+}

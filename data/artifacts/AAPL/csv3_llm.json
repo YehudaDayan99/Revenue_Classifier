@@ -1,0 +1,172 @@
+{
+  "rows": [
+    {
+      "segment": "Mac",
+      "business_item": "MacBook Air",
+      "business_item_short_description": "Lightweight laptop with macOS",
+      "business_item_long_description": "A thin and lightweight laptop designed for portability and everyday use, running the macOS operating system.",
+      "primary_source": "Apple 2025 10-K Products"
+    },
+    {
+      "segment": "Mac",
+      "business_item": "MacBook Pro",
+      "business_item_short_description": "High-performance laptop for professionals",
+      "business_item_long_description": "A powerful laptop designed for professional users requiring advanced computing capabilities, featuring macOS.",
+      "primary_source": "Apple 2025 10-K Products"
+    },
+    {
+      "segment": "Mac",
+      "business_item": "iMac",
+      "business_item_short_description": "All-in-one desktop computer",
+      "business_item_long_description": "A desktop computer integrating the display and computing components in a single unit, running macOS.",
+      "primary_source": "Apple 2025 10-K Products"
+    },
+    {
+      "segment": "Mac",
+      "business_item": "Mac mini",
+      "business_item_short_description": "Compact desktop computer",
+      "business_item_long_description": "A small form-factor desktop computer designed for versatility and space-saving, operating on macOS.",
+      "primary_source": "Apple 2025 10-K Products"
+    },
+    {
+      "segment": "Mac",
+      "business_item": "Mac Studio",
+      "business_item_short_description": "High-end desktop for creative professionals",
+      "business_item_long_description": "A desktop computer offering high performance and expandability tailored for creative professionals, running macOS.",
+      "primary_source": "Apple 2025 10-K Products"
+    },
+    {
+      "segment": "Mac",
+      "business_item": "Mac Pro",
+      "business_item_short_description": "Modular desktop for demanding workloads",
+      "business_item_long_description": "A modular and highly configurable desktop computer designed for intensive professional workloads, operating on macOS.",
+      "primary_source": "Apple 2025 10-K Products"
+    },
+    {
+      "segment": "Mac",
+      "business_item": "macOS",
+      "business_item_short_description": "Operating system for Mac computers",
+      "business_item_long_description": "The proprietary operating system developed by Apple for its Mac line of personal computers, providing a user-friendly interface and ecosystem integration.",
+      "primary_source": "Apple 2025 10-K Products"
+    },
+    {
+      "segment": "Services",
+      "business_item": "Advertising services",
+      "business_item_short_description": "Digital advertising platform",
+      "business_item_long_description": "Apple's platform offering advertising solutions across its digital properties to businesses and marketers.",
+      "primary_source": "Apple 2025 10-K Services"
+    },
+    {
+      "segment": "Services",
+      "business_item": "AppleCare",
+      "business_item_short_description": "Technical support and warranty services",
+      "business_item_long_description": "Extended warranty and technical support services provided by Apple for its hardware products.",
+      "primary_source": "Apple 2025 10-K Services"
+    },
+    {
+      "segment": "Services",
+      "business_item": "Cloud Services",
+      "business_item_short_description": "Cloud storage and computing services",
+      "business_item_long_description": "Apple's cloud-based services including iCloud storage, backup, and synchronization across devices.",
+      "primary_source": "Apple 2025 10-K Services"
+    },
+    {
+      "segment": "Services",
+      "business_item": "App Store",
+      "business_item_short_description": "Digital marketplace for apps",
+      "business_item_long_description": "Apple's online platform for distributing and purchasing applications for iOS, macOS, and other Apple operating systems.",
+      "primary_source": "Apple 2025 10-K Services"
+    },
+    {
+      "segment": "Services",
+      "business_item": "Apple Arcade",
+      "business_item_short_description": "Subscription gaming service",
+      "business_item_long_description": "A subscription-based service offering access to a curated collection of games across Apple devices.",
+      "primary_source": "Apple 2025 10-K Services"
+    },
+    {
+      "segment": "Services",
+      "business_item": "Apple Fitness+",
+      "business_item_short_description": "Subscription fitness service",
+      "business_item_long_description": "A subscription service providing guided workouts and fitness programs integrated with Apple Watch and other devices.",
+      "primary_source": "Apple 2025 10-K Services"
+    },
+    {
+      "segment": "Services",
+      "business_item": "Apple Music",
+      "business_item_short_description": "Music streaming service",
+      "business_item_long_description": "A subscription-based music streaming platform offering a vast library of songs and playlists.",
+      "primary_source": "Apple 2025 10-K Services"
+    },
+    {
+      "segment": "Services",
+      "business_item": "Apple News+",
+      "business_item_short_description": "Subscription news and magazine service",
+      "business_item_long_description": "A subscription service providing access to premium news articles and magazines.",
+      "primary_source": "Apple 2025 10-K Services"
+    },
+    {
+      "segment": "Services",
+      "business_item": "Apple TV",
+      "business_item_short_description": "Streaming video service",
+      "business_item_long_description": "A digital streaming service offering movies, TV shows, and original content.",
+      "primary_source": "Apple 2025 10-K Services"
+    },
+    {
+      "segment": "Services",
+      "business_item": "Apple Card",
+      "business_item_short_description": "Credit card service",
+      "business_item_long_description": "A credit card issued by Apple offering cashback and integration with Apple Pay and Wallet.",
+      "primary_source": "Apple 2025 10-K Services"
+    },
+    {
+      "segment": "Services",
+      "business_item": "Apple Pay",
+      "business_item_short_description": "Mobile payment and digital wallet",
+      "business_item_long_description": "A mobile payment and digital wallet service enabling secure payments using Apple devices.",
+      "primary_source": "Apple 2025 10-K Services"
+    },
+    {
+      "segment": "Wearables, Home and Accessories",
+      "business_item": "Apple Watch Series 11",
+      "business_item_short_description": "Latest generation smartwatch",
+      "business_item_long_description": "The newest model of Apple's smartwatch line offering health, fitness, and connectivity features.",
+      "primary_source": "Apple 2025 10-K Products"
+    },
+    {
+      "segment": "Wearables, Home and Accessories",
+      "business_item": "Apple Watch SE 3",
+      "business_item_short_description": "Affordable smartwatch option",
+      "business_item_long_description": "A cost-effective version of the Apple Watch providing essential features and performance.",
+      "primary_source": "Apple 2025 10-K Products"
+    },
+    {
+      "segment": "Wearables, Home and Accessories",
+      "business_item": "Apple Watch Ultra 3",
+      "business_item_short_description": "High-end rugged smartwatch",
+      "business_item_long_description": "A premium smartwatch designed for extreme sports and outdoor activities with enhanced durability.",
+      "primary_source": "Apple 2025 10-K Products"
+    },
+    {
+      "segment": "Wearables, Home and Accessories",
+      "business_item": "AirPods",
+      "business_item_short_description": "Wireless earbuds",
+      "business_item_long_description": "Apple's standard wireless earbuds offering seamless connectivity and sound quality.",
+      "primary_source": "Apple 2025 10-K Products"
+    },
+    {
+      "segment": "Wearables, Home and Accessories",
+      "business_item": "AirPods Pro",
+      "business_item_short_description": "Wireless earbuds with noise cancellation",
+      "business_item_long_description": "Premium wireless earbuds featuring active noise cancellation and enhanced audio performance.",
+      "primary_source": "Apple 2025 10-K Products"
+    },
+    {
+      "segment": "Wearables, Home and Accessories",
+      "business_item": "AirPods Max",
+      "business_item_short_description": "Over-ear wireless headphones",
+      "business_item_long_description": "High-fidelity over-ear headphones with active noise cancellation and spatial audio support.",
+      "primary_source": "Apple 2025 10-K Products"
+    }
+  ]
+}

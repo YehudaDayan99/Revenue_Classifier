@@ -1,0 +1,16 @@
+{
+  "segment_col": null,
+  "item_col": 0,
+  "year_cols": {
+    "2025": 3,
+    "2024": 9,
+    "2023": 15
+  },
+  "header_rows": [
+    1
+  ],
+  "total_row_regex": "(?i)^Total net sales$",
+  "exclude_row_regex": "(?i)Hedging gains",
+  "units_multiplier": 1000000,
+  "notes": "No separate segment column; first column is product/item; year columns are recent fiscal years 2025, 2024, 2023; total row identified by exact match 'Total net sales'"
+}

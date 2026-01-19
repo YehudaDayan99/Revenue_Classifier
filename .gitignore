@@ -30,8 +30,8 @@ env/
 .ipynb_checkpoints
 *.ipynb_checkpoints/
 
-# Data files (exclude downloaded 10-Ks and extracted data)
-data/
+# Data files (temporarily included for repo review)
+# data/
 .cache/
 
 # IDE

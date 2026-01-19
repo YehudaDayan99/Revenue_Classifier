@@ -1,0 +1,10 @@
+{
+  "tables": [
+    {
+      "table_id": "t0014",
+      "table_kind": "segment_revenue",
+      "confidence": 0.95,
+      "rationale": "Table shows net sales by geographic regions (Americas, Europe, Greater China, Japan, Rest of Asia Pacific) and total net sales, consistent with reportable segments revenue."
+    }
+  ]
+}
