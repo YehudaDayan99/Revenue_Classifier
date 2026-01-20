@@ -3,134 +3,113 @@
     {
       "segment": "Google Cloud",
       "business_item": "Google Cloud Platform",
-      "business_item_short_description": "Comprehensive cloud computing services",
-      "business_item_long_description": "Google Cloud Platform offers a suite of cloud computing services including computing, data storage, data analytics, and machine learning, enabling organizations to build, deploy, and scale applications efficiently.",
+      "business_item_short_description": "A suite of cloud computing services that runs on the same infrastructure as Google's internal products.",
+      "business_item_long_description": "Google Cloud Platform (GCP) offers a comprehensive set of infrastructure services including computing, storage, and networking, designed to support enterprise workloads. It enables businesses to build, deploy, and scale applications on Google's highly reliable and secure infrastructure. GCP also integrates advanced AI and machine learning capabilities to enhance cloud solutions.",
       "primary_source": "Alphabet Inc. 10-K 2024"
     },
     {
       "segment": "Google Cloud",
       "business_item": "Google Workspace",
-      "business_item_short_description": "Productivity and collaboration tools",
-      "business_item_long_description": "Google Workspace provides cloud-based productivity and collaboration tools such as Gmail, Docs, Drive, Calendar, and Meet, designed to enhance business communication and teamwork.",
+      "business_item_short_description": "A collection of productivity and collaboration tools for businesses.",
+      "business_item_long_description": "Google Workspace includes applications such as Gmail, Google Drive, Google Docs, Sheets, Slides, and Meet, designed to facilitate communication and collaboration within organizations. It supports real-time collaboration and seamless integration across devices, helping enterprises improve productivity and streamline workflows. Google Workspace is widely adopted across various industries including financial services, healthcare, and the public sector.",
       "primary_source": "Alphabet Inc. 10-K 2024"
     },
     {
       "segment": "Google Cloud",
-      "business_item": "AI-optimized infrastructure",
-      "business_item_short_description": "Infrastructure tailored for AI workloads",
-      "business_item_long_description": "Google Cloud offers AI-optimized infrastructure including specialized hardware and software designed to accelerate machine learning and artificial intelligence applications for enterprises.",
+      "business_item": "Google Cloud AI and Machine Learning Platform",
+      "business_item_short_description": "AI and machine learning tools integrated into Google Cloud services.",
+      "business_item_long_description": "Google Cloud's AI and Machine Learning Platform provides pre-trained models and a platform to build custom models, enabling enterprises to incorporate advanced AI capabilities into their applications. This platform supports natural language processing, vision, translation, and automated machine learning, helping businesses innovate and optimize operations. It is a key component of Google Cloud's strategy to deliver intelligent cloud solutions.",
       "primary_source": "Alphabet Inc. 10-K 2024"
     },
     {
       "segment": "Google Cloud",
-      "business_item": "AI development platform",
-      "business_item_short_description": "Tools and frameworks for AI development",
-      "business_item_long_description": "The AI development platform provides developers with tools, APIs, and frameworks to build, train, and deploy AI models and applications efficiently on Google Cloud.",
+      "business_item": "Google Cloud Security Services",
+      "business_item_short_description": "Comprehensive cybersecurity solutions to protect cloud infrastructure and data.",
+      "business_item_long_description": "Google Cloud Security Services include identity and access management, data encryption, threat detection, and compliance tools designed to safeguard enterprise cloud environments. These services help organizations meet regulatory requirements and protect against cyber threats globally. Google Cloud continuously updates its security offerings to address evolving risks and maintain trust with customers.",
       "primary_source": "Alphabet Inc. 10-K 2024"
     },
     {
       "segment": "Google Cloud",
-      "business_item": "Assistive agents",
-      "business_item_short_description": "AI-powered virtual assistants",
-      "business_item_long_description": "Assistive agents are AI-driven virtual assistants and chatbots that help businesses automate customer service, improve user engagement, and streamline operations.",
-      "primary_source": "Alphabet Inc. 10-K 2024"
-    },
-    {
-      "segment": "Google Cloud",
-      "business_item": "Cloud applications",
-      "business_item_short_description": "Software applications hosted on the cloud",
-      "business_item_long_description": "Google Cloud offers a variety of cloud-hosted applications that support business functions such as data analytics, security, and application development.",
-      "primary_source": "Alphabet Inc. 10-K 2024"
-    },
-    {
-      "segment": "Google Cloud",
-      "business_item": "AI models",
-      "business_item_short_description": "Pre-trained and customizable AI models",
-      "business_item_long_description": "Google Cloud provides access to pre-trained AI models and tools to customize models for specific business needs, enabling faster deployment of AI solutions.",
-      "primary_source": "Alphabet Inc. 10-K 2024"
-    },
-    {
-      "segment": "Google Cloud",
-      "business_item": "Business productivity tools",
-      "business_item_short_description": "Tools to enhance workplace productivity",
-      "business_item_long_description": "Google Cloud offers a range of business productivity tools designed to improve efficiency, collaboration, and workflow automation within organizations.",
+      "business_item": "Google Cloud Industry Solutions",
+      "business_item_short_description": "Tailored cloud solutions for specific industries such as financial services, healthcare, and the public sector.",
+      "business_item_long_description": "Google Cloud Industry Solutions provide customized cloud services and tools designed to meet the unique needs of sectors like financial services, healthcare, and government. These solutions address industry-specific challenges including regulatory compliance, data privacy, and operational efficiency. By leveraging Google Cloud's infrastructure and AI capabilities, these industries can accelerate digital transformation and innovation.",
       "primary_source": "Alphabet Inc. 10-K 2024"
     },
     {
       "segment": "Google Services",
-      "business_item": "Google Search",
-      "business_item_short_description": "Web search engine",
-      "business_item_long_description": "Google Search is a widely used web search engine that organizes and makes information universally accessible and useful to users worldwide.",
+      "business_item": "Google Cloud Platform",
+      "business_item_short_description": "A suite of cloud computing services for enterprise customers.",
+      "business_item_long_description": "Google Cloud Platform offers a comprehensive set of cloud services including computing, data storage, data analytics, and machine learning. It enables businesses to build, deploy, and scale applications efficiently on Google's infrastructure. The platform is designed to support rapid innovation and competitive pricing in a dynamic market.",
       "primary_source": "Alphabet Inc. 10-K 2024"
     },
     {
       "segment": "Google Services",
-      "business_item": "YouTube",
-      "business_item_short_description": "Online video sharing and streaming platform",
-      "business_item_long_description": "YouTube is a platform for uploading, sharing, and viewing videos, offering entertainment, education, and user-generated content globally.",
+      "business_item": "Google Workspace",
+      "business_item_short_description": "A collection of productivity and collaboration tools for businesses and consumers.",
+      "business_item_long_description": "Google Workspace includes applications such as Gmail, Google Drive, Google Docs, Sheets, Slides, and Google Meet, facilitating seamless communication and collaboration. It is widely used by enterprises and individuals to enhance productivity and streamline workflows. The suite integrates cloud storage and real-time collaboration features.",
       "primary_source": "Alphabet Inc. 10-K 2024"
     },
     {
       "segment": "Google Services",
-      "business_item": "Android",
-      "business_item_short_description": "Mobile operating system",
-      "business_item_long_description": "Android is an open-source mobile operating system used by a wide range of smartphones and devices, providing access to apps and services.",
+      "business_item": "Pixel Smartphones",
+      "business_item_short_description": "Google's flagship line of smartphones featuring advanced hardware and software integration.",
+      "business_item_long_description": "Pixel smartphones combine Google's latest Android operating system with proprietary hardware innovations, including advanced camera technology and AI-powered features. These devices are designed to provide a premium user experience with regular software updates and security enhancements. The Pixel line competes in the highly competitive smartphone market.",
       "primary_source": "Alphabet Inc. 10-K 2024"
     },
     {
       "segment": "Google Services",
-      "business_item": "Chrome",
-      "business_item_short_description": "Web browser",
-      "business_item_long_description": "Chrome is a fast, secure, and widely used web browser that enables users to access the internet and web applications.",
+      "business_item": "Nest Home Devices",
+      "business_item_short_description": "A range of smart home products including thermostats, cameras, and security systems.",
+      "business_item_long_description": "Nest devices integrate with Google Assistant to provide smart home automation, energy management, and security solutions. Products like the Nest Thermostat, Nest Cam, and Nest Doorbell offer users convenience, safety, and energy efficiency. These devices are part of Google's strategy to expand its presence in the connected home market.",
       "primary_source": "Alphabet Inc. 10-K 2024"
     },
     {
       "segment": "Google Services",
-      "business_item": "Gmail",
-      "business_item_short_description": "Email service",
-      "business_item_long_description": "Gmail is a free email service offering robust spam protection, integration with other Google services, and a user-friendly interface.",
-      "primary_source": "Alphabet Inc. 10-K 2024"
-    },
-    {
-      "segment": "Google Services",
-      "business_item": "Maps",
-      "business_item_short_description": "Mapping and navigation service",
-      "business_item_long_description": "Google Maps provides mapping, navigation, and location-based services to help users find places, get directions, and explore the world.",
-      "primary_source": "Alphabet Inc. 10-K 2024"
-    },
-    {
-      "segment": "Google Services",
-      "business_item": "Play Store",
-      "business_item_short_description": "Digital distribution platform for apps and media",
-      "business_item_long_description": "Google Play Store is a digital marketplace for downloading and purchasing apps, games, movies, books, and other digital content for Android devices.",
-      "primary_source": "Alphabet Inc. 10-K 2024"
-    },
-    {
-      "segment": "Google Services",
-      "business_item": "YouTube Partner Program",
-      "business_item_short_description": "Monetization program for content creators",
-      "business_item_long_description": "The YouTube Partner Program enables content creators to monetize their videos through ads, channel memberships, and other revenue streams.",
+      "business_item": "Wear OS by Google",
+      "business_item_short_description": "An operating system for wearable devices focused on health and connectivity.",
+      "business_item_long_description": "Wear OS powers smartwatches and other wearable devices, providing users with fitness tracking, notifications, and seamless integration with Android smartphones. The platform supports a variety of third-party apps and emphasizes health monitoring features. Google continues to invest in Wear OS to enhance user experience and compete in the wearable technology market.",
       "primary_source": "Alphabet Inc. 10-K 2024"
     },
     {
       "segment": "Other Bets",
-      "business_item": "Moonshot projects",
-      "business_item_short_description": "Ambitious, high-risk innovation projects",
-      "business_item_long_description": "Moonshot projects are experimental initiatives aimed at developing breakthrough technologies and solutions to solve large-scale problems beyond core Google services.",
+      "business_item": "Waymo",
+      "business_item_short_description": "Autonomous driving technology and self-driving car services.",
+      "business_item_long_description": "Waymo develops and deploys autonomous vehicle technology aimed at improving transportation safety and efficiency. It operates self-driving taxi services and partners with automotive manufacturers to integrate its technology. The venture faces regulatory and competitive challenges in the evolving autonomous vehicle market.",
       "primary_source": "Alphabet Inc. 10-K 2024"
     },
     {
       "segment": "Other Bets",
-      "business_item": "Innovative technologies",
-      "business_item_short_description": "Advanced technology development",
-      "business_item_long_description": "Other Bets focuses on creating and advancing innovative technologies that have the potential to transform industries and improve lives.",
+      "business_item": "Verily",
+      "business_item_short_description": "Life sciences research and healthcare technology development.",
+      "business_item_long_description": "Verily focuses on developing tools and devices to collect and analyze health data to improve disease prevention and management. It works on projects ranging from smart contact lenses to clinical research platforms. The company navigates complex regulatory environments and aims to innovate in health and life sciences.",
       "primary_source": "Alphabet Inc. 10-K 2024"
     },
     {
       "segment": "Other Bets",
-      "business_item": "Non-Google businesses",
-      "business_item_short_description": "Subsidiaries outside Google core operations",
-      "business_item_long_description": "Other Bets includes various subsidiaries and ventures that operate independently from Google's main business, exploring new markets and technologies.",
+      "business_item": "Calico",
+      "business_item_short_description": "Research on aging and age-related diseases.",
+      "business_item_long_description": "Calico is dedicated to understanding the biology of aging and developing interventions to extend human lifespan and healthspan. It conducts advanced research and collaborates with academic and industry partners. The initiative faces scientific and regulatory uncertainties inherent in longevity research.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Other Bets",
+      "business_item": "Loon",
+      "business_item_short_description": "High-altitude balloons providing internet connectivity.",
+      "business_item_long_description": "Loon develops and operates stratospheric balloons designed to deliver internet access to remote and underserved areas. The technology aims to bridge connectivity gaps but faces operational and regulatory challenges. Alphabet has scaled back some Loon operations due to commercial viability concerns.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Other Bets",
+      "business_item": "Wing",
+      "business_item_short_description": "Drone delivery services for goods and medical supplies.",
+      "business_item_long_description": "Wing operates drone delivery systems to transport packages, including medical supplies, in urban and rural areas. The service focuses on speed and efficiency while complying with aviation regulations. It is part of Alphabet’s efforts to innovate in logistics and transportation.",
+      "primary_source": "Alphabet Inc. 10-K 2024"
+    },
+    {
+      "segment": "Other Bets",
+      "business_item": "X Development LLC",
+      "business_item_short_description": "Alphabet’s moonshot factory for experimental technology projects.",
+      "business_item_long_description": "X Development LLC incubates and develops breakthrough technologies and radical innovations across various fields, including AI, robotics, and energy. It serves as a research and development hub for high-risk, high-reward projects. The division manages significant uncertainty and investment risk.",
       "primary_source": "Alphabet Inc. 10-K 2024"
     }
   ]

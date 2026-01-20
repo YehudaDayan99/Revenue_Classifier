@@ -4,9 +4,9 @@
     "iPhone",
     "Mac",
     "iPad",
-    "Wearables, Home and Accessories",
+    "Wearables/Home/Accessories",
     "Services"
   ],
   "include_segments_optional": [],
-  "notes": "Apple's primary business lines are categorized by product types as per the filing."
+  "notes": "Segments based on Apple product categories as per instructions and filing content."
 }

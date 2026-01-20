@@ -1,0 +1,246 @@
+{
+  "rejected": [
+    {
+      "table_id": "t0101",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bdeferred\\s+revenue\\b(?!\\s+recognition)",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Table of Contents"
+      ]
+    },
+    {
+      "table_id": "t0115",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bhedging\\s+instruments?\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Table of Contents"
+      ]
+    },
+    {
+      "table_id": "t0116",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bderivative\\s+instruments?\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Derivatives designated as hedging instruments:",
+        "Foreign exchange contracts",
+        "Cash flow hedges",
+        "Fair value hedges",
+        "Net investment hedges",
+        "Derivatives not designated as hedging instruments:",
+        "Foreign exchange contracts",
+        "Other contracts"
+      ]
+    },
+    {
+      "table_id": "t0117",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bderivative\\s+instruments?\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Derivatives designated as hedging instruments:",
+        "Foreign exchange contracts",
+        "Derivatives not designated as hedging instruments:",
+        "Foreign exchange contracts",
+        "Other contracts",
+        "Total derivatives not designated as hedging instruments",
+        "Total"
+      ]
+    },
+    {
+      "table_id": "t0120",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bhedging\\s+instruments?\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Total amounts included in the Consolidated Statements of Income",
+        "Effect of cash flow hedges:",
+        "Foreign exchange contracts",
+        "Amount reclassified from AOCI to income",
+        "Amount excluded from the assessment of effectiveness (amortized)",
+        "Effect of fair value hedges:",
+        "Foreign exchange contracts",
+        "Hedged items"
+      ]
+    },
+    {
+      "table_id": "t0121",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bderivative\\s+instruments?\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Table of Contents"
+      ]
+    },
+    {
+      "table_id": "t0123",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\blease\\s+(assets?|liabilities?|obligations?)\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Operating lease cost",
+        "Finance lease cost:",
+        "Amortization of lease assets",
+        "Interest on lease liabilities",
+        "Finance lease cost",
+        "Variable lease cost",
+        "Total lease cost"
+      ]
+    },
+    {
+      "table_id": "t0124",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bfinance\\s+lease\\s+(cost|liability|asset)\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Weighted average remaining lease term",
+        "Operating leases",
+        "Finance leases",
+        "Weighted average discount rate",
+        "Operating leases",
+        "Finance leases"
+      ]
+    },
+    {
+      "table_id": "t0126",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\blease\\s+(assets?|liabilities?|obligations?)\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Operating leases:",
+        "Operating lease assets",
+        "Accrued expenses and other liabilities",
+        "Operating lease liabilities",
+        "Total operating lease liabilities",
+        "Finance Leases:",
+        "Property and equipment, at cost",
+        "Accumulated depreciation"
+      ]
+    },
+    {
+      "table_id": "t0127",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\blease\\s+(assets?|liabilities?|obligations?)\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Cash payments for lease liabilities:",
+        "Operating cash flows used for operating leases",
+        "Operating cash flows used for finance leases",
+        "Financing cash flows used for finance leases (1)",
+        "Assets obtained in exchange for lease liabilities:",
+        "Operating leases",
+        "Finance leases"
+      ]
+    },
+    {
+      "table_id": "t0135",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\blease\\s+(assets?|liabilities?|obligations?)\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "European Commission fines (1)",
+        "Accrued purchases of property and equipment (2)",
+        "Accrued customer liabilities",
+        "Current operating lease liabilities",
+        "Income taxes payable, net",
+        "Other accrued expenses and current liabilities",
+        "Accrued expenses and other current liabilities"
+      ]
+    },
+    {
+      "table_id": "t0156",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bdeferred\\s+tax\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "U.S. federal statutory tax rate",
+        "Foreign income taxed at different rates",
+        "Foreign-derived intangible income deduction",
+        "Stock-based compensation expense",
+        "Federal research credit",
+        "Deferred tax asset valuation allowance",
+        "State and local income taxes",
+        "Effect of tax law change"
+      ]
+    },
+    {
+      "table_id": "t0157",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bdeferred\\s+tax\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Table of Contents"
+      ]
+    },
+    {
+      "table_id": "t0158",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bdeferred\\s+tax\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Deferred tax assets:",
+        "Accrued employee benefits",
+        "Accruals and reserves not currently deductible",
+        "Tax credits",
+        "Net operating losses",
+        "Operating leases",
+        "Capitalized research and development",
+        "Other"
+      ]
+    },
+    {
+      "table_id": "t0159",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bdeferred\\s+tax\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Table of Contents"
+      ]
+    },
+    {
+      "table_id": "t0160",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bunrecognized\\s+tax\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Beginning gross unrecognized tax benefits",
+        "Increases related to prior year tax positions",
+        "Decreases related to prior year tax positions",
+        "Decreases related to settlement with tax authorities",
+        "Increases related to current year tax positions",
+        "Ending gross unrecognized tax benefits"
+      ]
+    },
+    {
+      "table_id": "t0164",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\blease\\s+(assets?|liabilities?|obligations?)\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Long-lived assets:",
+        "United States",
+        "International",
+        "Total long-lived assets"
+      ]
+    }
+  ]
+}

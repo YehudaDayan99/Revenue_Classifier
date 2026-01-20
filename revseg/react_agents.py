@@ -279,18 +279,34 @@ def select_revenue_disaggregation_table(
     segments: List[str],
     keyword_hints: Optional[List[str]] = None,
     max_candidates: int = 80,
+    prefer_granular: bool = True,
 ) -> Dict[str, Any]:
-    """Select the most granular revenue disaggregation table that includes a Total row."""
+    """Select the most granular revenue disaggregation table that includes a Total row.
+    
+    When prefer_granular=True, prioritize tables with product/service line items
+    (e.g., 'Revenue by Products and Services') over segment-level totals.
+    """
     ranked = rank_candidates_for_financial_tables(candidates)[:max_candidates]
     payload = [_candidate_summary(c) for c in ranked]
+    
+    granular_guidance = ""
+    if prefer_granular:
+        granular_guidance = (
+            "- STRONGLY PREFER tables titled 'Revenue from External Customers by Products and Services' "
+            "or 'Disaggregation of Revenue' that show individual product/service line items "
+            "(e.g., 'Server products and cloud services', 'LinkedIn', 'Gaming', 'YouTube ads').\n"
+            "- These granular tables are better than segment-level totals.\n"
+        )
+    
     system = (
         "You are a financial filings analyst. Select the single best table that DISAGGREGATES revenue "
         "by business lines (segments or product categories) and includes a Total Revenue/Net Sales row.\n"
         "Constraints:\n"
+        f"{granular_guidance}"
         "- Ignore geography-only tables.\n"
-        "- Prefer Item 8 / Notes.\n"
+        "- Prefer Item 8 / Notes (Note 17 or Note 18 often has the most granular breakdown).\n"
         "- Prefer tables whose year columns are recent fiscal years (>= 2018).\n"
-        "- Prefer tables where row/column labels overlap the provided business lines.\n"
+        "- Prefer tables where row/column labels overlap the provided business lines or known products.\n"
         "Output STRICT JSON ONLY."
     )
     user = json.dumps(
@@ -528,16 +544,16 @@ def classify_table_candidates(
     snippets: List[str],
     max_candidates: int = 60,
 ) -> Dict[str, Any]:
-    """Classify top candidates into a strict table_kind enum for routing (CSV1 vs CSV4)."""
+    """Classify top candidates into a strict table_kind enum for routing."""
     ranked = rank_candidates_for_financial_tables(candidates)[:max_candidates]
     payload = [_candidate_summary(c) for c in ranked]
 
     system = (
         "You are a financial filings analyst. Classify each table candidate into a strict table_kind enum.\n"
         "Definitions:\n"
-        "- segment_revenue: revenue by reportable segment/business segment (CSV1 target)\n"
-        "- product_service_revenue: revenue by product/service offerings or disaggregation (CSV4 target)\n"
-        "- segment_results_of_operations: segment operating income/costs/expenses (often confused; NOT CSV1)\n"
+        "- segment_revenue: revenue by reportable segment/business segment\n"
+        "- product_service_revenue: revenue by product/service offerings or disaggregation\n"
+        "- segment_results_of_operations: segment operating income/costs/expenses (NOT revenue)\n"
         "- other: anything else\n"
         "Output STRICT JSON ONLY."
     )
@@ -711,25 +727,93 @@ def summarize_segment_descriptions(
     sec_doc_url: str,
     html_text: str,
     segment_names: List[str],
-    max_chars_per_segment: int = 3500,
+    max_chars_per_segment: int = 6000,
 ) -> Dict[str, Any]:
-    """Produce CSV2-style rows via LLM from extracted filing text snippets."""
+    """Produce CSV2-style rows via LLM from extracted filing text snippets.
+    
+    Enhanced to find segment descriptions in Notes sections (Note 18 - Segment Information)
+    which contain detailed product listings, falling back to Item 1 if needed.
+    """
     snippets: Dict[str, str] = {}
     t = html_text
     low = t.lower()
+    
+    # Find key sections in the document
+    # Priority 1: Note 18 / Segment Information section (has detailed product lists)
+    segment_info_idx = low.find("segment information")
+    if segment_info_idx == -1:
+        segment_info_idx = low.find("note 18")
+    
+    # Also look for "segment primarily comprises" pattern (where bullet lists usually are)
+    segment_comprises_idx = low.find("segment primarily comprises")
+    
+    # Notes section as fallback
+    notes_idx = low.find("notes to consolidated financial statements")
+    if notes_idx == -1:
+        notes_idx = low.find("notes to financial statements")
+    
+    # Item 1 Business section as final fallback
+    item1_idx = low.find("item 1")
+    item1_business_idx = low.find("item 1.", item1_idx) if item1_idx >= 0 else -1
+    
     for seg in segment_names:
         key = seg
-        idx = low.find(seg.lower())
-        if idx == -1:
+        seg_low = seg.lower()
+        
+        # Strategy: Find the best occurrence of segment name with detailed product list
+        # Priority 1: In Segment Information section (Note 18, has detailed products like Azure)
+        # Priority 2: Near "segment primarily comprises" pattern (has bullet lists)
+        # Priority 3: In Notes section (Item 8)
+        # Priority 4: In Item 1 Business section
+        # Priority 5: First occurrence anywhere
+        
+        best_idx = -1
+        
+        # Priority 1: Segment Information section
+        if segment_info_idx >= 0:
+            seg_in_segment_info = low.find(seg_low, segment_info_idx)
+            if seg_in_segment_info >= 0:
+                best_idx = seg_in_segment_info
+        
+        # Priority 2: Near "segment primarily comprises" (detailed product bullets)
+        if best_idx == -1 and segment_comprises_idx >= 0:
+            # Search backwards to find segment name before "primarily comprises"
+            search_start = max(0, segment_comprises_idx - 500)
+            seg_near_comprises = low.find(seg_low, search_start)
+            if seg_near_comprises >= 0 and seg_near_comprises < segment_comprises_idx + 5000:
+                best_idx = seg_near_comprises
+        
+        # Priority 3: Notes section (Item 8)
+        if best_idx == -1 and notes_idx >= 0:
+            seg_in_notes = low.find(seg_low, notes_idx)
+            if seg_in_notes >= 0:
+                best_idx = seg_in_notes
+        
+        # Priority 4: Item 1 Business section
+        if best_idx == -1 and item1_business_idx >= 0:
+            seg_in_item1 = low.find(seg_low, item1_business_idx)
+            if seg_in_item1 >= 0:
+                best_idx = seg_in_item1
+        
+        # Priority 5: Fallback to first occurrence
+        if best_idx == -1:
+            best_idx = low.find(seg_low)
+        
+        if best_idx == -1:
             snippets[key] = ""
             continue
-        start = max(0, idx - max_chars_per_segment // 3)
-        end = min(len(t), idx + max_chars_per_segment)
+        
+        # Extract more context after the segment name (where product details usually are)
+        start = max(0, best_idx - 300)
+        end = min(len(t), best_idx + max_chars_per_segment)
         snippets[key] = _clean(t[start:end])
 
     system = (
         "You summarize company business segments from SEC 10-K text. "
-        "For each segment, write a concise description and a list of key products/services keywords. "
+        "For each segment, write a comprehensive description and list SPECIFIC product/brand names "
+        "(e.g., 'Azure', 'Office 365', 'Microsoft 365 Commercial', 'Dynamics 365', 'LinkedIn', 'GitHub', "
+        "'iPhone', 'iPad', 'Google Cloud Platform', 'YouTube'). "
+        "Do NOT use generic terms when specific product names are mentioned in the text. "
         "Output STRICT JSON ONLY."
     )
     user = json.dumps(
@@ -742,8 +826,8 @@ def summarize_segment_descriptions(
                 "rows": [
                     {
                         "segment": "string",
-                        "segment_description": "string",
-                        "key_products_services": "list[string] (keywords/phrases)",
+                        "segment_description": "string (comprehensive, 2-3 sentences)",
+                        "key_products_services": "list[string] (specific brand/product names)",
                         "primary_source": "string short",
                     }
                 ]
@@ -751,7 +835,7 @@ def summarize_segment_descriptions(
         },
         ensure_ascii=False,
     )
-    return llm.json_call(system=system, user=user, max_output_tokens=1400)
+    return llm.json_call(system=system, user=user, max_output_tokens=2000)
 
 
 def expand_key_items_per_segment(
@@ -762,30 +846,51 @@ def expand_key_items_per_segment(
     sec_doc_url: str,
     segment_rows: List[Dict[str, Any]],
 ) -> Dict[str, Any]:
-    """Produce CSV3 rows: key items per segment with short + long description."""
-    system = (
-        "You expand segment descriptions into key product/service items. "
-        "Return 5-10 items per segment when possible. Output STRICT JSON ONLY."
-    )
-    user = json.dumps(
-        {
-            "ticker": ticker,
-            "company_name": company_name,
-            "sec_doc_url": sec_doc_url,
-            "segments": segment_rows,
-            "output_schema": {
-                "rows": [
-                    {
-                        "segment": "string",
-                        "business_item": "string",
-                        "business_item_short_description": "string",
-                        "business_item_long_description": "string",
-                        "primary_source": "string short",
-                    }
-                ]
+    """Produce CSV3 rows: key items per segment with short + long description.
+    
+    Process each segment individually to prevent token truncation.
+    """
+    all_rows: List[Dict[str, Any]] = []
+    
+    for seg_row in segment_rows:
+        segment_name = seg_row.get("segment", "Unknown")
+        system = (
+            "You expand a single business segment description into 5-10 key product/service items. "
+            "Use SPECIFIC brand names and product names when mentioned in the source "
+            "(e.g., 'Azure', 'Microsoft 365 Commercial', 'Dynamics 365', 'LinkedIn', 'GitHub', 'Office 365'). "
+            "Do NOT use generic terms when specific product names are available. "
+            "Output STRICT JSON ONLY."
+        )
+        user = json.dumps(
+            {
+                "ticker": ticker,
+                "company_name": company_name,
+                "sec_doc_url": sec_doc_url,
+                "segment": seg_row,
+                "output_schema": {
+                    "rows": [
+                        {
+                            "segment": "string (must match input segment name)",
+                            "business_item": "string (specific product/brand name)",
+                            "business_item_short_description": "string (1 sentence)",
+                            "business_item_long_description": "string (2-3 sentences)",
+                            "primary_source": "string short",
+                        }
+                    ]
+                },
             },
-        },
-        ensure_ascii=False,
-    )
-    return llm.json_call(system=system, user=user, max_output_tokens=1800)
+            ensure_ascii=False,
+        )
+        try:
+            result = llm.json_call(system=system, user=user, max_output_tokens=1800)
+            rows = result.get("rows", [])
+            # Ensure segment name is consistent
+            for row in rows:
+                row["segment"] = segment_name
+            all_rows.extend(rows)
+        except Exception as e:
+            print(f"[{ticker}] Warning: expand_key_items failed for segment '{segment_name}': {e}", flush=True)
+            continue
+    
+    return {"rows": all_rows}
 

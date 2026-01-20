@@ -1,5 +1,73 @@
 {
   "year": 2025,
-  "rows": [],
-  "total_value": null
+  "rows": [
+    {
+      "segment": "Intelligent Cloud",
+      "item": "Server products and cloud services",
+      "value": 98435000000,
+      "row_type": "item"
+    },
+    {
+      "segment": "Productivity and Business Processes",
+      "item": "Microsoft 365 Commercial products and cloud services",
+      "value": 87767000000,
+      "row_type": "item"
+    },
+    {
+      "segment": "More Personal Computing",
+      "item": "Gaming",
+      "value": 23455000000,
+      "row_type": "item"
+    },
+    {
+      "segment": "Productivity and Business Processes",
+      "item": "LinkedIn",
+      "value": 17812000000,
+      "row_type": "item"
+    },
+    {
+      "segment": "More Personal Computing",
+      "item": "Windows and Devices",
+      "value": 17314000000,
+      "row_type": "item"
+    },
+    {
+      "segment": "More Personal Computing",
+      "item": "Search and news advertising",
+      "value": 13878000000,
+      "row_type": "item"
+    },
+    {
+      "segment": "Productivity and Business Processes",
+      "item": "Dynamics products and cloud services",
+      "value": 7827000000,
+      "row_type": "item"
+    },
+    {
+      "segment": "Intelligent Cloud",
+      "item": "Enterprise and partner services",
+      "value": 7760000000,
+      "row_type": "item"
+    },
+    {
+      "segment": "Productivity and Business Processes",
+      "item": "Microsoft 365 Consumer products and cloud services",
+      "value": 7404000000,
+      "row_type": "item"
+    },
+    {
+      "segment": "Other",
+      "item": "Other",
+      "value": 72000000,
+      "row_type": "item"
+    }
+  ],
+  "table_total": 281724000000,
+  "segment_revenues": {
+    "Intelligent Cloud": 106195000000,
+    "Productivity and Business Processes": 120810000000,
+    "More Personal Computing": 54647000000,
+    "Other": 72000000
+  },
+  "adjustment_revenues": {}
 }

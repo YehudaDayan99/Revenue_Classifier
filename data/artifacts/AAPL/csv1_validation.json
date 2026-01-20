@@ -1,8 +1,9 @@
 {
   "ok": true,
-  "total_revenue_usd": 416161000000,
-  "sum_segments_usd": 416161000000,
-  "abs_delta_usd": 0,
-  "pct_delta": 0.0,
-  "notes": "OK"
+  "table_total": 416161000000,
+  "segment_sum": 416161000000,
+  "adjustment_sum": 0,
+  "external_total": null,
+  "delta_pct": 0.0,
+  "notes": "OK: matches table total within 0.00%"
 }

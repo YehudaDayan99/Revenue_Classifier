@@ -1,9 +1,23 @@
-Year,Company,Ticker,Segment,Income $,Income %,Primary source,Link
-2025,Apple Inc.,AAPL,iPhone,209586000000,50.3618,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
-2025,Apple Inc.,AAPL,Services,109158000000,26.2298,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
-2025,Apple Inc.,AAPL,"Wearables, Home and Accessories",35686000000,8.575,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
-2025,Apple Inc.,AAPL,Mac,33708000000,8.0997,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
-2025,Apple Inc.,AAPL,iPad,28023000000,6.7337,10-K revenue disaggregation table (t0027),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
-2024,Alphabet Inc.,GOOGL,Google Services,304930000000,87.1184,10-K revenue disaggregation table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
-2024,Alphabet Inc.,GOOGL,Google Cloud,43229000000,12.3505,10-K revenue disaggregation table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
-2024,Alphabet Inc.,GOOGL,Other Bets,1648000000,0.4708,10-K revenue disaggregation table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+Year,Company,Ticker,Segment,Item,Income $,Income %,Row type,Primary source,Link
+2025,Apple Inc.,AAPL,Mac,Mac,33708000000,8.0997,item,10-K revenue table (t0015),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2025,Apple Inc.,AAPL,Services,Services (1),109158000000,26.2298,item,10-K revenue table (t0015),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2025,Apple Inc.,AAPL,Wearables/Home/Accessories,"Wearables, Home and Accessories",35686000000,8.575,item,10-K revenue table (t0015),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2025,Apple Inc.,AAPL,iPad,iPad,28023000000,6.7337,item,10-K revenue table (t0015),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2025,Apple Inc.,AAPL,iPhone,iPhone,209586000000,50.3618,item,10-K revenue table (t0015),https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+2025,MICROSOFT CORP,MSFT,Intelligent Cloud,Server products and cloud services,98435000000,34.9402,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
+2025,MICROSOFT CORP,MSFT,Intelligent Cloud,Enterprise and partner services,7760000000,2.7545,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
+2025,MICROSOFT CORP,MSFT,More Personal Computing,Gaming,23455000000,8.3255,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
+2025,MICROSOFT CORP,MSFT,More Personal Computing,Windows and Devices,17314000000,6.1457,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
+2025,MICROSOFT CORP,MSFT,More Personal Computing,Search and news advertising,13878000000,4.9261,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
+2025,MICROSOFT CORP,MSFT,Other,Other,72000000,0.0256,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
+2025,MICROSOFT CORP,MSFT,Productivity and Business Processes,Microsoft 365 Commercial products and cloud services,87767000000,31.1535,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
+2025,MICROSOFT CORP,MSFT,Productivity and Business Processes,LinkedIn,17812000000,6.3225,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
+2025,MICROSOFT CORP,MSFT,Productivity and Business Processes,Dynamics products and cloud services,7827000000,2.7783,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
+2025,MICROSOFT CORP,MSFT,Productivity and Business Processes,Microsoft 365 Consumer products and cloud services,7404000000,2.6281,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
+2024,Alphabet Inc.,GOOGL,Google Cloud,Google Cloud,43229000000,12.3505,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,Google Services,Google Search & other,198084000000,56.5925,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,Google Services,"Google subscriptions, platforms, and devices",40340000000,11.5251,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,Google Services,YouTube ads,36147000000,10.3272,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,Google Services,Google Network,30359000000,8.6736,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,Other,Hedging gains (losses),211000000,0.0603,adjustment,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,Other Bets,Other Bets,1648000000,0.4708,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm

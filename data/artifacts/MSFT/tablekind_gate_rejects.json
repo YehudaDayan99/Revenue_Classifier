@@ -1,0 +1,304 @@
+{
+  "rejected": [
+    {
+      "table_id": "t0010",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bremaining\\s+performance\\s+obligation",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "Commercial remaining performance obligation",
+        "Microsoft Cloud revenue and revenue growth",
+        "Microsoft Cloud gross margin percentage"
+      ]
+    },
+    {
+      "table_id": "t0016",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bderivative\\s+instruments?\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions, except percentages)",
+        "Sales and marketing",
+        "As a percent of revenue"
+      ]
+    },
+    {
+      "table_id": "t0019",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bunearned\\s+revenue\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "Three Months Ending",
+        "September 30, 2025",
+        "December 31, 2025",
+        "March 31, 2026",
+        "June 30, 2026",
+        "Thereafter",
+        "Total"
+      ]
+    },
+    {
+      "table_id": "t0020",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bunearned\\s+revenue\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "Long-term debt: (a)",
+        "Principal payments",
+        "Interest payments",
+        "Construction commitments (b)",
+        "Operating and finance leases, including imputed interest (c)",
+        "Purchase commitments (d)",
+        "Total"
+      ]
+    },
+    {
+      "table_id": "t0025",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bunearned\\s+revenue\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "June 30,",
+        "Assets",
+        "Current assets:",
+        "Cash and cash equivalents",
+        "Short-term investments",
+        "Total cash, cash equivalents, and short-term investments",
+        "Accounts receivable, net of allowance for doubtful accounts of $ 944 and $ 830"
+      ]
+    },
+    {
+      "table_id": "t0033",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bderivative\\s+instruments?\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "June 30, 2024",
+        "Changes in Fair Value Recorded in Other Comprehensive Income",
+        "Commercial paper",
+        "Certificates of deposit",
+        "U.S. government securities",
+        "U.S. agency securities",
+        "Foreign government bonds"
+      ]
+    },
+    {
+      "table_id": "t0037",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bderivative\\s+instruments?\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "Designated as Hedging Instruments",
+        "Foreign exchange contracts purchased",
+        "Interest rate contracts purchased",
+        "Not Designated as Hedging Instruments",
+        "Foreign exchange contracts purchased",
+        "Foreign exchange contracts sold",
+        "Equity contracts purchased"
+      ]
+    },
+    {
+      "table_id": "t0038",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bderivative\\s+instruments?\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "Designated as Hedging Instruments",
+        "Foreign exchange contracts",
+        "Interest rate contracts",
+        "Not Designated as Hedging Instruments",
+        "Foreign exchange contracts"
+      ]
+    },
+    {
+      "table_id": "t0039",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bderivative\\s+instruments?\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "June 30, 2025",
+        "Derivative assets",
+        "Derivative liabilities",
+        "June 30, 2024",
+        "Derivative assets",
+        "Derivative liabilities"
+      ]
+    },
+    {
+      "table_id": "t0040",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bderivative\\s+instruments?\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "Year Ended June 30,",
+        "Designated as Fair Value Hedging Instruments",
+        "Interest rate contracts",
+        "Derivatives",
+        "Hedged items",
+        "Designated as Cash Flow Hedging Instruments",
+        "Foreign exchange contracts"
+      ]
+    },
+    {
+      "table_id": "t0041",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bderivative\\s+instruments?\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "Year Ended June 30,",
+        "Designated as Cash Flow Hedging Instruments",
+        "Foreign exchange contracts",
+        "Included in effectiveness assessment"
+      ]
+    },
+    {
+      "table_id": "t0055",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bdeferred\\s+tax\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "June 30,",
+        "Deferred Income Tax Assets",
+        "Stock-based compensation expense",
+        "Accruals, reserves, and other expenses",
+        "Loss and credit carryforwards",
+        "Amortization",
+        "Leasing liabilities"
+      ]
+    },
+    {
+      "table_id": "t0056",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bunrecognized\\s+tax\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "Year Ended June 30,",
+        "Beginning unrecognized tax benefits",
+        "Decreases related to settlements",
+        "Increases for tax positions related to the current year",
+        "Increases for tax positions related to prior years",
+        "Decreases for tax positions related to prior years",
+        "Decreases due to lapsed statutes of limitations"
+      ]
+    },
+    {
+      "table_id": "t0057",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bunearned\\s+revenue\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "June 30,",
+        "Productivity and Business Processes",
+        "Intelligent Cloud",
+        "More Personal Computing",
+        "Total"
+      ]
+    },
+    {
+      "table_id": "t0058",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\bunearned\\s+revenue\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "Year Ended June 30, 2025",
+        "Balance, beginning of period",
+        "Deferral of revenue",
+        "Recognition of unearned revenue",
+        "Balance, end of period"
+      ]
+    },
+    {
+      "table_id": "t0059",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\blease\\s+(assets?|liabilities?|obligations?)\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "Year Ended June 30,",
+        "Operating lease cost",
+        "Finance lease cost:",
+        "Amortization of right-of-use assets",
+        "Interest on lease liabilities",
+        "Total finance lease cost"
+      ]
+    },
+    {
+      "table_id": "t0060",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\blease\\s+(assets?|liabilities?|obligations?)\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "Year Ended June 30,",
+        "Cash paid for amounts included in the measurement of lease liabilities:",
+        "Operating cash flows from operating leases",
+        "Operating cash flows from finance leases",
+        "Financing cash flows from finance leases",
+        "Right-of-use assets obtained in exchange for lease obligations:",
+        "Operating leases"
+      ]
+    },
+    {
+      "table_id": "t0061",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\blease\\s+(assets?|liabilities?|obligations?)\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions, except lease term and discount rate)",
+        "June 30,",
+        "Operating Leases",
+        "Operating lease right-of-use assets",
+        "Other current liabilities",
+        "Operating lease liabilities"
+      ]
+    },
+    {
+      "table_id": "t0062",
+      "reason": "negative_gate_strict",
+      "negative_hit": "\\blease\\s+(assets?|liabilities?|obligations?)\\b",
+      "caption": "",
+      "heading": "",
+      "row_labels": [
+        "(In millions)",
+        "Year Ending June 30,",
+        "2026",
+        "2027",
+        "2028",
+        "2029",
+        "2030",
+        "Thereafter"
+      ]
+    }
+  ]
+}

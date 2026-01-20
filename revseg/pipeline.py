@@ -16,11 +16,8 @@ from revseg.react_agents import (
     rank_candidates_for_financial_tables,
     extract_keyword_windows,
     discover_primary_business_lines,
-    select_segment_revenue_table,
     select_revenue_disaggregation_table,
     infer_disaggregation_layout,
-    extract_disaggregation_rows_from_grid,
-    extract_segment_revenue_from_segment_results_grid,
     summarize_segment_descriptions,
     expand_key_items_per_segment,
 )
@@ -32,8 +29,15 @@ from revseg.table_candidates import (
     find_primary_document_html,
     write_candidates_json,
 )
-from revseg.validate import fetch_companyfacts_total_revenue_usd, validate_segment_table
+from revseg.validate import fetch_companyfacts_total_revenue_usd
 from revseg.table_kind import tablekind_gate
+from revseg.extraction import (
+    extract_revenue_unified,
+    extract_with_layout_fallback,
+    validate_extraction,
+    ExtractionResult,
+    ValidationResult,
+)
 
 
 def _load_json(path: Path) -> Dict[str, Any]:
@@ -101,94 +105,7 @@ def _trace_append(t_art: Path, event: Dict[str, Any]) -> None:
         f.write(json.dumps(event, ensure_ascii=False) + "\n")
 
 
-def _override_layout_with_heuristics(
-    *,
-    grid: List[List[str]],
-    layout: Dict[str, Any],
-    segments: List[str],
-) -> Dict[str, Any]:
-    """Fix common LLM layout mistakes deterministically.
-
-    Supports:
-    - AAPL-style: one label col (product categories)
-    - MSFT-style: segment_col + item_col (product/service lines under segments)
-    """
-    import re
-
-    # pad
-    max_len = max((len(r) for r in grid), default=0)
-    if max_len > 0:
-        grid = [list(r) + [""] * (max_len - len(r)) for r in grid]
-
-    seg_set = {s.lower() for s in segments}
-
-    def score_col_for_values(col: int) -> int:
-        hits = 0
-        for r in grid[:50]:
-            if col < len(r):
-                v = str(r[col] or "").strip().lower()
-                if v in seg_set:
-                    hits += 1
-        return hits
-
-    # Identify a likely segment column if segment names exist in the grid.
-    cand_cols = list(range(0, min(6, max_len)))
-    seg_col = None
-    if cand_cols:
-        best_seg = max(cand_cols, key=score_col_for_values)
-        if score_col_for_values(best_seg) >= 2:
-            seg_col = int(best_seg)
-            layout["segment_col"] = seg_col
-
-    # Fix item_col:
-    # - If we found a segment_col, item_col should be a different nearby text column.
-    # - Otherwise fall back to AAPL heuristic (label column contains segment names).
-    def _col_text_stats(col: int) -> tuple[int, int]:
-        nonempty = 0
-        uniq = set()
-        for r in grid[:80]:
-            if col >= len(r):
-                continue
-            v = str(r[col] or "").strip()
-            if not v:
-                continue
-            nonempty += 1
-            if len(v) <= 80:
-                uniq.add(v.lower())
-        return nonempty, len(uniq)
-
-    if seg_col is not None:
-        # choose a neighbor col with many non-empty and many unique values
-        item_candidates = [c for c in cand_cols if c != seg_col]
-        if item_candidates:
-            item_best = max(item_candidates, key=lambda c: _col_text_stats(c))
-            layout["item_col"] = int(item_best)
-    else:
-        # AAPL-like fallback: choose col with max segment-name hits (product label col)
-        cand_cols = list(range(0, min(20, max_len)))
-        if cand_cols:
-            best = max(cand_cols, key=score_col_for_values)
-            if score_col_for_values(best) > 0:
-                layout["item_col"] = int(best)
-                if layout.get("segment_col") is not None and int(layout["segment_col"]) == int(best):
-                    layout["segment_col"] = None
-
-    # Fix year_cols: detect recent years in first 8 rows
-    year_re = re.compile(r"\b(20\d{2})\b")
-    year_cols: Dict[str, int] = {}
-    for r in grid[:8]:
-        for ci, cell in enumerate(r):
-            m = year_re.search(str(cell or ""))
-            if not m:
-                continue
-            y = int(m.group(1))
-            if y < 2018 or y > 2100:
-                continue
-            # prefer first seen
-            year_cols.setdefault(str(y), int(ci))
-    if len(year_cols) >= 2:
-        layout["year_cols"] = year_cols
-    return layout
+# Note: _override_layout_with_heuristics removed - now handled in extraction/core.py
 
 
 def _keyword_hints_for_ticker(ticker: str) -> List[str]:
@@ -220,141 +137,18 @@ def _keyword_hints_for_ticker(ticker: str) -> List[str]:
 
 
 def _canonicalize_business_lines(ticker: str, segments: List[str]) -> List[str]:
-    t = ticker.upper()
+    """Light canonicalization - fuzzy matching in extraction handles most normalization."""
     out: List[str] = []
     for s in segments:
         ss = str(s or "").strip()
-        if not ss:
-            continue
-        out.append(ss)
-
-    if t == "AAPL":
-        # Normalize to filing's canonical labels
-        canon = []
-        for s in out:
-            low = s.lower()
-            if "iphone" == low:
-                canon.append("iPhone")
-            elif "mac" == low:
-                canon.append("Mac")
-            elif "ipad" == low:
-                canon.append("iPad")
-            elif "wear" in low:
-                canon.append("Wearables, Home and Accessories")
-            elif "service" in low:
-                canon.append("Services")
-            else:
-                canon.append(s)
-        # de-dupe preserving order
-        seen = set()
-        dedup = []
-        for s in canon:
-            if s.lower() in seen:
-                continue
-            seen.add(s.lower())
-            dedup.append(s)
-        return dedup
-
+        if ss:
+            out.append(ss)
     return out
 
 
-def _normalize_label_for_match(label: str) -> str:
-    s = str(label or "").strip()
-    if not s:
-        return ""
-    # strip common footnotes like "Services (1)" or "EMEA (1)"
-    s = s.split(" (")[0].strip()
-    return s
-
-
-def _infer_segment_from_item(item: str, segments: List[str]) -> str:
-    it = _normalize_label_for_match(item).lower()
-    for seg in segments:
-        s = seg.lower()
-        if it.startswith(s):
-            return seg
-    return ""
-
-
-def _looks_like_geography_table(rows: List[Dict[str, Any]]) -> bool:
-    labs = " ".join([str(r.get("item") or "") for r in rows]).lower()
-    geo_hits = 0
-    for kw in ["united states", "emea", "apac", "other americas", "china", "japan", "europe"]:
-        if kw in labs:
-            geo_hits += 1
-    return geo_hits >= 2
-
-
-def _pick_segment_results_candidate(candidates: List[TableCandidate], *, segments: List[str]) -> Optional[str]:
-    """Heuristic pick for 'segment results of operations' tables that contain a Revenue line per segment."""
-    seg_set = {s.lower() for s in segments}
-    best_tid: Optional[str] = None
-    best_score = -1.0
-    for c in candidates:
-        blob = " ".join(
-            [
-                " ".join([" ".join(r) for r in (getattr(c, "preview", []) or [])[:12]]),
-                " ".join(getattr(c, "row_label_preview", []) or []),
-                str(getattr(c, "caption_text", "") or ""),
-                str(getattr(c, "heading_context", "") or ""),
-                str(getattr(c, "nearby_text_context", "") or ""),
-            ]
-        ).lower()
-        # Must mention revenue as a row label or in preview
-        if "revenue" not in blob:
-            continue
-
-        score = 0.0
-        # Segment labels present
-        hits = sum(1 for s in seg_set if s and s in blob)
-        score += hits * 4.0
-        # "Segment results of operations" phrase is strong signal
-        if "segment results" in blob or "results of operations" in blob:
-            score += 6.0
-        # Prefer Item 8 / notes
-        score += float(getattr(c, "money_cell_ratio", 0.0)) * 3.0
-        score += float(getattr(c, "numeric_cell_ratio", 0.0)) * 1.0
-        if getattr(c, "has_year_header", False):
-            score += 2.0
-        if score > best_score:
-            best_score = score
-            best_tid = c.table_id
-    return best_tid
-
-
-def _business_line_overlap_score(
-    *,
-    ticker: str,
-    dimension: str,
-    rows: List[Dict[str, Any]],
-    segments: List[str],
-) -> int:
-    """Count how many business lines we can match in extracted rows (used to reject wrong tables)."""
-    seg_set = {s.lower() for s in segments}
-    matched = set()
-    if dimension == "product_category":
-        for r in rows:
-            item = _normalize_label_for_match(r.get("item") or "")
-            if item.lower() in seg_set:
-                matched.add(item.lower())
-        return len(matched)
-
-    # reportable_segments
-    for r in rows:
-        seg = str(r.get("segment") or "").strip()
-        item = str(r.get("item") or "").strip()
-        if seg:
-            if seg.lower() in seg_set:
-                matched.add(seg.lower())
-        else:
-            inf = _infer_segment_from_item(item, segments)
-            if inf:
-                matched.add(inf.lower())
-    return len(matched)
-
-def _is_corporate_adjustment_item(item: str) -> bool:
-    t = str(item or "").lower()
-    return ("hedging" in t) or ("corporate" in t)
+# Note: _looks_like_geography_table, _pick_segment_results_candidate, 
+# _business_line_overlap_score, _is_corporate_adjustment_item removed
+# - Now handled by unified extraction in extraction/core.py
 
 
 def _pick_income_statement_candidate(candidates: List[TableCandidate]) -> Optional[TableCandidate]:
@@ -494,7 +288,6 @@ def run_pipeline(
     csv1_rows: List[Dict[str, Any]] = []
     csv2_rows: List[Dict[str, Any]] = []
     csv3_rows: List[Dict[str, Any]] = []
-    csv4_rows: List[Dict[str, Any]] = []
 
     report: Dict[str, Any] = {"tickers": {}, "outputs_dir": str(out_dir)}
 
@@ -585,138 +378,12 @@ def run_pipeline(
             else:
                 candidates_for_select = candidates
 
-            # If the primary dimension is reportable segments, prefer a segment-results table
-            # and extract the 'Revenue' line per segment (MSFT-style).
-            if str(discovery.get("dimension") or "") == "reportable_segments":
-                seg_table_id = _pick_segment_results_candidate(candidates_for_select, segments=segments)
-                seg_choice: Dict[str, Any] = {
-                    "table_id": seg_table_id,
-                    "kind": "segment_results_of_operations",
-                    "confidence": 0.6,
-                    "rationale": "Deterministic heuristic pick for segment results table containing Revenue lines per segment.",
-                }
-                if not seg_table_id:
-                    seg_choice = select_segment_revenue_table(
-                        llm,
-                        ticker=ticker,
-                        company_name=company_name,
-                        candidates=candidates_for_select,
-                        scout=scout,
-                        snippets=snippets,
-                    )
-                    seg_table_id = str(seg_choice.get("table_id") or "")
-                if seg_table_id:
-                    print(f"[{ticker}] preferred segment table: {seg_table_id}", flush=True)
-                    try:
-                        seg_grid = extract_table_grid_normalized(html_path, seg_table_id)
-                        seg_extracted = extract_segment_revenue_from_segment_results_grid(
-                            seg_grid, segments=segments
-                        )
-                        year = int(seg_extracted["year"])
-                        # MSFT segment results tables are in millions; scale to USD for validation/output
-                        units_mult = 1_000_000
-                        seg_totals = {k: int(v) * units_mult for k, v in dict(seg_extracted["segment_totals"]).items()}
-                        total_rev = seg_extracted.get("total_value")
-                        total_rev_usd = int(total_rev) * units_mult if total_rev is not None else None
-                        if total_rev_usd is None:
-                            total_rev_usd = fetch_companyfacts_total_revenue_usd(cik, year)
-                        validation = validate_segment_table(
-                            segment_revenues_usd=seg_totals,
-                            total_revenue_usd=total_rev_usd,
-                            tolerance_pct=validation_tolerance_pct,
-                        )
-                        if validation.ok:
-                            # Write trace artifacts for this path
-                            (t_art / "segment_choice.json").write_text(
-                                json.dumps(seg_choice, indent=2, ensure_ascii=False), encoding="utf-8"
-                            )
-                            (t_art / "segment_extracted.json").write_text(
-                                json.dumps(seg_extracted, indent=2, ensure_ascii=False), encoding="utf-8"
-                            )
-                            (t_art / "csv1_validation.json").write_text(
-                                json.dumps(asdict(validation), indent=2), encoding="utf-8"
-                            )
-                            _trace_append(t_art, {"stage": "csv1_validate", "validation": asdict(validation), "table_id": seg_table_id})
-
-                            total_for_pct = validation.total_revenue_usd or sum(seg_totals.values())
-                            for seg, rev in sorted(seg_totals.items(), key=lambda kv: kv[1], reverse=True):
-                                pct = (rev / total_for_pct * 100.0) if total_for_pct else 0.0
-                                csv1_rows.append(
-                                    {
-                                        "Year": year,
-                                        "Company": company_name,
-                                        "Ticker": ticker,
-                                        "Segment": seg,
-                                        "Income $": int(rev),
-                                        "Income %": round(pct, 4),
-                                        "Primary source": f"10-K segment results table ({seg_table_id})",
-                                        "Link": sec_doc_url,
-                                    }
-                                )
-
-                            # Continue to CSV2/CSV3 using these segments
-                            html_text = _html_text_for_llm(html_path)
-                            seg_names = sorted(seg_totals.keys())
-                            print(f"[{ticker}] summarizing segment descriptions (LLM)...", flush=True)
-                            seg_desc = summarize_segment_descriptions(
-                                llm,
-                                ticker=ticker,
-                                company_name=company_name,
-                                sec_doc_url=sec_doc_url,
-                                html_text=html_text,
-                                segment_names=seg_names,
-                            )
-                            (t_art / "csv2_llm.json").write_text(json.dumps(seg_desc, indent=2, ensure_ascii=False), encoding="utf-8")
-                            for r in (seg_desc.get("rows") or []):
-                                csv2_rows.append(
-                                    {
-                                        "Company": company_name,
-                                        "Ticker": ticker,
-                                        "Segment": r.get("segment", ""),
-                                        "Segment description": r.get("segment_description", ""),
-                                        "Key products / services (keywords)": "; ".join(r.get("key_products_services", []) or []),
-                                        "Primary source": r.get("primary_source", "10-K segment/business description"),
-                                        "Link": sec_doc_url,
-                                    }
-                                )
-
-                            print(f"[{ticker}] expanding key items per segment (LLM)...", flush=True)
-                            csv3_payload = expand_key_items_per_segment(
-                                llm,
-                                ticker=ticker,
-                                company_name=company_name,
-                                sec_doc_url=sec_doc_url,
-                                segment_rows=(seg_desc.get("rows") or []),
-                            )
-                            (t_art / "csv3_llm.json").write_text(
-                                json.dumps(csv3_payload, indent=2, ensure_ascii=False), encoding="utf-8"
-                            )
-                            for r in (csv3_payload.get("rows") or []):
-                                csv3_rows.append(
-                                    {
-                                        "Company Name": company_name,
-                                        "Business segment": r.get("segment", ""),
-                                        "Business item": r.get("business_item", ""),
-                                        "Description of Business item": r.get("business_item_short_description", ""),
-                                        "Textual description of the business item- Long form description": r.get(
-                                            "business_item_long_description", ""
-                                        ),
-                                        "Primary source": r.get("primary_source", "10-K segment/business description"),
-                                        "Link": sec_doc_url,
-                                    }
-                                )
-
-                            per["ok"] = True
-                            per["segment_year"] = year
-                            per["n_segments"] = len(seg_totals)
-                            per["validation"] = asdict(validation)
-                            print(f"[{ticker}] done", flush=True)
-                            continue
-                    except Exception:
-                        # Fall back to disaggregation selection below
-                        pass
-
-            # Select the disaggregation table (most granular revenue table with Total row)
+            # =====================================================================
+            # UNIFIED EXTRACTION FLOW
+            # Uses extraction module for both AAPL-style and MSFT-style tables
+            # =====================================================================
+            
+            # Select the best revenue table using LLM
             choice = select_revenue_disaggregation_table(
                 llm,
                 ticker=ticker,
@@ -754,10 +421,11 @@ def run_pipeline(
             ]
 
             year = None
-            rows: List[Dict[str, Any]] = []
             seg_totals: Dict[str, int] = {}
-            validation = None
+            adj_totals: Dict[str, int] = {}
+            validation: Optional[ValidationResult] = None
             table_id = ""
+            extraction_result: Optional[ExtractionResult] = None
 
             for attempt_id in candidate_table_ids:
                 print(f"[{ticker}] try table {attempt_id} ...", flush=True)
@@ -766,6 +434,8 @@ def run_pipeline(
                     continue
                 try:
                     grid = extract_table_grid_normalized(html_path, attempt_id)
+                    
+                    # Get LLM layout hints
                     layout = infer_disaggregation_layout(
                         llm,
                         ticker=ticker,
@@ -775,140 +445,131 @@ def run_pipeline(
                         grid=grid,
                         business_lines=segments,
                     )
-                    layout = _override_layout_with_heuristics(grid=grid, layout=layout, segments=segments + include_optional)
-
-                    extracted = extract_disaggregation_rows_from_grid(
+                    
+                    # Use unified extraction with fallback strategies
+                    all_segments = segments + include_optional
+                    result = extract_with_layout_fallback(
                         grid,
-                        layout=layout,
-                        business_lines=segments + include_optional,
+                        expected_segments=all_segments,
+                        llm_layout=layout,
+                        ticker=ticker,
+                        prefer_granular=True,
                     )
-                except Exception:
-                    continue
-                attempt_rows = extracted.get("rows") or []
-                attempt_total = extracted.get("total_value")
-                attempt_year = int(extracted["year"])
-
-                if not attempt_rows:
-                    continue
-                # Reject geography-only tables for tickers where we want business lines
-                if _looks_like_geography_table(attempt_rows) and ticker.upper() in {"GOOGL", "MSFT"}:
-                    continue
-
-                # Require overlap with intended business lines (prevents index tables and wrong disclosures)
-                dim = str(discovery.get("dimension") or "")
-                overlap = _business_line_overlap_score(
-                    ticker=ticker, dimension=dim, rows=attempt_rows, segments=segments
-                )
-                if dim == "product_category":
-                    # AAPL needs at least 4/5 categories present
-                    if overlap < max(3, min(4, len(segments) - 1)):
+                    
+                    if result is None or not result.segment_revenues:
+                        _trace_append(t_art, {"stage": "extract_fail", "table_id": attempt_id, "reason": "no_segments"})
                         continue
-                else:
-                    # MSFT/GOOGL: need at least 2 segments matched
-                    if overlap < 2:
+                    
+                    # Validate using self-consistent validation
+                    external_total = fetch_companyfacts_total_revenue_usd(cik, result.year)
+                    attempt_validation = validate_extraction(
+                        segment_revenues=result.segment_revenues,
+                        adjustment_revenues=result.adjustment_revenues,
+                        table_total=result.table_total,
+                        external_total=external_total,
+                        tolerance_pct=validation_tolerance_pct,
+                    )
+                    
+                    _trace_append(t_art, {
+                        "stage": "extract_attempt",
+                        "table_id": attempt_id,
+                        "year": result.year,
+                        "n_segments": len(result.segment_revenues),
+                        "segment_sum": sum(result.segment_revenues.values()),
+                        "table_total": result.table_total,
+                        "validation_ok": attempt_validation.ok,
+                        "validation_notes": attempt_validation.notes,
+                    })
+                    
+                    if not attempt_validation.ok:
                         continue
-                # Allow negatives only for optional/corporate adjustments; otherwise reject.
-                bad = False
-                for r in attempt_rows:
-                    segv = str(r.get("segment") or "").strip()
-                    if int(r.get("value") or 0) < 0 and (segv not in include_optional and segv.lower() != "corporate"):
-                        bad = True
-                        break
-                if bad:
+                    
+                    # Accept this table
+                    table_id = attempt_id
+                    year = result.year
+                    seg_totals = result.segment_revenues
+                    adj_totals = result.adjustment_revenues
+                    validation = attempt_validation
+                    extraction_result = result
+                    
+                    # Write extraction artifacts
+                    (t_art / "disagg_layout.json").write_text(json.dumps(layout, indent=2, ensure_ascii=False), encoding="utf-8")
+                    extraction_dict = {
+                        "year": result.year,
+                        "rows": [{"segment": r.segment, "item": r.item, "value": r.value, "row_type": r.row_type} for r in result.rows],
+                        "table_total": result.table_total,
+                        "segment_revenues": result.segment_revenues,
+                        "adjustment_revenues": result.adjustment_revenues,
+                    }
+                    (t_art / "disagg_extracted.json").write_text(json.dumps(extraction_dict, indent=2, ensure_ascii=False), encoding="utf-8")
+                    print(f"[{ticker}] accepted table {table_id} year={year} segments={len(seg_totals)}", flush=True)
+                    break
+                    
+                except Exception as e:
+                    _trace_append(t_art, {"stage": "extract_error", "table_id": attempt_id, "error": str(e)})
                     continue
 
-                # Aggregate segment totals
-                attempt_seg_totals: Dict[str, int] = {}
-                if str(discovery.get("dimension")) == "product_category":
-                    seg_norm = {s.lower(): s for s in segments}
-                    for r in attempt_rows:
-                        raw_item = str(r.get("item") or "").strip()
-                        if not raw_item:
-                            continue
-                        # normalize footnotes like "Services (1)" -> "Services"
-                        item = _normalize_label_for_match(raw_item)
-                        key = item.lower()
-                        if key not in seg_norm:
-                            continue
-                        canon = seg_norm[key]
-                        attempt_seg_totals[canon] = attempt_seg_totals.get(canon, 0) + int(r.get("value") or 0)
-                else:
-                    # Prefer explicit segment totals (e.g., "Google Services total") to avoid double counting.
-                    totals_by_seg: Dict[str, int] = {}
-                    for r in attempt_rows:
-                        seg = str(r.get("segment") or "").strip()
-                        item = str(r.get("item") or "").strip()
-                        if not seg:
-                            seg = _infer_segment_from_item(item, segments) or ""
-                        if not seg:
-                            continue
-                        norm_item = (item or "").lower()
-                        # Accept either explicit "Segment total" rows OR direct "Segment" rows (e.g., "Google Cloud")
-                        if (("total" in norm_item and seg.lower() in norm_item) or (_normalize_label_for_match(item).lower() == seg.lower())):
-                            totals_by_seg[seg] = int(r.get("value") or 0)
-                        # Allow corporate adjustments (hedging gains/losses) to contribute to Corporate if requested
-                        if include_optional and "Corporate" in include_optional and _is_corporate_adjustment_item(item):
-                            totals_by_seg["Corporate"] = totals_by_seg.get("Corporate", 0) + int(r.get("value") or 0)
-
-                    if totals_by_seg:
-                        attempt_seg_totals = totals_by_seg
-                    else:
-                        for r in attempt_rows:
-                            seg = str(r.get("segment") or "").strip()
-                            item = str(r.get("item") or "").strip()
-                            if not seg:
-                                seg = _infer_segment_from_item(item, segments) or "Other"
-                            # skip subtotal/total lines when summing by segment
-                            if "total" in (item or "").lower():
-                                continue
-                            if include_optional and "Corporate" in include_optional and _is_corporate_adjustment_item(item):
-                                seg = "Corporate"
-                            attempt_seg_totals[seg] = attempt_seg_totals.get(seg, 0) + int(r.get("value") or 0)
-
-                total_rev = int(attempt_total) if attempt_total is not None else None
-                if total_rev is None:
-                    total_rev = fetch_companyfacts_total_revenue_usd(cik, attempt_year)
-                attempt_validation = validate_segment_table(
-                    segment_revenues_usd=attempt_seg_totals,
-                    total_revenue_usd=total_rev,
-                    tolerance_pct=validation_tolerance_pct,
-                )
-                if not attempt_validation.ok:
-                    continue
-
-                # Accept this table
-                table_id = attempt_id
-                year = attempt_year
-                rows = attempt_rows
-                seg_totals = attempt_seg_totals
-                validation = attempt_validation
-                (t_art / "disagg_layout.json").write_text(json.dumps(layout, indent=2, ensure_ascii=False), encoding="utf-8")
-                (t_art / "disagg_extracted.json").write_text(json.dumps(extracted, indent=2, ensure_ascii=False), encoding="utf-8")
-                print(f"[{ticker}] accepted table {table_id} year={year} segments={len(seg_totals)}", flush=True)
-                break
-
-            if not rows or year is None or validation is None:
+            if not seg_totals or year is None or validation is None:
                 per["errors"].append("No rows extracted from disaggregation table")
                 continue
 
-            (t_art / "csv1_validation.json").write_text(json.dumps(asdict(validation), indent=2), encoding="utf-8")
-            _trace_append(t_art, {"stage": "csv1_validate", "validation": asdict(validation), "table_id": table_id})
+            # Write validation artifact
+            validation_dict = {
+                "ok": validation.ok,
+                "table_total": validation.table_total,
+                "segment_sum": validation.segment_sum,
+                "adjustment_sum": validation.adjustment_sum,
+                "external_total": validation.external_total,
+                "delta_pct": validation.delta_pct,
+                "notes": validation.notes,
+            }
+            (t_art / "csv1_validation.json").write_text(json.dumps(validation_dict, indent=2), encoding="utf-8")
+            _trace_append(t_art, {"stage": "csv1_validate", "validation": validation_dict, "table_id": table_id})
 
-            total_for_pct = validation.total_revenue_usd or sum(seg_totals.values())
-            for seg, rev in sorted(seg_totals.items(), key=lambda kv: kv[1], reverse=True):
-                pct = (rev / total_for_pct * 100.0) if total_for_pct else 0.0
-                csv1_rows.append(
-                    {
-                        "Year": year,
-                        "Company": company_name,
-                        "Ticker": ticker,
-                        "Segment": seg,
-                        "Income $": rev,
-                        "Income %": round(pct, 4),
-                        "Primary source": f"10-K revenue disaggregation table ({table_id})",
-                        "Link": sec_doc_url,
-                    }
+            # Write CSV1 rows - now with individual line items
+            total_for_pct = validation.table_total or validation.external_total or sum(seg_totals.values())
+            
+            # Use extraction_result.rows for granular line items
+            if extraction_result and extraction_result.rows:
+                # Sort rows: by segment, then by value descending
+                sorted_rows = sorted(
+                    extraction_result.rows,
+                    key=lambda r: (r.segment or "ZZZ", -r.value),
                 )
+                for r in sorted_rows:
+                    pct = (r.value / total_for_pct * 100.0) if total_for_pct else 0.0
+                    csv1_rows.append(
+                        {
+                            "Year": year,
+                            "Company": company_name,
+                            "Ticker": ticker,
+                            "Segment": r.segment,
+                            "Item": r.item,
+                            "Income $": r.value,
+                            "Income %": round(pct, 4),
+                            "Row type": r.row_type,
+                            "Primary source": f"10-K revenue table ({table_id})",
+                            "Link": sec_doc_url,
+                        }
+                    )
+            else:
+                # Fallback to segment totals if no granular rows
+                for seg, rev in sorted(seg_totals.items(), key=lambda kv: kv[1], reverse=True):
+                    pct = (rev / total_for_pct * 100.0) if total_for_pct else 0.0
+                    csv1_rows.append(
+                        {
+                            "Year": year,
+                            "Company": company_name,
+                            "Ticker": ticker,
+                            "Segment": seg,
+                            "Item": seg,  # Item same as segment when no granular data
+                            "Income $": rev,
+                            "Income %": round(pct, 4),
+                            "Row type": "segment",
+                            "Primary source": f"10-K revenue table ({table_id})",
+                            "Link": sec_doc_url,
+                        }
+                    )
 
             # CSV2 + CSV3 via LLM
             html_text = _html_text_for_llm(html_path)
@@ -964,30 +625,10 @@ def run_pipeline(
                     }
                 )
 
-            # CSV4: item-level disaggregation rows (for inspection)
-            for r in rows:
-                seg = str(r.get("segment") or "").strip()
-                item = str(r.get("item") or "").strip()
-                val = int(r.get("value") or 0)
-                csv4_rows.append(
-                    {
-                        "Year": year,
-                        "Company": company_name,
-                        "Ticker": ticker,
-                        "Associated segment": seg,
-                        "Item": item,
-                        "Revenue $": val,
-                        "Table kind": "revenue_disaggregation",
-                        "Table id": table_id,
-                        "Primary source": f"10-K revenue disaggregation table ({table_id})",
-                        "Link": sec_doc_url,
-                    }
-                )
-
             per["ok"] = True
             per["segment_year"] = year
             per["n_segments"] = len(seg_totals)
-            per["validation"] = asdict(validation) if validation else None
+            per["validation"] = validation_dict
             print(f"[{ticker}] done", flush=True)
 
         except Exception as e:
@@ -996,7 +637,7 @@ def run_pipeline(
     # Write CSVs
     _write_csv(
         out_dir / "csv1_segment_revenue.csv",
-        ["Year", "Company", "Ticker", "Segment", "Income $", "Income %", "Primary source", "Link"],
+        ["Year", "Company", "Ticker", "Segment", "Item", "Income $", "Income %", "Row type", "Primary source", "Link"],
         csv1_rows,
     )
     _write_csv(
@@ -1024,22 +665,6 @@ def run_pipeline(
             "Link",
         ],
         csv3_rows,
-    )
-    _write_csv(
-        out_dir / "csv4_other_revenue_tables.csv",
-        [
-            "Year",
-            "Company",
-            "Ticker",
-            "Associated segment",
-            "Item",
-            "Revenue $",
-            "Table kind",
-            "Table id",
-            "Primary source",
-            "Link",
-        ],
-        csv4_rows,
     )
 
     (out_dir / "run_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")

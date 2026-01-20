@@ -2,41 +2,43 @@
   "year": 2025,
   "rows": [
     {
-      "segment": "",
+      "segment": "iPhone",
       "item": "iPhone",
       "value": 209586000000,
-      "year": 2025
+      "row_type": "item"
     },
     {
-      "segment": "",
+      "segment": "Mac",
       "item": "Mac",
       "value": 33708000000,
-      "year": 2025
+      "row_type": "item"
     },
     {
-      "segment": "",
+      "segment": "iPad",
       "item": "iPad",
       "value": 28023000000,
-      "year": 2025
+      "row_type": "item"
     },
     {
-      "segment": "",
+      "segment": "Wearables/Home/Accessories",
       "item": "Wearables, Home and Accessories",
       "value": 35686000000,
-      "year": 2025
+      "row_type": "item"
     },
     {
-      "segment": "",
+      "segment": "Services",
       "item": "Services (1)",
       "value": 109158000000,
-      "year": 2025
-    },
-    {
-      "segment": "",
-      "item": "Portion of total net sales that was included in deferred revenue as of the beginning of the period",
-      "value": 8229000000,
-      "year": 2025
+      "row_type": "item"
     }
   ],
-  "total_value": 416161000000
+  "table_total": 416161000000,
+  "segment_revenues": {
+    "iPhone": 209586000000,
+    "Mac": 33708000000,
+    "iPad": 28023000000,
+    "Wearables/Home/Accessories": 35686000000,
+    "Services": 109158000000
+  },
+  "adjustment_revenues": {}
 }

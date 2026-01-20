@@ -1,5 +1,5 @@
 {
   "table_id": "t0048",
   "confidence": 0.95,
-  "rationale": "Table t0048 from Item 8 disaggregates revenue by business lines matching the requested segments: Google Services (including Google advertising and subscriptions), Google Cloud, and Other Bets, and includes a Total revenues row. It covers recent fiscal years 2023 and 2024, is from Item 8 / Notes, and includes units in millions. It aligns well with the business lines and keyword hints provided."
+  "rationale": "This table disaggregates Alphabet's revenue by detailed business lines including 'Google Search & other', 'YouTube ads', 'Google Network', 'Google advertising', 'Google subscriptions, platforms, and devices', 'Google Services total', 'Google Cloud', 'Other Bets', and includes 'Hedging gains (losses)' and a 'Total revenues' row. It covers recent fiscal years 2023 and 2024, is from Item 8 / Notes section, and aligns well with the requested business lines (Google Services, Google Cloud, Other Bets) and keyword hints. It provides granular product/service line items rather than just segment totals, making it the best fit."
 }

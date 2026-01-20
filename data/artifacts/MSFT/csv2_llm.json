@@ -1,76 +1,80 @@
 {
   "rows": [
     {
-      "segment": "Cost of revenue",
-      "segment_description": "Costs related to delivering diverse software and hardware solutions, including licenses of Windows OS, cloud services, and vertically-integrated hardware/software products. Includes expenses from competing platforms, content and application marketplaces, and investments in AI and cloud infrastructure.",
-      "key_products_services": [
-        "Windows operating systems",
-        "PC operating system licenses",
-        "Vertically-integrated hardware and software products",
-        "Cloud-based services",
-        "Artificial intelligence (AI) capabilities",
-        "Content and application marketplaces"
-      ],
-      "primary_source": "Business model competition and cost factors"
-    },
-    {
-      "segment": "Operating Income",
-      "segment_description": "Income generated from operations after accounting for costs, affected by international taxation, intellectual property risks, and legal disputes. Includes impacts from audits, tax adjustments, and protection of proprietary software and patents.",
-      "key_products_services": [
-        "Operating income",
-        "International taxation",
-        "Intellectual property protection",
-        "Source code security",
-        "Royalty-bearing licensing agreements",
-        "Legal settlements"
-      ],
-      "primary_source": "Risks related to taxation and intellectual property"
-    },
-    {
-      "segment": "Operating expenses",
-      "segment_description": "Expenses incurred from investments in cloud and AI engineering, gaming, and commercial sales, including costs related to acquisitions. Reflects growth in Microsoft Cloud and AI infrastructure scaling.",
-      "key_products_services": [
-        "Cloud engineering investments",
-        "AI engineering investments",
-        "Gaming operations",
-        "Activision Blizzard acquisition",
-        "Commercial sales expenses"
-      ],
-      "primary_source": "Summary results of operations and segment expenses"
-    },
-    {
-      "segment": "Productivity and Business Processes",
-      "segment_description": "Revenue and operating income from Microsoft 365 Commercial and Consumer products, LinkedIn, and Dynamics products and cloud services. Growth driven by cloud services, subscriber growth, and new product launches.",
-      "key_products_services": [
-        "Microsoft 365 Commercial cloud",
-        "Microsoft 365 Consumer cloud",
-        "LinkedIn",
-        "Dynamics 365",
-        "Office 2024"
-      ],
-      "primary_source": "Segment results of operations"
-    },
-    {
       "segment": "Intelligent Cloud",
-      "segment_description": "Revenue and operating income from server products and cloud services, primarily Azure, and enterprise and partner services. Growth driven by demand for cloud services despite decline in transactional server product purchases.",
+      "segment_description": "The Intelligent Cloud segment includes Microsoft’s public, private, and hybrid server products and cloud services that support modern business and developer needs. It encompasses server products such as SQL Server, Windows Server, Visual Studio, and System Center, as well as cloud services including Azure, GitHub, and Nuance Healthcare cloud services. This segment also provides enterprise and partner services like Enterprise Support Services, Industry Solutions, and Microsoft Partner Network to assist customers in deploying and managing Microsoft server and AI solutions.",
       "key_products_services": [
-        "Azure cloud services",
-        "Server products",
+        "Azure",
+        "GitHub",
+        "Nuance Healthcare cloud services",
+        "SQL Server",
+        "Windows Server",
+        "Visual Studio",
+        "System Center",
+        "Client Access Licenses (CALs)",
         "Enterprise Support Services",
-        "Industry Solutions"
+        "Industry Solutions",
+        "Microsoft Partner Network",
+        "Learning Experience"
       ],
-      "primary_source": "Segment results of operations"
+      "primary_source": "SEC 10-K Intelligent Cloud segment description"
     },
     {
       "segment": "More Personal Computing",
-      "segment_description": "Revenue and operating income from gaming, search and news advertising, and other personal computing products. Growth driven by gaming and advertising revenue increases.",
+      "segment_description": "The More Personal Computing segment focuses on products and services that enhance the personal computing experience, including Windows operating system licensing, devices such as Surface, and PC accessories. It also includes the Gaming business with Xbox hardware, content, and services like Xbox Game Pass and Xbox Cloud Gaming, as well as Search and news advertising through Bing, Microsoft Edge, and Microsoft Copilot. This segment aims to deliver consistent, secure, and engaging experiences across devices and platforms.",
       "key_products_services": [
-        "Gaming",
-        "Search advertising",
-        "News advertising",
-        "Personal computing devices"
+        "Windows OEM licensing (Windows Pro and non-Pro)",
+        "Surface",
+        "PC accessories",
+        "Xbox hardware",
+        "Xbox Game Pass",
+        "Xbox Cloud Gaming",
+        "Bing",
+        "Microsoft Copilot",
+        "Microsoft News",
+        "Microsoft Edge"
       ],
-      "primary_source": "Segment results of operations"
+      "primary_source": "SEC 10-K More Personal Computing segment description"
+    },
+    {
+      "segment": "Productivity and Business Processes",
+      "segment_description": "The Productivity and Business Processes segment offers a portfolio of productivity, communication, and information services across devices and platforms. It includes Microsoft 365 Commercial and Consumer products and cloud services, LinkedIn’s professional networking and monetized solutions, and Dynamics products and cloud services for business applications. This segment integrates AI-powered tools and cloud-based applications to enhance productivity, collaboration, and business management for organizations and individuals.",
+      "key_products_services": [
+        "Microsoft 365 Commercial",
+        "Enterprise Mobility + Security",
+        "Microsoft 365 Copilot",
+        "Windows Commercial on-premises",
+        "Office licensed on-premises",
+        "Microsoft 365 Consumer subscriptions",
+        "Outlook.com",
+        "OneDrive",
+        "LinkedIn Talent Solutions",
+        "LinkedIn Marketing Solutions",
+        "LinkedIn Premium Subscriptions",
+        "LinkedIn Sales Solutions",
+        "Dynamics 365",
+        "Power Apps",
+        "Power Automate"
+      ],
+      "primary_source": "SEC 10-K Productivity and Business Processes segment description"
+    },
+    {
+      "segment": "Other",
+      "segment_description": "The Other segment includes various Microsoft products and services that complement the main business segments, such as Microsoft 365 Commercial and Consumer products, LinkedIn’s monetized solutions, and Dynamics cloud and on-premises business applications. It highlights AI-enabled productivity tools, cloud services, and professional networking solutions designed to empower users and organizations. This segment also covers competition and integration aspects across Microsoft’s broad product portfolio.",
+      "key_products_services": [
+        "Microsoft 365 Commercial",
+        "Microsoft 365 Consumer",
+        "LinkedIn Talent Solutions",
+        "LinkedIn Marketing Solutions",
+        "LinkedIn Premium Subscriptions",
+        "LinkedIn Sales Solutions",
+        "Dynamics 365",
+        "Power Apps",
+        "Power Automate",
+        "Office licensed on-premises",
+        "Windows Commercial on-premises"
+      ],
+      "primary_source": "SEC 10-K Other segment description"
     }
   ]
 }

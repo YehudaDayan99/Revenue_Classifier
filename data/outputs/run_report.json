@@ -11,22 +11,32 @@
       "n_segments": 5,
       "validation": {
         "ok": true,
-        "total_revenue_usd": 416161000000,
-        "sum_segments_usd": 416161000000,
-        "abs_delta_usd": 0,
-        "pct_delta": 0.0,
-        "notes": "OK"
+        "table_total": 416161000000,
+        "segment_sum": 416161000000,
+        "adjustment_sum": 0,
+        "external_total": null,
+        "delta_pct": 0.0,
+        "notes": "OK: matches table total within 0.00%"
       }
     },
     "MSFT": {
-      "ok": false,
-      "errors": [
-        "No rows extracted from disaggregation table"
-      ],
+      "ok": true,
+      "errors": [],
       "artifacts_dir": "C:\\Users\\yehud\\Business Classification\\data\\artifacts\\MSFT",
       "html_path": "C:\\Users\\yehud\\Business Classification\\data\\10k\\MSFT\\2025-07-30_000095017025100235\\primary_document.html",
       "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm",
-      "income_statement_table_id_guess": "t0013"
+      "income_statement_table_id_guess": "t0013",
+      "segment_year": 2025,
+      "n_segments": 4,
+      "validation": {
+        "ok": true,
+        "table_total": 281724000000,
+        "segment_sum": 281724000000,
+        "adjustment_sum": 0,
+        "external_total": null,
+        "delta_pct": 0.0,
+        "notes": "OK: matches table total within 0.00%"
+      }
     },
     "GOOGL": {
       "ok": true,
@@ -39,13 +49,14 @@
       "n_segments": 3,
       "validation": {
         "ok": true,
-        "total_revenue_usd": 350018000000,
-        "sum_segments_usd": 349807000000,
-        "abs_delta_usd": 211000000,
-        "pct_delta": 0.0006028261403699238,
-        "notes": "OK"
+        "table_total": 350018000000,
+        "segment_sum": 349807000000,
+        "adjustment_sum": 211000000,
+        "external_total": null,
+        "delta_pct": 0.0,
+        "notes": "OK: matches table total within 0.00%"
       }
     }
   },
-  "outputs_dir": "C:\\Users\\yehud\\Business Classification\\data\\outputs_rerun"
+  "outputs_dir": "C:\\Users\\yehud\\Business Classification\\data\\outputs"
 }

@@ -2,80 +2,55 @@
   "rows": [
     {
       "segment": "Mac",
-      "segment_description": "Apple's line of personal computers featuring laptops and desktops, designed with macOS operating system for various user needs.",
+      "segment_description": "The Mac segment includes Apple’s line of personal computers, which are designed for a variety of users including consumers, professionals, and enterprises. This segment focuses on hardware products that integrate with Apple’s software and services ecosystem, delivering high performance and innovative design.",
       "key_products_services": [
-        "MacBook Air",
-        "MacBook Pro",
-        "iMac",
-        "Mac mini",
-        "Mac Studio",
-        "Mac Pro",
-        "macOS"
+        "Mac"
       ],
-      "primary_source": "Apple 2025 10-K Item 1 Business Products section"
+      "primary_source": "Mac segment text snippet"
     },
     {
       "segment": "Services",
-      "segment_description": "Apple's portfolio of digital and support services including advertising, cloud, digital content, payment, and technical support offerings.",
+      "segment_description": "The Services segment encompasses Apple’s digital content stores, streaming services, cloud services, and licensing arrangements. It includes revenue from the App Store, Apple Music, iCloud, AppleCare, Apple Pay, and other subscription and advertising services, providing a recurring revenue stream that complements Apple’s hardware products.",
       "key_products_services": [
-        "Advertising services",
-        "AppleCare",
-        "Cloud Services",
         "App Store",
-        "Apple Arcade",
-        "Apple Fitness+",
         "Apple Music",
-        "Apple News+",
-        "Apple TV",
-        "Apple Card",
+        "iCloud",
+        "AppleCare",
         "Apple Pay"
       ],
-      "primary_source": "Apple 2025 10-K Item 1 Business Services section"
+      "primary_source": "Services segment text snippet"
     },
     {
-      "segment": "Wearables, Home and Accessories",
-      "segment_description": "Apple's products including smartwatches, wireless headphones, spatial computers, media streaming devices, smart speakers, and accessories.",
+      "segment": "Wearables/Home/Accessories",
+      "segment_description": "The Wearables, Home and Accessories segment includes Apple’s portfolio of products that complement its core hardware offerings, focusing on personal technology and smart home devices. This segment delivers innovative products that enhance user experience through integration with Apple’s ecosystem.",
       "key_products_services": [
-        "Apple Watch Series 11",
-        "Apple Watch SE 3",
-        "Apple Watch Ultra 3",
+        "Apple Watch",
         "AirPods",
-        "AirPods Pro",
-        "AirPods Max",
-        "Beats products",
-        "Apple Vision Pro",
-        "Apple TV 4K",
-        "HomePod",
-        "HomePod mini",
-        "Apple-branded accessories",
-        "Third-party accessories"
+        "HomePod"
       ],
-      "primary_source": "Apple 2025 10-K Item 1 Business Products section"
+      "primary_source": "Wearables/Home/Accessories segment text snippet"
     },
     {
       "segment": "iPad",
-      "segment_description": "Apple's line of multipurpose tablets designed with iPadOS, catering to various user needs from casual to professional use.",
+      "segment_description": "The iPad segment covers Apple’s line of tablet devices that combine portability with powerful computing capabilities. iPads are designed for a wide range of uses including education, business, and creative work, and are integrated with Apple’s software and services such as iCloud, Siri, and Maps.",
       "key_products_services": [
-        "iPad Pro",
-        "iPad Air",
         "iPad",
-        "iPad mini",
-        "iPadOS"
+        "iCloud",
+        "Siri",
+        "Maps"
       ],
-      "primary_source": "Apple 2025 10-K Item 1 Business Products section"
+      "primary_source": "iPad segment text snippet"
     },
     {
       "segment": "iPhone",
-      "segment_description": "Apple's line of smartphones based on iOS operating system, offering a range of models with advanced features and technology.",
+      "segment_description": "The iPhone segment represents Apple’s flagship smartphone product line, which integrates hardware, software, and services to deliver a premium user experience. The segment includes sales of iPhone devices and related bundled services, contributing significantly to Apple’s overall revenue.",
       "key_products_services": [
-        "iPhone 17 Pro",
-        "iPhone Air",
-        "iPhone 17",
-        "iPhone 16",
-        "iPhone 16e",
-        "iOS"
+        "iPhone",
+        "iCloud",
+        "Siri",
+        "Maps"
       ],
-      "primary_source": "Apple 2025 10-K Item 1 Business Products section"
+      "primary_source": "iPhone segment text snippet"
     }
   ]
 }

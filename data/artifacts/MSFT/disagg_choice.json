@@ -1,5 +1,5 @@
 {
-  "table_id": "t0057",
+  "table_id": "t0073",
   "confidence": 0.95,
-  "rationale": "Table t0057 disaggregates revenue by the specified business lines: 'Productivity and Business Processes', 'Intelligent Cloud', and 'More Personal Computing', and includes a 'Total' row. It is from Item 8 / Notes, contains recent fiscal years (2023, 2024, 2025), and is presented in millions, meeting all constraints."
+  "rationale": "This table disaggregates revenue by detailed product and service lines including 'Server products and cloud services', 'Microsoft 365 Commercial products and cloud services', 'Gaming', 'LinkedIn', 'Windows and Devices', 'Search and news advertising', 'Dynamics products and cloud services', 'Microsoft 365 Consumer products and cloud services', and includes a Total revenue row. It covers recent fiscal years 2023, 2024, and 2025, aligns well with the provided business lines and keyword hints, and is more granular than segment-level totals. It is likely from Item 8 / Notes section given the context and detailed breakdown."
 }
