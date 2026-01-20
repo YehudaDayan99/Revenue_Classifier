@@ -2,30 +2,30 @@
   "rows": [
     {
       "segment": "Google Cloud",
-      "segment_description": "Google Cloud focuses on developing and deploying enterprise-ready cloud services, including infrastructure, cybersecurity, and AI platforms to support cloud computing. It serves various industries such as financial services, healthcare, and the public sector, while facing competitive pricing and regulatory challenges globally.",
+      "segment_description": "Google Cloud segment includes cloud computing services and infrastructure offerings. It is reported separately from Google Services and Other Bets, reflecting its distinct business focus within Alphabet. The segment's operating income increased from $1,716 million in 2023 to $6,112 million in 2024, indicating growth in this area.",
       "key_products_services": [
-        "Google Cloud Platform",
-        "Google Workspace"
+        "Google Cloud"
       ],
-      "primary_source": "Alphabet Inc. 10-K 2024"
+      "primary_source": "10-K Part I, Item 1 Business and Note 15"
     },
     {
       "segment": "Google Services",
-      "segment_description": "Google Services encompasses a broad range of consumer and enterprise products including devices like smartphones, home devices, and wearables, alongside cloud services. The segment invests heavily in innovation and competes in markets characterized by rapid technological advancement, evolving standards, and price sensitivity.",
+      "segment_description": "Google Services segment encompasses various consumer and advertiser-facing products and platforms. This includes Google Search and other related services, YouTube advertising, Google Network advertising, and Google subscriptions, platforms, and devices. The segment showed significant operating income growth from $95,858 million in 2023 to $121,263 million in 2024.",
       "key_products_services": [
-        "Google Cloud Platform",
-        "Google Workspace",
-        "smartphones",
-        "home devices",
-        "wearables"
+        "Google Search & other",
+        "YouTube ads",
+        "Google Network",
+        "Google subscriptions, platforms, and devices"
       ],
-      "primary_source": "Alphabet Inc. 10-K 2024"
+      "primary_source": "10-K Part I, Item 1 Business and Note 15"
     },
     {
       "segment": "Other Bets",
-      "segment_description": "Other Bets includes investments in emerging technology areas such as health, life sciences, and transportation. These ventures face intense competition and regulatory challenges, with uncertain profitability and risks related to AI and other new technologies that may impact the company’s reputation and financial results.",
-      "key_products_services": [],
-      "primary_source": "Alphabet Inc. 10-K 2024"
+      "segment_description": "Other Bets segment includes Alphabet's experimental and emerging businesses outside of Google Services and Google Cloud. This segment reported operating losses of $4,095 million in 2023 and $4,444 million in 2024, reflecting ongoing investments in these ventures. Certain costs at the Alphabet level are not allocated to any segment.",
+      "key_products_services": [
+        "Other Bets"
+      ],
+      "primary_source": "10-K Part I, Item 1 Business and Note 15"
     }
   ]
 }

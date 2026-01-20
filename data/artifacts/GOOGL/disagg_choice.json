@@ -1,5 +1,5 @@
 {
   "table_id": "t0048",
   "confidence": 0.95,
-  "rationale": "This table disaggregates Alphabet's revenue by detailed business lines including 'Google Search & other', 'YouTube ads', 'Google Network', 'Google advertising', 'Google subscriptions, platforms, and devices', 'Google Services total', 'Google Cloud', 'Other Bets', and includes 'Hedging gains (losses)' and a 'Total revenues' row. It covers recent fiscal years 2023 and 2024, is from Item 8 / Notes section, and aligns well with the requested business lines (Google Services, Google Cloud, Other Bets) and keyword hints. It provides granular product/service line items rather than just segment totals, making it the best fit."
+  "rationale": "Table t0048 provides a granular disaggregation of Alphabet's revenue by product and service lines including 'Google Search & other', 'YouTube ads', 'Google Network', 'Google advertising', 'Google subscriptions, platforms, and devices', 'Google Services total', 'Google Cloud', 'Other Bets', 'Hedging gains (losses)', and a 'Total revenues' row. It covers recent fiscal years 2023 and 2024, is from Item 8 / Notes, and aligns well with the requested business lines (Google Services, Google Cloud, Other Bets) and keyword hints. It is more granular than segment-level totals and includes the total revenue row, making it the best fit."
 }

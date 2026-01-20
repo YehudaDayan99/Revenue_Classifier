@@ -2,55 +2,43 @@
   "rows": [
     {
       "segment": "Mac",
-      "segment_description": "The Mac segment includes Apple’s line of personal computers, which are designed for a variety of users including consumers, professionals, and enterprises. This segment focuses on hardware products that integrate with Apple’s software and services ecosystem, delivering high performance and innovative design.",
+      "segment_description": "The Mac segment includes Apple's line of personal computers. The text snippet does not provide detailed product descriptions but references Mac as a revenue item. The segment is part of the Company's consolidated financials and is managed alongside other hardware products.",
       "key_products_services": [
         "Mac"
       ],
-      "primary_source": "Mac segment text snippet"
+      "primary_source": "segment text and revenue items from filing"
     },
     {
       "segment": "Services",
-      "segment_description": "The Services segment encompasses Apple’s digital content stores, streaming services, cloud services, and licensing arrangements. It includes revenue from the App Store, Apple Music, iCloud, AppleCare, Apple Pay, and other subscription and advertising services, providing a recurring revenue stream that complements Apple’s hardware products.",
+      "segment_description": "The Services segment encompasses Apple's supplier arrangements, licensed intellectual property and content, and distribution rights. It involves commitments such as unconditional purchase obligations and is influenced by supply chain factors including component sourcing and manufacturing partnerships primarily in Asia. The segment is managed geographically and includes net sales and operating income data by region.",
       "key_products_services": [
-        "App Store",
-        "Apple Music",
-        "iCloud",
-        "AppleCare",
-        "Apple Pay"
+        "Services (1)"
       ],
-      "primary_source": "Services segment text snippet"
+      "primary_source": "segment text and revenue items from filing"
     },
     {
       "segment": "Wearables/Home/Accessories",
-      "segment_description": "The Wearables, Home and Accessories segment includes Apple’s portfolio of products that complement its core hardware offerings, focusing on personal technology and smart home devices. This segment delivers innovative products that enhance user experience through integration with Apple’s ecosystem.",
+      "segment_description": "The Wearables, Home and Accessories segment includes Apple's hardware products in these categories. Although the text snippet provided is empty, the segment is listed as a revenue item in the filing, indicating it represents a distinct product category within Apple's hardware offerings.",
       "key_products_services": [
-        "Apple Watch",
-        "AirPods",
-        "HomePod"
+        "Wearables, Home and Accessories"
       ],
-      "primary_source": "Wearables/Home/Accessories segment text snippet"
+      "primary_source": "revenue items from filing"
     },
     {
       "segment": "iPad",
-      "segment_description": "The iPad segment covers Apple’s line of tablet devices that combine portability with powerful computing capabilities. iPads are designed for a wide range of uses including education, business, and creative work, and are integrated with Apple’s software and services such as iCloud, Siri, and Maps.",
+      "segment_description": "The iPad segment covers Apple's tablet products and related bundled software delivered at the time of sale. It also includes product-related bundled services such as iCloud, Siri, and Maps. Revenue allocation is based on performance obligations related to hardware and services.",
       "key_products_services": [
-        "iPad",
-        "iCloud",
-        "Siri",
-        "Maps"
+        "iPad"
       ],
-      "primary_source": "iPad segment text snippet"
+      "primary_source": "segment text and revenue items from filing"
     },
     {
       "segment": "iPhone",
-      "segment_description": "The iPhone segment represents Apple’s flagship smartphone product line, which integrates hardware, software, and services to deliver a premium user experience. The segment includes sales of iPhone devices and related bundled services, contributing significantly to Apple’s overall revenue.",
+      "segment_description": "The iPhone segment includes Apple's smartphone products. The text notes that iPhone revenue represents a significant portion of net sales, especially in Greater China. Deferred revenue related to iPhone sales is also disclosed, with expected realization timelines.",
       "key_products_services": [
-        "iPhone",
-        "iCloud",
-        "Siri",
-        "Maps"
+        "iPhone"
       ],
-      "primary_source": "iPhone segment text snippet"
+      "primary_source": "segment text and revenue items from filing"
     }
   ]
 }

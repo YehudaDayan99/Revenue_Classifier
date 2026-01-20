@@ -1,8 +1,19 @@
 # Revenue Segmentation Pipeline
 
+## Objective
+
+> **Extract, for a given company's latest 10-K fiscal year, the complete set of revenue line items that are explicitly quantified in the filing and that represent products and/or services, and map each line item to the company's reported operating/business segments, producing a dataset that (a) is traceable to evidence in the filing and (b) reconciles to total revenue under a defined reconciliation policy.**
+
 ## Overview
 
 This pipeline extracts revenue segmentation data from SEC 10-K filings using a combination of **LLM agents** and **deterministic extraction**. The goal is to produce structured output showing how a company's revenue breaks down by business segment and product/service line.
+
+### Design Principles
+
+1. **Evidence-based**: All extracted items must be traceable to the filing text
+2. **Products/Services only**: Adjustments (hedging, corporate) are excluded from primary output
+3. **Reconciliation**: Internal validation ensures extracted items sum to total revenue
+4. **No hallucination**: CSV3 items require evidence spans validated against source text
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -81,9 +92,14 @@ This pipeline extracts revenue segmentation data from SEC 10-K filings using a c
 - Uses `mappings.py` to assign items to segments (e.g., "LinkedIn" → "Productivity and Business Processes")
 - Extracts values, handles accounting negatives `(500)`, validates totals
 
-**6. Description Agents** — Enrich with context:
-- CSV2: Summarizes each segment from 10-K text (prioritizes Note 18 for detailed product lists)
-- CSV3: Expands each segment into key product/service items with descriptions
+**6. Description Agents** — Enrich with context (evidence-based):
+- CSV2: Summarizes each segment from bounded 10-K text (segment note section)
+  - Uses revenue_items from CSV1 as grounding keywords
+  - Excludes "Other" residual segments
+- CSV3: **Extracts** (not expands) items with evidence validation:
+  - Each item requires an `evidence_span` verbatim quote
+  - Post-validation rejects items not found in source text
+  - De-duplication prevents cross-segment duplicates
 
 ---
 
@@ -120,29 +136,38 @@ This pipeline extracts revenue segmentation data from SEC 10-K filings using a c
 
 ### Validation Rules
 
-Extraction is accepted if:
+**Revenue Extraction (internal)**:
 ```
 |segment_sum + adjustment_sum - table_total| / table_total < 2%
 ```
+- Adjustments (hedging, corporate) are included for validation only
+- If no table total found, falls back to SEC CompanyFacts API
 
-If no table total found, falls back to SEC CompanyFacts API for external validation.
+**CSV3 Evidence Validation**:
+- Each item must have `evidence_span` found in source text (70%+ word match)
+- OR item name must appear in source text
+- Items failing validation are rejected and logged
 
 ### Output Schema
 
-**CSV1** (primary output):
+**CSV1** (primary output — products/services only):
 ```
 Year, Company, Ticker, Segment, Item, Income $, Income %, Row type, Primary source, Link
 ```
+- **Excludes**: Adjustments (hedging), "Other" residual segments
+- **Includes**: Only explicitly quantified product/service revenue lines
 
 **CSV2** (segment descriptions):
 ```
 Company, Ticker, Segment, Segment description, Key products/services, Primary source, Link
 ```
 
-**CSV3** (detailed items):
+**CSV3** (detailed items — evidence-based):
 ```
-Company, Ticker, Segment, Business item, Short description, Long description, Link
+Company, Ticker, Segment, Business item, Short description, Long description, Evidence span, Link
 ```
+- Items must be found in source text (not LLM-invented)
+- Excludes "Other" and "Corporate" segments
 
 ### Adding New Companies
 

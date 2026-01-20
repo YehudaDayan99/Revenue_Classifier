@@ -2,192 +2,57 @@
   "rows": [
     {
       "segment": "Mac",
-      "business_item": "MacBook Air",
-      "business_item_short_description": "A thin and lightweight laptop designed for portability and everyday use.",
-      "business_item_long_description": "The MacBook Air is Apple's ultra-portable laptop featuring a high-resolution Retina display, long battery life, and the Apple M-series chips for enhanced performance. It is ideal for consumers and professionals who need a balance of power and mobility in a sleek design.",
-      "primary_source": "Mac segment text snippet"
-    },
-    {
-      "segment": "Mac",
-      "business_item": "MacBook Pro",
-      "business_item_short_description": "A high-performance laptop designed for professionals and power users.",
-      "business_item_long_description": "The MacBook Pro offers advanced processing power, superior graphics, and a high-quality Retina display, making it suitable for demanding professional workflows such as video editing, software development, and graphic design. It integrates seamlessly with Apple's software and services ecosystem.",
-      "primary_source": "Mac segment text snippet"
-    },
-    {
-      "segment": "Mac",
-      "business_item": "iMac",
-      "business_item_short_description": "An all-in-one desktop computer combining performance and elegant design.",
-      "business_item_long_description": "The iMac features a sleek, slim design with a vibrant Retina display and powerful internal components, catering to both consumers and professionals. It integrates hardware and software to deliver a seamless user experience within the Apple ecosystem.",
-      "primary_source": "Mac segment text snippet"
-    },
-    {
-      "segment": "Mac",
-      "business_item": "Mac mini",
-      "business_item_short_description": "A compact desktop computer designed for versatility and integration.",
-      "business_item_long_description": "The Mac mini is a small form-factor desktop that offers powerful performance with Apple’s M-series chips, suitable for both consumer and enterprise use. It supports a variety of configurations and integrates well with other Apple products and services.",
-      "primary_source": "Mac segment text snippet"
-    },
-    {
-      "segment": "Mac",
-      "business_item": "Mac Studio",
-      "business_item_short_description": "A high-end desktop computer designed for creative professionals.",
-      "business_item_long_description": "Mac Studio delivers exceptional performance with advanced Apple silicon, targeting professionals in video production, 3D rendering, and software development. It offers extensive connectivity options and integrates tightly with macOS and Apple’s software ecosystem.",
-      "primary_source": "Mac segment text snippet"
-    },
-    {
-      "segment": "Services",
-      "business_item": "App Store",
-      "business_item_short_description": "Apple's digital content marketplace for apps and games.",
-      "business_item_long_description": "The App Store is Apple's digital distribution platform for mobile apps on iOS devices, offering millions of apps and games to users worldwide. It generates revenue through app sales, in-app purchases, and subscriptions, providing developers a global marketplace and users a secure environment for app discovery and downloads.",
-      "primary_source": "Services segment text snippet"
-    },
-    {
-      "segment": "Services",
-      "business_item": "Apple Music",
-      "business_item_short_description": "Apple's subscription-based music streaming service.",
-      "business_item_long_description": "Apple Music offers on-demand streaming of millions of songs, curated playlists, and radio shows to subscribers. It integrates with the Apple ecosystem, providing personalized recommendations and exclusive content, contributing to Apple's recurring revenue through monthly subscriptions.",
-      "primary_source": "Services segment text snippet"
-    },
-    {
-      "segment": "Services",
-      "business_item": "iCloud",
-      "business_item_short_description": "Apple's cloud storage and cloud computing service.",
-      "business_item_long_description": "iCloud provides users with secure cloud storage for photos, documents, backups, and app data, enabling seamless synchronization across Apple devices. It supports collaboration and data protection, with subscription tiers offering additional storage capacity, thus generating recurring revenue.",
-      "primary_source": "Services segment text snippet"
-    },
-    {
-      "segment": "Services",
-      "business_item": "AppleCare",
-      "business_item_short_description": "Apple's extended warranty and technical support service.",
-      "business_item_long_description": "AppleCare offers customers extended hardware warranty coverage and technical support for Apple products beyond the standard warranty period. It includes options like AppleCare+ which covers accidental damage, providing peace of mind and additional revenue through service plans.",
-      "primary_source": "Services segment text snippet"
-    },
-    {
-      "segment": "Services",
-      "business_item": "Apple Pay",
-      "business_item_short_description": "Apple's mobile payment and digital wallet service.",
-      "business_item_long_description": "Apple Pay enables users to make secure contactless payments using their Apple devices in stores, apps, and on the web. It leverages tokenization and biometric authentication to enhance security, facilitating convenient transactions and supporting Apple's ecosystem integration.",
-      "primary_source": "Services segment text snippet"
-    },
-    {
-      "segment": "Services",
-      "business_item": "Apple Advertising Services",
-      "business_item_short_description": "Advertising platform integrated within Apple's digital services.",
-      "business_item_long_description": "Apple Advertising Services deliver targeted ads within the App Store, Apple News, and Stocks apps, generating revenue through advertising placements. This service leverages user data privacy and relevance to provide effective marketing solutions for developers and advertisers.",
-      "primary_source": "Services segment text snippet"
-    },
-    {
-      "segment": "Services",
-      "business_item": "Apple TV+",
-      "business_item_short_description": "Apple's subscription-based streaming video service.",
-      "business_item_long_description": "Apple TV+ offers original TV shows, movies, and documentaries produced by Apple, available exclusively to subscribers. It complements Apple's ecosystem by providing premium video content and generating recurring subscription revenue.",
-      "primary_source": "Services segment text snippet"
-    },
-    {
-      "segment": "Wearables/Home/Accessories",
-      "business_item": "Apple Watch",
-      "business_item_short_description": "A line of smartwatches that integrate health, fitness, and connectivity features.",
-      "business_item_long_description": "Apple Watch offers advanced health monitoring, fitness tracking, and seamless integration with the Apple ecosystem, including iPhone and iOS apps. It supports features like ECG, blood oxygen monitoring, and customizable watch faces, enhancing personal technology experiences.",
-      "primary_source": "Wearables/Home/Accessories segment text snippet"
-    },
-    {
-      "segment": "Wearables/Home/Accessories",
-      "business_item": "AirPods",
-      "business_item_short_description": "Wireless earbuds delivering high-quality audio and smart features.",
-      "business_item_long_description": "AirPods provide wireless audio with active noise cancellation, spatial audio, and effortless connectivity with Apple devices. They enhance user experience through hands-free Siri access and seamless switching between Apple products.",
-      "primary_source": "Wearables/Home/Accessories segment text snippet"
-    },
-    {
-      "segment": "Wearables/Home/Accessories",
-      "business_item": "HomePod",
-      "business_item_short_description": "Smart speaker designed for high-fidelity audio and smart home control.",
-      "business_item_long_description": "HomePod delivers rich, room-filling sound and integrates with Apple’s HomeKit for smart home automation. It supports Siri voice commands, enabling users to control smart devices, play music, and access information hands-free.",
-      "primary_source": "Wearables/Home/Accessories segment text snippet"
-    },
-    {
-      "segment": "Wearables/Home/Accessories",
-      "business_item": "AirPods Pro",
-      "business_item_short_description": "Premium wireless earbuds with active noise cancellation and customizable fit.",
-      "business_item_long_description": "AirPods Pro feature advanced active noise cancellation, transparency mode, and a customizable silicone ear tip design for comfort. They provide immersive sound quality and seamless integration with Apple devices for an enhanced audio experience.",
-      "primary_source": "Wearables/Home/Accessories segment text snippet"
-    },
-    {
-      "segment": "Wearables/Home/Accessories",
-      "business_item": "AirPods Max",
-      "business_item_short_description": "Over-ear wireless headphones offering high-fidelity audio and spatial sound.",
-      "business_item_long_description": "AirPods Max combine high-fidelity audio with active noise cancellation and spatial audio technology. Designed for premium sound quality and comfort, they integrate deeply with Apple’s ecosystem for a superior listening experience.",
-      "primary_source": "Wearables/Home/Accessories segment text snippet"
-    },
-    {
-      "segment": "Wearables/Home/Accessories",
-      "business_item": "Apple Fitness+",
-      "business_item_short_description": "Subscription service offering guided workouts integrated with Apple Watch.",
-      "business_item_long_description": "Apple Fitness+ provides a range of workout videos and health tracking features that sync with Apple Watch metrics. It enhances the fitness experience by delivering personalized coaching and motivation within the Apple ecosystem.",
-      "primary_source": "Wearables/Home/Accessories segment text snippet"
-    },
-    {
-      "segment": "Wearables/Home/Accessories",
-      "business_item": "Beats by Dre",
-      "business_item_short_description": "Brand of headphones and earphones known for premium sound and style.",
-      "business_item_long_description": "Beats offers a variety of headphones and earphones that deliver powerful sound and stylish design. Acquired by Apple, Beats products integrate with Apple devices and complement the Wearables segment’s focus on personal audio technology.",
-      "primary_source": "Wearables/Home/Accessories segment text snippet"
+      "business_item": "Mac",
+      "business_item_short_description": "Apple's line of personal computers.",
+      "business_item_long_description": "The Mac segment includes Apple's line of personal computers. It is a revenue item within the Company's consolidated financials and is managed alongside other hardware products.",
+      "evidence_span": "The Mac segment includes Apple's line of personal computers. The text snippet does not provide detailed product descriptions but references Mac as a revenue item.",
+      "evidence_validated": true,
+      "item_in_source": true
     },
     {
       "segment": "iPad",
       "business_item": "iPad",
-      "business_item_short_description": "Apple's line of tablet devices combining portability with powerful computing capabilities.",
-      "business_item_long_description": "The iPad is a versatile tablet designed for a wide range of uses including education, business, and creative work. It features a high-resolution display, advanced processors, and supports accessories like the Apple Pencil and Smart Keyboard to enhance productivity and creativity.",
-      "primary_source": "iPad segment text snippet"
+      "business_item_short_description": "Apple's tablet product line.",
+      "business_item_long_description": "The iPad segment includes Apple's tablet products and related bundled software delivered at the time of sale. It also encompasses product-related bundled services such as iCloud, Siri, and Maps.",
+      "evidence_span": "The iPad segment covers Apple's tablet products and related bundled software delivered at the time of sale. It also includes product-related bundled services such as iCloud, Siri, and Maps.",
+      "evidence_validated": true,
+      "item_in_source": true
     },
     {
       "segment": "iPad",
       "business_item": "iCloud",
-      "business_item_short_description": "Apple's cloud storage and cloud computing service integrated with iPad devices.",
-      "business_item_long_description": "iCloud provides seamless cloud storage and synchronization for iPad users, enabling automatic backup of photos, documents, and app data. It allows users to access their content across all Apple devices securely and effortlessly.",
-      "primary_source": "iPad segment text snippet"
+      "business_item_short_description": "Product-related bundled cloud storage service.",
+      "business_item_long_description": "iCloud is a product-related bundled service included in the iPad segment, providing cloud storage and synchronization services to users. It is delivered at the time of sale along with the hardware.",
+      "evidence_span": "It also includes product-related bundled services such as iCloud, Siri, and Maps.",
+      "evidence_validated": true,
+      "item_in_source": true
     },
     {
       "segment": "iPad",
       "business_item": "Siri",
-      "business_item_short_description": "Apple's intelligent voice assistant integrated into iPad devices.",
-      "business_item_long_description": "Siri enables users to interact with their iPads using natural language voice commands to perform tasks such as setting reminders, sending messages, and searching the web. It enhances user experience by providing hands-free control and personalized assistance.",
-      "primary_source": "iPad segment text snippet"
+      "business_item_short_description": "Product-related bundled voice assistant service.",
+      "business_item_long_description": "Siri is a product-related bundled service included in the iPad segment, offering voice assistant capabilities to users. It is delivered at the time of sale along with the hardware.",
+      "evidence_span": "It also includes product-related bundled services such as iCloud, Siri, and Maps.",
+      "evidence_validated": true,
+      "item_in_source": true
     },
     {
       "segment": "iPad",
       "business_item": "Maps",
-      "business_item_short_description": "Apple's mapping and navigation service integrated with iPad devices.",
-      "business_item_long_description": "Maps offers detailed geographic information, turn-by-turn navigation, and real-time traffic updates on the iPad. It supports features like Flyover and Look Around to provide immersive and interactive map experiences.",
-      "primary_source": "iPad segment text snippet"
+      "business_item_short_description": "Product-related bundled mapping service.",
+      "business_item_long_description": "Maps is a product-related bundled service included in the iPad segment, providing mapping and navigation features to users. It is delivered at the time of sale along with the hardware.",
+      "evidence_span": "It also includes product-related bundled services such as iCloud, Siri, and Maps.",
+      "evidence_validated": true,
+      "item_in_source": true
     },
     {
       "segment": "iPhone",
       "business_item": "iPhone",
-      "business_item_short_description": "Apple’s flagship smartphone product line integrating hardware and software.",
-      "business_item_long_description": "The iPhone is Apple’s premium smartphone that combines advanced hardware components with iOS software to deliver a seamless user experience. It supports a wide range of applications and services, making it central to Apple’s ecosystem and a major revenue driver.",
-      "primary_source": "iPhone segment text snippet"
-    },
-    {
-      "segment": "iPhone",
-      "business_item": "iCloud",
-      "business_item_short_description": "Cloud storage and cloud computing service integrated with iPhone devices.",
-      "business_item_long_description": "iCloud provides users with cloud storage for photos, documents, backups, and app data, enabling seamless synchronization across Apple devices including the iPhone. It supports services such as iCloud Drive, iCloud Photos, and device backup, enhancing the overall user experience.",
-      "primary_source": "iPhone segment text snippet"
-    },
-    {
-      "segment": "iPhone",
-      "business_item": "Siri",
-      "business_item_short_description": "Apple’s voice-activated virtual assistant integrated into iPhone devices.",
-      "business_item_long_description": "Siri enables users to perform tasks, get information, and control smart devices using voice commands on the iPhone. It leverages machine learning and natural language processing to provide personalized assistance and improve user interaction with the device.",
-      "primary_source": "iPhone segment text snippet"
-    },
-    {
-      "segment": "iPhone",
-      "business_item": "Maps",
-      "business_item_short_description": "Apple Maps navigation and location service integrated with iPhone.",
-      "business_item_long_description": "Apple Maps offers turn-by-turn navigation, real-time traffic updates, and location search capabilities on the iPhone. It integrates with other iPhone features and apps to provide a comprehensive mapping and navigation experience.",
-      "primary_source": "iPhone segment text snippet"
+      "business_item_short_description": "Apple's smartphone product line.",
+      "business_item_long_description": "The iPhone segment includes Apple's smartphone products, which represent a significant portion of net sales, especially in Greater China. Deferred revenue related to iPhone sales is also disclosed with expected realization timelines.",
+      "evidence_span": "The iPhone segment includes Apple's smartphone products. The text notes that iPhone revenue represents a significant portion of net sales, especially in Greater China.",
+      "evidence_validated": true,
+      "item_in_source": true
     }
   ]
 }

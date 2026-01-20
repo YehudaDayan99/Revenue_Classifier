@@ -526,14 +526,29 @@ def run_pipeline(
             (t_art / "csv1_validation.json").write_text(json.dumps(validation_dict, indent=2), encoding="utf-8")
             _trace_append(t_art, {"stage": "csv1_validate", "validation": validation_dict, "table_id": table_id})
 
-            # Write CSV1 rows - now with individual line items
-            total_for_pct = validation.table_total or validation.external_total or sum(seg_totals.values())
+            # Write CSV1 rows - products/services only (no adjustments)
+            # Per objective: "revenue line items that represent products and/or services"
+            # Adjustments (hedging, corporate) are used for validation but excluded from output
+            
+            # Calculate total for percentage (products only, excluding adjustments)
+            product_sum = sum(
+                r.value for r in (extraction_result.rows if extraction_result else [])
+                if r.row_type != "adjustment"
+            ) or sum(seg_totals.values())
+            total_for_pct = product_sum
             
             # Use extraction_result.rows for granular line items
             if extraction_result and extraction_result.rows:
+                # Filter: only products/services, no adjustments, no "Other" residuals
+                product_rows = [
+                    r for r in extraction_result.rows
+                    if r.row_type != "adjustment" 
+                    and r.segment.lower() not in ("other", "corporate")
+                ]
+                
                 # Sort rows: by segment, then by value descending
                 sorted_rows = sorted(
-                    extraction_result.rows,
+                    product_rows,
                     key=lambda r: (r.segment or "ZZZ", -r.value),
                 )
                 for r in sorted_rows:
@@ -555,6 +570,9 @@ def run_pipeline(
             else:
                 # Fallback to segment totals if no granular rows
                 for seg, rev in sorted(seg_totals.items(), key=lambda kv: kv[1], reverse=True):
+                    # Skip "Other" residual
+                    if seg.lower() in ("other", "corporate"):
+                        continue
                     pct = (rev / total_for_pct * 100.0) if total_for_pct else 0.0
                     csv1_rows.append(
                         {
@@ -574,6 +592,15 @@ def run_pipeline(
             # CSV2 + CSV3 via LLM
             html_text = _html_text_for_llm(html_path)
             seg_names = sorted(seg_totals.keys())
+            
+            # Extract revenue item names for grounding (from extraction_result)
+            revenue_item_names = []
+            if extraction_result and extraction_result.rows:
+                revenue_item_names = [
+                    r.item for r in extraction_result.rows 
+                    if r.row_type != "adjustment" and r.item
+                ]
+            
             print(f"[{ticker}] summarizing segment descriptions (LLM)...", flush=True)
             seg_desc = summarize_segment_descriptions(
                 llm,
@@ -582,6 +609,7 @@ def run_pipeline(
                 sec_doc_url=sec_doc_url,
                 html_text=html_text,
                 segment_names=seg_names,
+                revenue_items=revenue_item_names,
             )
             (t_art / "csv2_llm.json").write_text(json.dumps(seg_desc, indent=2, ensure_ascii=False), encoding="utf-8")
 
@@ -605,6 +633,7 @@ def run_pipeline(
                 company_name=company_name,
                 sec_doc_url=sec_doc_url,
                 segment_rows=(seg_desc.get("rows") or []),
+                html_text=html_text,
             )
             (t_art / "csv3_llm.json").write_text(
                 json.dumps(csv3_payload, indent=2, ensure_ascii=False), encoding="utf-8"

@@ -2,11 +2,11 @@
   "rows": [
     {
       "segment": "Intelligent Cloud",
-      "segment_description": "The Intelligent Cloud segment includes Microsoft’s public, private, and hybrid server products and cloud services that support modern business and developer needs. It encompasses server products such as SQL Server, Windows Server, Visual Studio, and System Center, as well as cloud services including Azure, GitHub, and Nuance Healthcare cloud services. This segment also provides enterprise and partner services like Enterprise Support Services, Industry Solutions, and Microsoft Partner Network to assist customers in deploying and managing Microsoft server and AI solutions.",
+      "segment_description": "The Intelligent Cloud segment includes public, private, and hybrid server products and cloud services that support modern business and developers. It primarily consists of server products and cloud services such as Azure, GitHub, Nuance Healthcare cloud services, and enterprise and partner services including Enterprise Support Services and Microsoft Partner Network. This segment focuses on cloud infrastructure, AI offerings, server software, and professional services to enhance productivity and efficiency for IT professionals and developers.",
       "key_products_services": [
         "Azure",
         "GitHub",
-        "Nuance Healthcare cloud services",
+        "Nuance Healthcare",
         "SQL Server",
         "Windows Server",
         "Visual Studio",
@@ -14,67 +14,63 @@
         "Client Access Licenses (CALs)",
         "Enterprise Support Services",
         "Industry Solutions",
+        "Nuance professional services",
         "Microsoft Partner Network",
-        "Learning Experience"
+        "Learning Experience",
+        "Server products and cloud services",
+        "Enterprise and partner services"
       ],
-      "primary_source": "SEC 10-K Intelligent Cloud segment description"
+      "primary_source": "10-K text snippet"
     },
     {
       "segment": "More Personal Computing",
-      "segment_description": "The More Personal Computing segment focuses on products and services that enhance the personal computing experience, including Windows operating system licensing, devices such as Surface, and PC accessories. It also includes the Gaming business with Xbox hardware, content, and services like Xbox Game Pass and Xbox Cloud Gaming, as well as Search and news advertising through Bing, Microsoft Edge, and Microsoft Copilot. This segment aims to deliver consistent, secure, and engaging experiences across devices and platforms.",
+      "segment_description": "The More Personal Computing segment includes products and services that focus on personal technology experiences. It comprises Windows and Devices (including Windows OEM licensing and Surface devices), Gaming (Xbox hardware, content, subscriptions, and cloud gaming), and Search and news advertising (Bing, Copilot, Microsoft News, Microsoft Edge). This segment aims to deliver consistent user experiences across devices, expand gaming ecosystems, and provide relevant advertising solutions.",
       "key_products_services": [
-        "Windows OEM licensing (Windows Pro and non-Pro)",
+        "Windows OEM licensing",
         "Surface",
         "PC accessories",
         "Xbox hardware",
+        "Xbox content and services",
         "Xbox Game Pass",
         "Xbox Cloud Gaming",
         "Bing",
-        "Microsoft Copilot",
+        "Copilot",
         "Microsoft News",
-        "Microsoft Edge"
+        "Microsoft Edge",
+        "Search and news advertising",
+        "Windows and Devices",
+        "Gaming"
       ],
-      "primary_source": "SEC 10-K More Personal Computing segment description"
+      "primary_source": "10-K text snippet"
     },
     {
       "segment": "Productivity and Business Processes",
-      "segment_description": "The Productivity and Business Processes segment offers a portfolio of productivity, communication, and information services across devices and platforms. It includes Microsoft 365 Commercial and Consumer products and cloud services, LinkedIn’s professional networking and monetized solutions, and Dynamics products and cloud services for business applications. This segment integrates AI-powered tools and cloud-based applications to enhance productivity, collaboration, and business management for organizations and individuals.",
+      "segment_description": "The Productivity and Business Processes segment offers productivity, communication, and information services across devices and platforms. It includes Microsoft 365 Commercial and Consumer products and cloud services, LinkedIn with its Talent, Marketing, Premium, and Sales Solutions, and Dynamics products and cloud services such as Dynamics 365 ERP and CRM applications. This segment focuses on AI-powered business productivity tools, professional networking, and intelligent business applications to empower organizations and individuals.",
       "key_products_services": [
         "Microsoft 365 Commercial",
-        "Enterprise Mobility + Security",
         "Microsoft 365 Copilot",
-        "Windows Commercial on-premises",
-        "Office licensed on-premises",
-        "Microsoft 365 Consumer subscriptions",
-        "Outlook.com",
-        "OneDrive",
-        "LinkedIn Talent Solutions",
-        "LinkedIn Marketing Solutions",
-        "LinkedIn Premium Subscriptions",
-        "LinkedIn Sales Solutions",
-        "Dynamics 365",
-        "Power Apps",
-        "Power Automate"
-      ],
-      "primary_source": "SEC 10-K Productivity and Business Processes segment description"
-    },
-    {
-      "segment": "Other",
-      "segment_description": "The Other segment includes various Microsoft products and services that complement the main business segments, such as Microsoft 365 Commercial and Consumer products, LinkedIn’s monetized solutions, and Dynamics cloud and on-premises business applications. It highlights AI-enabled productivity tools, cloud services, and professional networking solutions designed to empower users and organizations. This segment also covers competition and integration aspects across Microsoft’s broad product portfolio.",
-      "key_products_services": [
-        "Microsoft 365 Commercial",
+        "Enterprise Mobility + Security",
+        "Power BI",
+        "Exchange",
+        "SharePoint",
+        "Microsoft Teams",
+        "Microsoft 365 Security and Compliance",
         "Microsoft 365 Consumer",
-        "LinkedIn Talent Solutions",
-        "LinkedIn Marketing Solutions",
-        "LinkedIn Premium Subscriptions",
-        "LinkedIn Sales Solutions",
+        "Office licensed on-premises",
+        "LinkedIn",
+        "Talent Solutions",
+        "Marketing Solutions",
+        "Premium Subscriptions",
+        "Sales Solutions",
         "Dynamics 365",
         "Power Apps",
         "Power Automate",
-        "Office licensed on-premises",
-        "Windows Commercial on-premises"
+        "Dynamics products and cloud services",
+        "Microsoft 365 Commercial products and cloud services",
+        "Microsoft 365 Consumer products and cloud services",
+        "LinkedIn"
       ],
-      "primary_source": "SEC 10-K Other segment description"
+      "primary_source": "10-K text snippet"
     }
   ]
 }

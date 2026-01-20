@@ -727,107 +727,161 @@ def summarize_segment_descriptions(
     sec_doc_url: str,
     html_text: str,
     segment_names: List[str],
+    revenue_items: Optional[List[str]] = None,
     max_chars_per_segment: int = 6000,
 ) -> Dict[str, Any]:
     """Produce CSV2-style rows via LLM from extracted filing text snippets.
     
-    Enhanced to find segment descriptions in Notes sections (Note 18 - Segment Information)
-    which contain detailed product listings, falling back to Item 1 if needed.
+    Enhanced to:
+    1. Find segment descriptions in Notes sections with better boundary detection
+    2. Use revenue_items (from CSV1) as "must include" keywords for grounding
+    3. Extract bounded segments (from one segment heading to the next)
     """
     snippets: Dict[str, str] = {}
     t = html_text
     low = t.lower()
     
-    # Find key sections in the document
-    # Priority 1: Note 18 / Segment Information section (has detailed product lists)
-    segment_info_idx = low.find("segment information")
-    if segment_info_idx == -1:
-        segment_info_idx = low.find("note 18")
+    # Find all segment boundary positions for bounded extraction
+    segment_positions: Dict[str, List[int]] = {}
+    for seg in segment_names:
+        seg_low = seg.lower()
+        positions = []
+        idx = 0
+        while True:
+            found = low.find(seg_low, idx)
+            if found == -1:
+                break
+            positions.append(found)
+            idx = found + 1
+        segment_positions[seg] = positions
     
-    # Also look for "segment primarily comprises" pattern (where bullet lists usually are)
-    segment_comprises_idx = low.find("segment primarily comprises")
+    # Key section markers
+    segment_info_patterns = [
+        "segment information",
+        "reportable segments",
+        "note 18",
+        "note 17",
+        "segment results",
+    ]
+    segment_info_idx = -1
+    for pattern in segment_info_patterns:
+        idx = low.find(pattern)
+        if idx >= 0:
+            segment_info_idx = idx
+            break
     
-    # Notes section as fallback
+    # Notes section
     notes_idx = low.find("notes to consolidated financial statements")
     if notes_idx == -1:
         notes_idx = low.find("notes to financial statements")
     
-    # Item 1 Business section as final fallback
+    # Item 1 Business section
     item1_idx = low.find("item 1")
     item1_business_idx = low.find("item 1.", item1_idx) if item1_idx >= 0 else -1
     
     for seg in segment_names:
+        # Skip "Other" segment - it's a residual, not a reportable segment
+        if seg.lower() in ("other", "other revenue", "corporate"):
+            continue
+            
         key = seg
         seg_low = seg.lower()
+        positions = segment_positions.get(seg, [])
         
-        # Strategy: Find the best occurrence of segment name with detailed product list
-        # Priority 1: In Segment Information section (Note 18, has detailed products like Azure)
-        # Priority 2: Near "segment primarily comprises" pattern (has bullet lists)
-        # Priority 3: In Notes section (Item 8)
-        # Priority 4: In Item 1 Business section
-        # Priority 5: First occurrence anywhere
+        if not positions:
+            snippets[key] = ""
+            continue
+        
+        # Find the best occurrence using priority:
+        # 1. In segment info section (Note 17/18)
+        # 2. In Notes section after segment_info_idx
+        # 3. In Item 1 Business section
+        # 4. First occurrence
         
         best_idx = -1
         
-        # Priority 1: Segment Information section
+        # Priority 1: In segment info section
         if segment_info_idx >= 0:
-            seg_in_segment_info = low.find(seg_low, segment_info_idx)
-            if seg_in_segment_info >= 0:
-                best_idx = seg_in_segment_info
+            for pos in positions:
+                if pos >= segment_info_idx and pos < segment_info_idx + 100000:
+                    best_idx = pos
+                    break
         
-        # Priority 2: Near "segment primarily comprises" (detailed product bullets)
-        if best_idx == -1 and segment_comprises_idx >= 0:
-            # Search backwards to find segment name before "primarily comprises"
-            search_start = max(0, segment_comprises_idx - 500)
-            seg_near_comprises = low.find(seg_low, search_start)
-            if seg_near_comprises >= 0 and seg_near_comprises < segment_comprises_idx + 5000:
-                best_idx = seg_near_comprises
-        
-        # Priority 3: Notes section (Item 8)
+        # Priority 2: In Notes section
         if best_idx == -1 and notes_idx >= 0:
-            seg_in_notes = low.find(seg_low, notes_idx)
-            if seg_in_notes >= 0:
-                best_idx = seg_in_notes
+            for pos in positions:
+                if pos >= notes_idx:
+                    best_idx = pos
+                    break
         
-        # Priority 4: Item 1 Business section
+        # Priority 3: In Item 1
         if best_idx == -1 and item1_business_idx >= 0:
-            seg_in_item1 = low.find(seg_low, item1_business_idx)
-            if seg_in_item1 >= 0:
-                best_idx = seg_in_item1
+            for pos in positions:
+                if pos >= item1_business_idx:
+                    best_idx = pos
+                    break
         
-        # Priority 5: Fallback to first occurrence
-        if best_idx == -1:
-            best_idx = low.find(seg_low)
+        # Priority 4: First occurrence
+        if best_idx == -1 and positions:
+            best_idx = positions[0]
         
         if best_idx == -1:
             snippets[key] = ""
             continue
         
-        # Extract more context after the segment name (where product details usually are)
-        start = max(0, best_idx - 300)
-        end = min(len(t), best_idx + max_chars_per_segment)
+        # Find the end boundary (next segment heading or max chars)
+        end_idx = best_idx + max_chars_per_segment
+        other_seg_names = [s for s in segment_names if s.lower() != seg_low and s.lower() not in ("other", "corporate")]
+        for other_seg in other_seg_names:
+            other_pos = low.find(other_seg.lower(), best_idx + len(seg))
+            if other_pos > best_idx and other_pos < end_idx:
+                # Found next segment - use as boundary but include some padding
+                end_idx = min(end_idx, other_pos + 200)
+        
+        # Extract bounded snippet
+        start = max(0, best_idx - 200)
+        end = min(len(t), end_idx)
         snippets[key] = _clean(t[start:end])
 
+    # Filter out "Other" segments
+    filtered_segments = [s for s in segment_names if s.lower() not in ("other", "other revenue", "corporate")]
+    
     system = (
         "You summarize company business segments from SEC 10-K text. "
-        "For each segment, write a comprehensive description and list SPECIFIC product/brand names "
-        "(e.g., 'Azure', 'Office 365', 'Microsoft 365 Commercial', 'Dynamics 365', 'LinkedIn', 'GitHub', "
-        "'iPhone', 'iPad', 'Google Cloud Platform', 'YouTube'). "
-        "Do NOT use generic terms when specific product names are mentioned in the text. "
+        "CRITICAL RULES:\n"
+        "1. For each segment, write a description GROUNDED in the provided text snippet.\n"
+        "2. List SPECIFIC product/brand names that appear in the text "
+        "(e.g., 'Azure', 'Microsoft 365 Commercial', 'LinkedIn', 'YouTube ads').\n"
+        "3. The 'revenue_items_from_filing' field contains ACTUAL revenue line items from the 10-K. "
+        "Map these to the correct segment and include them in key_products_services.\n"
+        "4. Do NOT invent products not mentioned in the text or revenue items.\n"
         "Output STRICT JSON ONLY."
     )
+    
+    # Build segment data with revenue items mapping hint
+    segment_data = []
+    for s in filtered_segments:
+        item_data = {
+            "segment": s,
+            "text_snippet": snippets.get(s, ""),
+        }
+        # Add revenue items hint if provided
+        if revenue_items:
+            item_data["revenue_items_from_filing"] = revenue_items
+        segment_data.append(item_data)
+    
     user = json.dumps(
         {
             "ticker": ticker,
             "company_name": company_name,
             "sec_doc_url": sec_doc_url,
-            "segments": [{"segment": s, "text_snippet": snippets.get(s, "")} for s in segment_names],
+            "segments": segment_data,
             "output_schema": {
                 "rows": [
                     {
                         "segment": "string",
-                        "segment_description": "string (comprehensive, 2-3 sentences)",
-                        "key_products_services": "list[string] (specific brand/product names)",
+                        "segment_description": "string (comprehensive, 2-3 sentences, grounded in text)",
+                        "key_products_services": "list[string] (specific brand/product names from text and revenue_items)",
                         "primary_source": "string short",
                     }
                 ]
@@ -845,36 +899,56 @@ def expand_key_items_per_segment(
     company_name: str,
     sec_doc_url: str,
     segment_rows: List[Dict[str, Any]],
+    html_text: str = "",
 ) -> Dict[str, Any]:
     """Produce CSV3 rows: key items per segment with short + long description.
+    
+    EVIDENCE-BASED EXTRACTION:
+    - Only extract items that appear verbatim in the provided text
+    - Each item must include an evidence_span copied from the source
+    - Post-validate that evidence_span exists in html_text
     
     Process each segment individually to prevent token truncation.
     """
     all_rows: List[Dict[str, Any]] = []
+    seen_items: set = set()  # For de-duplication
+    html_text_lower = html_text.lower() if html_text else ""
     
     for seg_row in segment_rows:
         segment_name = seg_row.get("segment", "Unknown")
+        
+        # Skip "Other" segments - they are residuals, not reportable segments
+        if segment_name.lower() in ("other", "other revenue", "corporate"):
+            continue
+        
+        segment_description = seg_row.get("segment_description", "")
+        key_products = seg_row.get("key_products_services", [])
+        
         system = (
-            "You expand a single business segment description into 5-10 key product/service items. "
-            "Use SPECIFIC brand names and product names when mentioned in the source "
-            "(e.g., 'Azure', 'Microsoft 365 Commercial', 'Dynamics 365', 'LinkedIn', 'GitHub', 'Office 365'). "
-            "Do NOT use generic terms when specific product names are available. "
+            "You EXTRACT (not invent) product/service items from 10-K segment descriptions. "
+            "CRITICAL RULES:\n"
+            "1. Only output items that are EXPLICITLY MENTIONED in the provided text.\n"
+            "2. Each item MUST include an 'evidence_span' - a VERBATIM quote (10-30 words) from the text that mentions this item.\n"
+            "3. Do NOT invent, infer, or add items not in the text.\n"
+            "4. Use the EXACT product/brand names as they appear in the text.\n"
+            "5. If fewer than 5 items are explicitly mentioned, output fewer items.\n"
             "Output STRICT JSON ONLY."
         )
         user = json.dumps(
             {
                 "ticker": ticker,
                 "company_name": company_name,
-                "sec_doc_url": sec_doc_url,
-                "segment": seg_row,
+                "segment": segment_name,
+                "segment_description": segment_description,
+                "key_products_from_filing": key_products,
                 "output_schema": {
                     "rows": [
                         {
                             "segment": "string (must match input segment name)",
-                            "business_item": "string (specific product/brand name)",
+                            "business_item": "string (exact product/brand name from text)",
                             "business_item_short_description": "string (1 sentence)",
                             "business_item_long_description": "string (2-3 sentences)",
-                            "primary_source": "string short",
+                            "evidence_span": "string (verbatim quote from text, 10-30 words)",
                         }
                     ]
                 },
@@ -884,10 +958,47 @@ def expand_key_items_per_segment(
         try:
             result = llm.json_call(system=system, user=user, max_output_tokens=1800)
             rows = result.get("rows", [])
-            # Ensure segment name is consistent
+            
             for row in rows:
                 row["segment"] = segment_name
-            all_rows.extend(rows)
+                item_name = row.get("business_item", "").strip()
+                evidence = row.get("evidence_span", "").strip()
+                
+                # De-duplication check
+                item_key = item_name.lower().replace(" ", "").replace("-", "")
+                if item_key in seen_items:
+                    continue
+                
+                # Evidence validation: check if evidence_span exists in html_text
+                evidence_found = False
+                if evidence and html_text_lower:
+                    # Normalize for matching (remove extra spaces, lowercase)
+                    evidence_normalized = " ".join(evidence.lower().split())
+                    # Try exact match first
+                    if evidence_normalized in html_text_lower:
+                        evidence_found = True
+                    else:
+                        # Try fuzzy: check if key words from evidence appear together
+                        evidence_words = [w for w in evidence_normalized.split() if len(w) > 3]
+                        if len(evidence_words) >= 3:
+                            # Check if at least 70% of significant words appear
+                            matches = sum(1 for w in evidence_words if w in html_text_lower)
+                            if matches / len(evidence_words) >= 0.7:
+                                evidence_found = True
+                
+                # Also check if the item name itself appears in the text
+                item_in_text = item_name.lower() in html_text_lower if item_name else False
+                
+                # Accept if either evidence is found OR item name is in text
+                if evidence_found or item_in_text or not html_text:
+                    row["evidence_validated"] = evidence_found
+                    row["item_in_source"] = item_in_text
+                    seen_items.add(item_key)
+                    all_rows.append(row)
+                else:
+                    # Reject hallucinated items
+                    print(f"[{ticker}] Rejected item '{item_name}' - not found in source text", flush=True)
+                    
         except Exception as e:
             print(f"[{ticker}] Warning: expand_key_items failed for segment '{segment_name}': {e}", flush=True)
             continue

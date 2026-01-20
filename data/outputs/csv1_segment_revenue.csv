@@ -9,15 +9,13 @@ Year,Company,Ticker,Segment,Item,Income $,Income %,Row type,Primary source,Link
 2025,MICROSOFT CORP,MSFT,More Personal Computing,Gaming,23455000000,8.3255,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
 2025,MICROSOFT CORP,MSFT,More Personal Computing,Windows and Devices,17314000000,6.1457,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
 2025,MICROSOFT CORP,MSFT,More Personal Computing,Search and news advertising,13878000000,4.9261,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
-2025,MICROSOFT CORP,MSFT,Other,Other,72000000,0.0256,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
 2025,MICROSOFT CORP,MSFT,Productivity and Business Processes,Microsoft 365 Commercial products and cloud services,87767000000,31.1535,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
 2025,MICROSOFT CORP,MSFT,Productivity and Business Processes,LinkedIn,17812000000,6.3225,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
 2025,MICROSOFT CORP,MSFT,Productivity and Business Processes,Dynamics products and cloud services,7827000000,2.7783,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
 2025,MICROSOFT CORP,MSFT,Productivity and Business Processes,Microsoft 365 Consumer products and cloud services,7404000000,2.6281,item,10-K revenue table (t0073),https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm
-2024,Alphabet Inc.,GOOGL,Google Cloud,Google Cloud,43229000000,12.3505,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
-2024,Alphabet Inc.,GOOGL,Google Services,Google Search & other,198084000000,56.5925,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
-2024,Alphabet Inc.,GOOGL,Google Services,"Google subscriptions, platforms, and devices",40340000000,11.5251,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
-2024,Alphabet Inc.,GOOGL,Google Services,YouTube ads,36147000000,10.3272,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
-2024,Alphabet Inc.,GOOGL,Google Services,Google Network,30359000000,8.6736,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
-2024,Alphabet Inc.,GOOGL,Other,Hedging gains (losses),211000000,0.0603,adjustment,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
-2024,Alphabet Inc.,GOOGL,Other Bets,Other Bets,1648000000,0.4708,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,Google Cloud,Google Cloud,43229000000,12.358,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,Google Services,Google Search & other,198084000000,56.6267,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,Google Services,"Google subscriptions, platforms, and devices",40340000000,11.5321,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,Google Services,YouTube ads,36147000000,10.3334,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,Google Services,Google Network,30359000000,8.6788,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+2024,Alphabet Inc.,GOOGL,Other Bets,Other Bets,1648000000,0.4711,item,10-K revenue table (t0048),https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
