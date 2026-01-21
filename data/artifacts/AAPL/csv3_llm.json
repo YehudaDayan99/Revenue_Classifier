@@ -3,81 +3,54 @@
     {
       "segment": "Mac",
       "business_item": "Mac",
-      "business_item_short_description": "Apple's line of personal computers.",
-      "business_item_long_description": "The Mac segment includes Apple's line of personal computers, which are a key revenue source and part of Apple's hardware offerings. This segment contributes significantly to the company's overall net sales.",
-      "evidence_span": "The Mac segment includes Apple's line of personal computers. The segment is identified as a key revenue source. The Mac segment is part of Apple's hardware offerings and contributes to the company's overall net sales.",
-      "evidence_validated": true,
-      "item_in_source": true
-    },
-    {
-      "segment": "Services",
-      "business_item": "licensed intellectual property",
-      "business_item_short_description": "Apple offers licensed intellectual property as part of its Services segment.",
-      "business_item_long_description": "The Services segment includes licensed intellectual property, which Apple manages along with content and distribution rights. These offerings contribute significantly to the company's net sales and operating income.",
-      "evidence_span": "The Services segment encompasses Apple's various service offerings, including licensed intellectual property, content, and distribution rights.",
-      "evidence_validated": true,
-      "item_in_source": true
-    },
-    {
-      "segment": "Services",
-      "business_item": "content",
-      "business_item_short_description": "Apple provides content as a key component of its Services segment.",
-      "business_item_long_description": "Content is part of the Services segment, which includes licensed intellectual property and distribution rights. Apple manages supplier arrangements and supply chain commitments related to these services.",
-      "evidence_span": "The Services segment encompasses Apple's various service offerings, including licensed intellectual property, content, and distribution rights.",
-      "evidence_validated": true,
-      "item_in_source": true
-    },
-    {
-      "segment": "Services",
-      "business_item": "distribution rights",
-      "business_item_short_description": "Distribution rights are included in Apple's Services segment offerings.",
-      "business_item_long_description": "Distribution rights form a part of the Services segment, alongside licensed intellectual property and content. Apple manages these rights geographically to align with customer locations and market dynamics.",
-      "evidence_span": "The Services segment encompasses Apple's various service offerings, including licensed intellectual property, content, and distribution rights.",
+      "business_item_short_description": "Apple's line of personal computers and related hardware products.",
+      "business_item_long_description": "The Mac segment includes Apple's personal computers and related hardware products. It is a distinct revenue item and a key product contributing to the company's net sales. The segment also involves performance obligations related to hardware and bundled software delivered at the time of sale.",
+      "evidence_span": "The Mac segment includes Apple's line of personal computers and related hardware products. The text references Mac as a distinct revenue item and discusses performance obligations related to hardware and bundled software delivered at the time of sale.",
       "evidence_validated": true,
       "item_in_source": true
     },
     {
       "segment": "iPad",
       "business_item": "iPad",
-      "business_item_short_description": "Apple's tablet product line.",
-      "business_item_long_description": "The iPad segment includes Apple's tablet products along with related bundled software and services such as iCloud, Siri, and Maps. Revenue is recognized based on performance obligations including hardware delivery and product-related services.",
-      "evidence_span": "The iPad segment covers Apple's tablet products and related bundled software and services such as iCloud, Siri, and Maps.",
+      "business_item_short_description": "Apple's tablet product contributing to net sales.",
+      "business_item_long_description": "The iPad segment includes Apple's tablet products along with related hardware and bundled software. It is a distinct revenue item contributing to the Company's net sales.",
+      "evidence_span": "The iPad segment covers Apple's tablet products and related hardware and bundled software. iPad is a distinct revenue item contributing to the Company's net sales.",
       "evidence_validated": true,
       "item_in_source": true
     },
     {
       "segment": "iPad",
       "business_item": "iCloud",
-      "business_item_short_description": "Bundled software and service related to iPad products.",
-      "business_item_long_description": "iCloud is part of the bundled software and services offered with Apple's iPad products. It contributes to the revenue recognized based on performance obligations related to product-related services.",
-      "evidence_span": "The iPad segment covers Apple's tablet products and related bundled software and services such as iCloud, Siri, and Maps.",
+      "business_item_short_description": "Product-related bundled service included with iPad sales.",
+      "business_item_long_description": "iCloud is one of the product-related bundled services identified as a performance obligation in arrangements involving iPad sales. It is part of the bundled software offered with the hardware.",
+      "evidence_span": "The Company identifies performance obligations in arrangements involving iPad sales, including hardware and product-related bundled services such as iCloud, Siri, and Maps.",
       "evidence_validated": true,
       "item_in_source": true
     },
     {
       "segment": "iPad",
       "business_item": "Siri",
-      "business_item_short_description": "Bundled software and service related to iPad products.",
-      "business_item_long_description": "Siri is included in the bundled software and services offered with Apple's iPad products. It is part of the performance obligations for which revenue is recognized.",
-      "evidence_span": "The iPad segment covers Apple's tablet products and related bundled software and services such as iCloud, Siri, and Maps.",
+      "business_item_short_description": "Product-related bundled service included with iPad sales.",
+      "business_item_long_description": "Siri is included as a product-related bundled service in arrangements involving iPad sales. It is part of the bundled software that accompanies the hardware.",
+      "evidence_span": "The Company identifies performance obligations in arrangements involving iPad sales, including hardware and product-related bundled services such as iCloud, Siri, and Maps.",
       "evidence_validated": true,
       "item_in_source": true
     },
     {
       "segment": "iPad",
       "business_item": "Maps",
-      "business_item_short_description": "Bundled software and service related to iPad products.",
-      "business_item_long_description": "Maps is one of the bundled software and services provided with Apple's iPad products. Revenue recognition includes product-related services like Maps.",
-      "evidence_span": "The iPad segment covers Apple's tablet products and related bundled software and services such as iCloud, Siri, and Maps.",
+      "business_item_short_description": "Product-related bundled service included with iPad sales.",
+      "business_item_long_description": "Maps is one of the bundled software services provided with iPad hardware sales. It is identified as a performance obligation in the sales arrangements.",
+      "evidence_span": "The Company identifies performance obligations in arrangements involving iPad sales, including hardware and product-related bundled services such as iCloud, Siri, and Maps.",
       "evidence_validated": true,
       "item_in_source": true
     },
     {
       "segment": "iPhone",
       "business_item": "iPhone",
-      "business_item_short_description": "Apple's smartphone product line.",
-      "business_item_long_description": "The iPhone segment includes Apple's smartphone products, which are a major component of Apple's hardware revenue. This segment significantly contributes to net sales across geographic segments.",
-      "evidence_span": "The iPhone segment includes Apple's smartphone products. The text snippet references revenue recognition and deferred revenue related to iPhone sales, highlighting its significant contribution to net sales across geographic segments.",
+      "business_item_short_description": "Apple's smartphone products and related hardware and services.",
+      "business_item_long_description": "The iPhone segment includes Apple's smartphone products and related hardware and services. It represents a significant portion of net sales, especially in Greater China. Deferred revenue related to iPhone highlights its importance in the Company's revenue recognition.",
+      "evidence_span": "The iPhone segment includes Apple's smartphone products and related hardware and services. The text notes that iPhone revenue represents a significant portion of net sales, especially in Greater China.",
       "evidence_validated": true,
       "item_in_source": true
     }

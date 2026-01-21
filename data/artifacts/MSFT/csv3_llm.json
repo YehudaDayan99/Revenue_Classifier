@@ -4,8 +4,8 @@
       "segment": "Intelligent Cloud",
       "business_item": "Azure",
       "business_item_short_description": "A cloud service supporting modern business and developers.",
-      "business_item_long_description": "Azure is a cloud service included in the Intelligent Cloud segment that supports modern business and developers by providing cloud infrastructure and AI offerings.",
-      "evidence_span": "It primarily consists of server products and cloud services such as Azure, GitHub, Nuance Healthcare cloud services, and enterprise and partner services",
+      "business_item_long_description": "Azure is a cloud service included in the Intelligent Cloud segment that supports modern business and developers by providing cloud infrastructure and AI offerings. It is part of the server products and cloud services offered by Microsoft.",
+      "evidence_span": "It primarily consists of server products and cloud services such as Azure, GitHub, and Nuance Healthcare cloud services",
       "evidence_validated": true,
       "item_in_source": true
     },
@@ -13,8 +13,8 @@
       "segment": "Intelligent Cloud",
       "business_item": "GitHub",
       "business_item_short_description": "A cloud service supporting modern business and developers.",
-      "business_item_long_description": "GitHub is a cloud service included in the Intelligent Cloud segment that supports modern business and developers by providing cloud infrastructure and AI offerings.",
-      "evidence_span": "It primarily consists of server products and cloud services such as Azure, GitHub, Nuance Healthcare cloud services, and enterprise and partner services",
+      "business_item_long_description": "GitHub is a cloud service included in the Intelligent Cloud segment that supports modern business and developers by providing cloud infrastructure and AI offerings. It is part of the server products and cloud services offered by Microsoft.",
+      "evidence_span": "It primarily consists of server products and cloud services such as Azure, GitHub, and Nuance Healthcare cloud services",
       "evidence_validated": true,
       "item_in_source": true
     },
@@ -22,17 +22,17 @@
       "segment": "Intelligent Cloud",
       "business_item": "Nuance Healthcare cloud services",
       "business_item_short_description": "Cloud services focused on healthcare.",
-      "business_item_long_description": "Nuance Healthcare cloud services are part of the Intelligent Cloud segment, providing cloud-based solutions specifically for the healthcare industry.",
-      "evidence_span": "It primarily consists of server products and cloud services such as Azure, GitHub, Nuance Healthcare cloud services, and enterprise and partner services",
+      "business_item_long_description": "Nuance Healthcare cloud services are part of the Intelligent Cloud segment, providing cloud-based solutions specifically for the healthcare industry. These services support modern business and developers with cloud infrastructure and AI offerings.",
+      "evidence_span": "It primarily consists of server products and cloud services such as Azure, GitHub, and Nuance Healthcare cloud services",
       "evidence_validated": true,
       "item_in_source": true
     },
     {
       "segment": "Intelligent Cloud",
       "business_item": "Enterprise Support Services",
-      "business_item_short_description": "Enterprise support services for IT professionals and developers.",
-      "business_item_long_description": "Enterprise Support Services are part of the Intelligent Cloud segment, offering professional services to enhance productivity and efficiency for IT professionals and developers.",
-      "evidence_span": "and enterprise and partner services including Enterprise Support Services and Microsoft Partner Network",
+      "business_item_short_description": "Enterprise and partner services supporting IT professionals.",
+      "business_item_long_description": "Enterprise Support Services are part of the Intelligent Cloud segment, offering professional services to enhance productivity and efficiency for IT professionals and developers. These services are included in the enterprise and partner services category.",
+      "evidence_span": "as well as enterprise and partner services including Enterprise Support Services and Microsoft Partner Network",
       "evidence_validated": true,
       "item_in_source": true
     },
@@ -40,8 +40,8 @@
       "segment": "Intelligent Cloud",
       "business_item": "Microsoft Partner Network",
       "business_item_short_description": "A network of enterprise and partner services.",
-      "business_item_long_description": "Microsoft Partner Network is included in the Intelligent Cloud segment as part of enterprise and partner services, supporting collaboration and business growth.",
-      "evidence_span": "and enterprise and partner services including Enterprise Support Services and Microsoft Partner Network",
+      "business_item_long_description": "Microsoft Partner Network is part of the Intelligent Cloud segment, providing enterprise and partner services that support IT professionals and developers. It is included alongside Enterprise Support Services in the segment's offerings.",
+      "evidence_span": "as well as enterprise and partner services including Enterprise Support Services and Microsoft Partner Network",
       "evidence_validated": true,
       "item_in_source": true
     },
@@ -49,8 +49,8 @@
       "segment": "More Personal Computing",
       "business_item": "Windows OEM licensing",
       "business_item_short_description": "Licensing of Windows operating system to original equipment manufacturers.",
-      "business_item_long_description": "Windows OEM licensing involves providing the Windows operating system to device manufacturers for pre-installation on personal computers. This enables a consistent user experience across devices.",
-      "evidence_span": "It includes Windows OEM licensing and devices such as Surface and PC accessories",
+      "business_item_long_description": "Windows OEM licensing involves providing Windows operating system licenses to original equipment manufacturers for pre-installation on new devices. This enables personalized technology experiences through Windows-based devices.",
+      "evidence_span": "It includes Windows and Devices such as Windows OEM licensing and Surface devices",
       "evidence_validated": true,
       "item_in_source": true
     },
@@ -58,44 +58,35 @@
       "segment": "More Personal Computing",
       "business_item": "Surface",
       "business_item_short_description": "Microsoft's line of personal computing devices.",
-      "business_item_long_description": "Surface devices are part of Microsoft's hardware offerings designed to enhance personal computing experiences. They include tablets, laptops, and hybrid devices.",
-      "evidence_span": "It includes Windows OEM licensing and devices such as Surface and PC accessories",
-      "evidence_validated": true,
-      "item_in_source": true
-    },
-    {
-      "segment": "More Personal Computing",
-      "business_item": "PC accessories",
-      "business_item_short_description": "Peripheral devices that complement personal computers.",
-      "business_item_long_description": "PC accessories include hardware components that enhance or extend the functionality of personal computers, such as keyboards, mice, and other peripherals.",
-      "evidence_span": "It includes Windows OEM licensing and devices such as Surface and PC accessories",
+      "business_item_long_description": "Surface devices are a range of personal computing hardware products designed to deliver personalized technology experiences. They are part of the Windows and Devices category within the More Personal Computing segment.",
+      "evidence_span": "It includes Windows and Devices such as Windows OEM licensing and Surface devices",
       "evidence_validated": true,
       "item_in_source": true
     },
     {
       "segment": "More Personal Computing",
       "business_item": "Xbox hardware",
-      "business_item_short_description": "Gaming consoles developed by Microsoft.",
-      "business_item_long_description": "Xbox hardware refers to Microsoft's gaming consoles that provide a platform for gaming and entertainment. These devices support various gaming and multimedia applications.",
-      "evidence_span": "gaming through Xbox hardware and content including Xbox Game Pass and Xbox Cloud Gaming",
+      "business_item_short_description": "Gaming consoles and related hardware products.",
+      "business_item_long_description": "Xbox hardware refers to Microsoft's gaming consoles and associated devices that support gaming experiences. This includes the physical consoles used to access Xbox content and services.",
+      "evidence_span": "Gaming with Xbox hardware and content including Xbox Game Pass and Xbox Cloud Gaming",
       "evidence_validated": true,
       "item_in_source": true
     },
     {
       "segment": "More Personal Computing",
       "business_item": "Xbox Game Pass",
-      "business_item_short_description": "Subscription service for Xbox gaming content.",
-      "business_item_long_description": "Xbox Game Pass is a subscription service that offers access to a wide library of games for Xbox consoles and PC. It enhances the gaming ecosystem by providing diverse content.",
-      "evidence_span": "gaming through Xbox hardware and content including Xbox Game Pass and Xbox Cloud Gaming",
+      "business_item_short_description": "Subscription service for Xbox games.",
+      "business_item_long_description": "Xbox Game Pass is a subscription service that provides access to a wide library of Xbox games. It is part of the gaming content and services offered within the More Personal Computing segment.",
+      "evidence_span": "Gaming with Xbox hardware and content including Xbox Game Pass and Xbox Cloud Gaming",
       "evidence_validated": true,
       "item_in_source": true
     },
     {
       "segment": "More Personal Computing",
       "business_item": "Xbox Cloud Gaming",
-      "business_item_short_description": "Cloud-based gaming service for Xbox titles.",
-      "business_item_long_description": "Xbox Cloud Gaming allows users to stream and play Xbox games on various devices via the cloud, expanding accessibility and convenience for gamers.",
-      "evidence_span": "gaming through Xbox hardware and content including Xbox Game Pass and Xbox Cloud Gaming",
+      "business_item_short_description": "Cloud-based gaming service for Xbox games.",
+      "business_item_long_description": "Xbox Cloud Gaming allows users to stream Xbox games over the cloud without the need for local hardware. It enhances gaming accessibility and is included in the gaming content and services.",
+      "evidence_span": "Gaming with Xbox hardware and content including Xbox Game Pass and Xbox Cloud Gaming",
       "evidence_validated": true,
       "item_in_source": true
     },
@@ -103,8 +94,8 @@
       "segment": "More Personal Computing",
       "business_item": "Bing",
       "business_item_short_description": "Microsoft's search engine platform.",
-      "business_item_long_description": "Bing provides search engine services that deliver search results and advertising. It is part of the segment's focus on search and news advertising.",
-      "evidence_span": "search and news advertising via Bing, Microsoft Edge, and Microsoft News",
+      "business_item_long_description": "Bing is Microsoft's search engine that provides search and news advertising services. It is part of the segment's focus on search and news advertising to enhance user engagement.",
+      "evidence_span": "Search and news advertising through Bing, Microsoft Edge, and Microsoft News",
       "evidence_validated": true,
       "item_in_source": true
     },
@@ -112,8 +103,8 @@
       "segment": "More Personal Computing",
       "business_item": "Microsoft Edge",
       "business_item_short_description": "Microsoft's web browser.",
-      "business_item_long_description": "Microsoft Edge is a web browser that supports search and news advertising, contributing to the personal computing experience and advertising ecosystem.",
-      "evidence_span": "search and news advertising via Bing, Microsoft Edge, and Microsoft News",
+      "business_item_long_description": "Microsoft Edge is a web browser that supports search and news advertising. It is part of the More Personal Computing segment's offerings to enhance user engagement across devices.",
+      "evidence_span": "Search and news advertising through Bing, Microsoft Edge, and Microsoft News",
       "evidence_validated": true,
       "item_in_source": true
     },
@@ -121,64 +112,37 @@
       "segment": "More Personal Computing",
       "business_item": "Microsoft News",
       "business_item_short_description": "News aggregation and delivery service.",
-      "business_item_long_description": "Microsoft News aggregates and delivers news content, supporting the segment's advertising and personal user experience goals.",
-      "evidence_span": "search and news advertising via Bing, Microsoft Edge, and Microsoft News",
+      "business_item_long_description": "Microsoft News provides news content and advertising services as part of the search and news advertising category. It aims to enhance user engagement through personalized news experiences.",
+      "evidence_span": "Search and news advertising through Bing, Microsoft Edge, and Microsoft News",
       "evidence_validated": true,
       "item_in_source": true
     },
     {
       "segment": "Productivity and Business Processes",
-      "business_item": "Microsoft 365 Commercial",
-      "business_item_short_description": "A suite of productivity products and cloud services for commercial users.",
-      "business_item_long_description": "Microsoft 365 Commercial includes productivity, communication, and information services designed for commercial customers across various devices and platforms. It is part of the broader Microsoft 365 Commercial products and cloud services offering.",
-      "evidence_span": "It comprises Microsoft 365 Commercial and Consumer products and cloud services",
+      "business_item": "Microsoft 365 Commercial and Consumer products and cloud services",
+      "business_item_short_description": "A portfolio of productivity, communication, and information services across various devices and platforms.",
+      "business_item_long_description": "Microsoft 365 Commercial and Consumer products and cloud services provide productivity, communication, and information services designed for various devices and platforms. These services support business productivity and collaboration.",
+      "evidence_span": "It features Microsoft 365 Commercial and Consumer products and cloud services",
       "evidence_validated": true,
-      "item_in_source": true
+      "item_in_source": false
     },
     {
       "segment": "Productivity and Business Processes",
-      "business_item": "Microsoft 365 Consumer",
-      "business_item_short_description": "A suite of productivity products and cloud services for consumer users.",
-      "business_item_long_description": "Microsoft 365 Consumer includes productivity, communication, and information services designed for individual consumers across various devices and platforms. It is part of the broader Microsoft 365 Consumer products and cloud services offering.",
-      "evidence_span": "It comprises Microsoft 365 Commercial and Consumer products and cloud services",
-      "evidence_validated": true,
-      "item_in_source": true
-    },
-    {
-      "segment": "Productivity and Business Processes",
-      "business_item": "LinkedIn",
-      "business_item_short_description": "A professional networking platform with various business solutions.",
-      "business_item_long_description": "LinkedIn offers professional networking services along with Talent, Marketing, Premium, and Sales Solutions. It is integrated within the Productivity and Business Processes segment to support professional networking and business productivity.",
+      "business_item": "LinkedIn with its Talent, Marketing, Premium, and Sales Solutions",
+      "business_item_short_description": "Professional networking services including Talent, Marketing, Premium, and Sales Solutions.",
+      "business_item_long_description": "LinkedIn offers professional networking services that include Talent, Marketing, Premium, and Sales Solutions. These services support professional networking and business growth.",
       "evidence_span": "LinkedIn with its Talent, Marketing, Premium, and Sales Solutions",
       "evidence_validated": true,
-      "item_in_source": true
+      "item_in_source": false
     },
     {
       "segment": "Productivity and Business Processes",
-      "business_item": "Dynamics 365",
-      "business_item_short_description": "A suite of intelligent business applications and cloud services.",
-      "business_item_long_description": "Dynamics 365 includes products and cloud services focused on intelligent business applications. It also encompasses low code platforms like Power Apps and Power Automate to enhance business productivity.",
-      "evidence_span": "Dynamics products and cloud services including Dynamics 365 and low code platforms like Power Apps and Power Automate",
+      "business_item": "Dynamics products and cloud services including Dynamics 365 ERP and CRM applications",
+      "business_item_short_description": "Business applications including ERP and CRM solutions delivered via cloud services.",
+      "business_item_long_description": "Dynamics products and cloud services include Dynamics 365 ERP and CRM applications that provide intelligent cloud-based business solutions. These tools help businesses manage operations and customer relationships effectively.",
+      "evidence_span": "Dynamics products and cloud services including Dynamics 365 ERP and CRM applications",
       "evidence_validated": true,
-      "item_in_source": true
-    },
-    {
-      "segment": "Productivity and Business Processes",
-      "business_item": "Power Apps",
-      "business_item_short_description": "A low code platform for building custom business applications.",
-      "business_item_long_description": "Power Apps is a low code platform included in the Dynamics products and cloud services, enabling users to create custom business applications to improve productivity and business processes.",
-      "evidence_span": "Dynamics products and cloud services including Dynamics 365 and low code platforms like Power Apps and Power Automate",
-      "evidence_validated": true,
-      "item_in_source": true
-    },
-    {
-      "segment": "Productivity and Business Processes",
-      "business_item": "Power Automate",
-      "business_item_short_description": "A low code platform for automating workflows and business processes.",
-      "business_item_long_description": "Power Automate is a low code platform that allows users to automate workflows and business processes, included within the Dynamics products and cloud services to enhance business productivity.",
-      "evidence_span": "Dynamics products and cloud services including Dynamics 365 and low code platforms like Power Apps and Power Automate",
-      "evidence_validated": true,
-      "item_in_source": true
+      "item_in_source": false
     }
   ]
 }

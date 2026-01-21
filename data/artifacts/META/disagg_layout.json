@@ -13,5 +13,5 @@
   "total_row_regex": "(?i)^Total revenue$",
   "exclude_row_regex": "",
   "units_multiplier": 1000000,
-  "notes": "No separate segment column; item column is first column; year columns correspond to recent fiscal years 2024, 2023, 2022; total row labeled exactly 'Total revenue'; units in millions."
+  "notes": "No separate segment column; item column is first column; year columns correspond to recent fiscal years 2024, 2023, 2022; total row labeled 'Total revenue'; units in millions."
 }

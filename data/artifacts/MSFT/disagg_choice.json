@@ -1,5 +1,5 @@
 {
   "table_id": "t0073",
   "confidence": 0.95,
-  "rationale": "Table t0073 disaggregates revenue by detailed business lines including 'Server products and cloud services', 'Microsoft 365 Commercial products and cloud services', 'Gaming', 'LinkedIn', 'Windows and Devices', 'Search and news advertising', 'Dynamics products and cloud services', 'Enterprise and partner services', and 'Microsoft 365 Consumer products and cloud services'. It includes a Total revenue row and covers recent fiscal years 2023, 2024, and 2025. The row labels closely match the provided business lines and keyword hints, making it the best fit for granular revenue disaggregation by product/service lines."
+  "rationale": "This table disaggregates revenue by detailed product and service lines including 'Server products and cloud services', 'Microsoft 365 Commercial products and cloud services', 'Gaming', 'LinkedIn', 'Windows and Devices', 'Search and news advertising', 'Dynamics products and cloud services', 'Enterprise and partner services', and 'Microsoft 365 Consumer products and cloud services'. It includes a 'Total' revenue row and covers recent fiscal years 2023, 2024, and 2025. The row labels overlap well with the provided business lines and keyword hints, making it the best fit for granular revenue disaggregation by business lines."
 }

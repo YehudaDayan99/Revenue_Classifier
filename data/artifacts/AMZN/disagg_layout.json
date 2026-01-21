@@ -12,5 +12,5 @@
   "total_row_regex": "Consolidated",
   "exclude_row_regex": "Year-over-year|Net Sales Mix",
   "units_multiplier": 1000000,
-  "notes": "Segment and Item columns are the same (column 0) with segments like North America, International, AWS. Year columns are recent fiscal years 2023 and 2024 at columns 3 and 9 respectively. Total row labeled 'Consolidated'. Rows with growth percentages and mix excluded."
+  "notes": "Segment and Item columns are the same (column 0) with segment names like North America, International, AWS. Year columns are recent fiscal years 2023 and 2024 at columns 3 and 9. Total row labeled 'Consolidated'. Exclude growth and mix rows."
 }

@@ -2,7 +2,7 @@
   "rows": [
     {
       "segment": "Google Cloud",
-      "segment_description": "Google Cloud segment includes cloud computing services and infrastructure offerings. It is reported separately from Google Services and Other Bets, reflecting its distinct business focus within Alphabet. The segment's profitability and revenue are tracked independently to highlight its performance.",
+      "segment_description": "Google Cloud segment includes cloud computing services and infrastructure offerings. It is reported separately from Google Services and Other Bets, reflecting its focus on cloud-based products and services. The segment's operating income increased from $1,716 million in 2023 to $6,112 million in 2024.",
       "key_products_services": [
         "Google Cloud"
       ],
@@ -10,7 +10,7 @@
     },
     {
       "segment": "Google Services",
-      "segment_description": "Google Services segment encompasses a broad range of consumer and advertiser-facing products and platforms. This includes Google Search, YouTube advertising, Google Network, and Google subscriptions, platforms, and devices. The segment represents the core business operations generating significant revenue and operating income.",
+      "segment_description": "Google Services segment encompasses various consumer and advertiser-facing products and platforms. This includes Google Search and other related services, YouTube advertising, Google Network, and Google subscriptions, platforms, and devices. The segment showed significant operating income growth from $95,858 million in 2023 to $121,263 million in 2024.",
       "key_products_services": [
         "Google Search & other",
         "YouTube ads",
@@ -21,7 +21,7 @@
     },
     {
       "segment": "Other Bets",
-      "segment_description": "Other Bets segment includes Alphabet's experimental and emerging businesses outside of Google Services and Google Cloud. This segment typically operates at a loss and includes various projects and companies that are in development or early stages. It is reported separately to distinguish these ventures from the main business segments.",
+      "segment_description": "Other Bets segment includes Alphabet's experimental and emerging businesses outside of Google Services and Google Cloud. This segment reported operating losses of $4,095 million in 2023 and $4,444 million in 2024, reflecting ongoing investments in these ventures.",
       "key_products_services": [
         "Other Bets"
       ],

@@ -70,8 +70,9 @@ class OpenAIChatClient:
     base_url: str = "https://api.openai.com/v1"
     timeout_s: int = 120
     max_retries: int = 3
-    # Throttle to avoid RPM limits (defaults match low-tier limits like 3 RPM).
-    rate_limit_rpm: Optional[float] = 3.0
+    # Throttle to avoid RPM limits. Modern accounts support 500+ RPM for gpt-4.1-mini.
+    # Default is conservative; pipeline.py overrides to 60 RPM for efficiency.
+    rate_limit_rpm: Optional[float] = 60.0
     # Prefer OpenAI JSON mode when available.
     use_response_format_json: bool = True
     # Mutable single-element list used for tracking last call time even in frozen dataclass.

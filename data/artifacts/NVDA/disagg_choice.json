@@ -1,5 +1,5 @@
 {
   "table_id": "t0059",
   "confidence": 0.95,
-  "rationale": "Table t0059 is titled 'Revenue by End Market' and disaggregates revenue by business lines including Gaming, Data Center, Professional Visualization, Automotive, and OEM and Other, matching the requested business lines. It includes a 'Total revenue' row and shows recent fiscal years (2023, 2024, 2025) with amounts in millions. This table provides a granular product/service line revenue breakdown rather than just segment totals, fulfilling the preference for detailed disaggregation in Item 8 / Notes."
+  "rationale": "This table titled 'Revenue by End Market:' disaggregates revenue by business lines that closely match the requested segments: Data Center, Gaming, Professional Visualization, Automotive, OEM and Other, and includes a 'Total revenue' row. It covers recent fiscal years including 2023, 2024, and 2025, is from Item 8 / Notes section, and shows granular product/service line items rather than just segment totals. It aligns well with the business lines provided and meets the preference for a detailed disaggregation of revenue by product categories rather than geography."
 }

@@ -4,28 +4,10 @@
       "segment": "Family of Apps",
       "business_item": "advertising placements",
       "business_item_short_description": "Advertising placements sold on the family of apps to marketers.",
-      "business_item_long_description": "The Family of Apps segment primarily generates revenue through selling advertising placements on its family of apps to marketers. These ads enable marketers to reach people across various marketing objectives such as generating leads or driving awareness. The segment focuses on helping people learn, get things done, create content, and connect with others through its platforms.",
-      "evidence_span": "The Family of Apps segment primarily generates revenue through selling advertising placements on its family of apps to marketers.",
+      "business_item_long_description": "The Family of Apps segment primarily generates revenue by selling advertising placements on its family of apps to marketers. These ads enable marketers to reach people across various marketing objectives such as generating leads or driving awareness.",
+      "evidence_span": "The Family of Apps segment primarily generates revenue by selling advertising placements on its family of apps to marketers.",
       "evidence_validated": true,
       "item_in_source": true
-    },
-    {
-      "segment": "Reality Labs",
-      "business_item": "AI glasses",
-      "business_item_short_description": "AI glasses designed to help people learn, get things done, create content, and connect with others.",
-      "business_item_long_description": "AI glasses are part of the Reality Labs segment, which focuses on enabling users to learn, accomplish tasks, create content, and connect socially. These glasses incorporate artificial intelligence to enhance user experience through web-based interactions.",
-      "evidence_span": "Reality Labs is a segment designed to help people learn, get things done, create content, and connect with others, including through AI glasses and web-based experiences.",
-      "evidence_validated": true,
-      "item_in_source": true
-    },
-    {
-      "segment": "Reality Labs",
-      "business_item": "web-based experiences",
-      "business_item_short_description": "Web-based experiences that facilitate learning, productivity, content creation, and social connection.",
-      "business_item_long_description": "The Reality Labs segment includes web-based experiences that allow users to engage in learning, task completion, content creation, and social interaction. These experiences are distinct from the Family of Apps and contribute to the segment's revenue.",
-      "evidence_span": "Reality Labs is a segment designed to help people learn, get things done, create content, and connect with others, including through AI glasses and web-based experiences.",
-      "evidence_validated": true,
-      "item_in_source": false
     }
   ]
 }

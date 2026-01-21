@@ -2,7 +2,7 @@
   "rows": [
     {
       "segment": "Family of Apps",
-      "segment_description": "The Family of Apps segment primarily generates revenue through selling advertising placements on its family of apps to marketers. These ads enable marketers to reach people across various marketing objectives such as generating leads or driving awareness. The segment focuses on helping people learn, get things done, create content, and connect with others through its platforms.",
+      "segment_description": "The Family of Apps segment primarily generates revenue by selling advertising placements on its family of apps to marketers. These ads enable marketers to reach people across various marketing objectives such as generating leads or driving awareness. The segment focuses on helping people learn, get things done, create content, and connect with others through its apps.",
       "key_products_services": [
         "Advertising",
         "Other revenue"
@@ -11,7 +11,7 @@
     },
     {
       "segment": "Reality Labs",
-      "segment_description": "Reality Labs is a segment designed to help people learn, get things done, create content, and connect with others, including through AI glasses and web-based experiences. While the segment is distinct from Family of Apps, it is reported separately and includes revenue items specific to Reality Labs.",
+      "segment_description": "Reality Labs is a distinct segment reported separately from Family of Apps. While the text does not provide detailed product descriptions, it is implied that Reality Labs involves products related to AI glasses and web-based experiences designed to help people learn, get things done, create content, and connect with others.",
       "key_products_services": [
         "Reality Labs"
       ],

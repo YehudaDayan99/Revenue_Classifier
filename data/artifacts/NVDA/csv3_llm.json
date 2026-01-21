@@ -3,8 +3,8 @@
     {
       "segment": "Automotive",
       "business_item": "AI model training and inference",
-      "business_item_short_description": "AI model training and inference tailored for automotive applications.",
-      "business_item_long_description": "The Automotive segment focuses on AI model training and inference to support advanced automotive applications. This includes leveraging NVIDIA's GPU technology for efficient processing and optimization.",
+      "business_item_short_description": "AI model training and inference tailored for automotive industry applications.",
+      "business_item_long_description": "The Automotive segment focuses on AI model training and inference, leveraging GPU technology to optimize these processes specifically for automotive and manufacturing sectors. This enables advanced data analytics and scientific computing tailored to industry needs.",
       "evidence_span": "The Automotive segment focuses on AI model training and inference, data analytics, scientific computing, and 3D graphics with vertical-specific optimizations tailored for industries including automotive.",
       "evidence_validated": true,
       "item_in_source": false
@@ -12,8 +12,8 @@
     {
       "segment": "Automotive",
       "business_item": "data analytics",
-      "business_item_short_description": "Data analytics services tailored for the automotive industry.",
-      "business_item_long_description": "The Automotive segment provides data analytics capabilities to support automotive industry needs. These analytics help in processing and interpreting large datasets for better decision-making and innovation.",
+      "business_item_short_description": "Data analytics services optimized for automotive industry applications.",
+      "business_item_long_description": "The Automotive segment provides data analytics capabilities that are enhanced by GPU technology, enabling detailed analysis and insights for automotive and manufacturing industries. These analytics support improved decision-making and operational efficiency.",
       "evidence_span": "The Automotive segment focuses on AI model training and inference, data analytics, scientific computing, and 3D graphics with vertical-specific optimizations tailored for industries including automotive.",
       "evidence_validated": true,
       "item_in_source": true
@@ -21,8 +21,8 @@
     {
       "segment": "Automotive",
       "business_item": "scientific computing",
-      "business_item_short_description": "Scientific computing solutions for automotive industry applications.",
-      "business_item_long_description": "The Automotive segment includes scientific computing to enable complex simulations and computations necessary for automotive research and development. This is supported by NVIDIA's GPU technology for enhanced performance.",
+      "business_item_short_description": "Scientific computing solutions designed for automotive and manufacturing sectors.",
+      "business_item_long_description": "Scientific computing within the Automotive segment leverages GPU technology to perform complex computations and simulations relevant to automotive and manufacturing industries. This supports innovation and development in these sectors.",
       "evidence_span": "The Automotive segment focuses on AI model training and inference, data analytics, scientific computing, and 3D graphics with vertical-specific optimizations tailored for industries including automotive.",
       "evidence_validated": true,
       "item_in_source": true
@@ -30,27 +30,27 @@
     {
       "segment": "Automotive",
       "business_item": "3D graphics",
-      "business_item_short_description": "3D graphics with vertical-specific optimizations for automotive use cases.",
-      "business_item_long_description": "The Automotive segment offers 3D graphics solutions optimized for automotive industry needs, enabling virtual simulations and advanced visualization. These graphics capabilities leverage NVIDIA's GPU technology.",
+      "business_item_short_description": "3D graphics technology with vertical-specific optimizations for automotive industry.",
+      "business_item_long_description": "The Automotive segment utilizes 3D graphics technology optimized for automotive applications, enabling realistic simulations and visualizations. This technology is powered by GPU advancements originally designed for virtual worlds.",
       "evidence_span": "The Automotive segment focuses on AI model training and inference, data analytics, scientific computing, and 3D graphics with vertical-specific optimizations tailored for industries including automotive.",
       "evidence_validated": true,
       "item_in_source": true
     },
     {
       "segment": "Automotive",
-      "business_item": "NVIDIA's GPU technology",
-      "business_item_short_description": "GPU technology enabling advanced automotive applications and simulations.",
-      "business_item_long_description": "NVIDIA's GPU technology is leveraged in the Automotive segment to enable advanced automotive applications and virtual simulations. This technology supports AI, analytics, scientific computing, and 3D graphics tailored for the automotive industry.",
-      "evidence_span": "It leverages NVIDIA's GPU technology to enable advanced automotive applications and virtual simulations.",
+      "business_item": "GPU technology",
+      "business_item_short_description": "GPU technology applied to automotive and manufacturing sectors.",
+      "business_item_long_description": "The segment leverages GPU technology initially designed for simulating human imagination and virtual worlds, now applied to automotive and manufacturing sectors to enhance computing and graphics capabilities.",
+      "evidence_span": "It leverages GPU technology initially designed for simulating human imagination and virtual worlds, now applied to automotive and manufacturing sectors.",
       "evidence_validated": true,
       "item_in_source": false
     },
     {
       "segment": "Data Center",
       "business_item": "Hopper computing platform",
-      "business_item_short_description": "A computing platform designed for large language models.",
-      "business_item_long_description": "The Hopper computing platform is a key platform within the Data Center segment, specifically designed to accelerate compute-intensive workloads such as AI and large language models. It supports modern AI applications by scaling to tens of thousands of GPU-accelerated servers.",
-      "evidence_span": "Key platforms include the Hopper computing platform for large language models and Spectrum-X ethernet platform for AI networking.",
+      "business_item_short_description": "A key platform for large language models in AI applications.",
+      "business_item_long_description": "The Hopper computing platform is designed to accelerate compute-intensive workloads, particularly for large language models used in modern AI applications. It supports scaling to tens of thousands of GPU-accelerated servers.",
+      "evidence_span": "Key platforms include the Hopper computing platform for large language models",
       "evidence_validated": true,
       "item_in_source": true
     },
@@ -58,35 +58,80 @@
       "segment": "Data Center",
       "business_item": "Spectrum-X ethernet platform",
       "business_item_short_description": "An ethernet platform for AI networking.",
-      "business_item_long_description": "The Spectrum-X ethernet platform is a networking solution within the Data Center segment that supports AI networking. It is designed to scale to tens of thousands of GPU-accelerated servers, facilitating modern AI applications.",
-      "evidence_span": "Key platforms include the Hopper computing platform for large language models and Spectrum-X ethernet platform for AI networking.",
+      "business_item_long_description": "The Spectrum-X ethernet platform provides networking solutions that support AI applications by enabling scalable, high-performance connectivity across GPU-accelerated servers in data centers.",
+      "evidence_span": "and Spectrum-X ethernet platform for AI networking",
       "evidence_validated": true,
       "item_in_source": false
     },
     {
       "segment": "Gaming",
-      "business_item": "GeForce RTX 40 Series GPUs",
-      "business_item_short_description": "A series of GPUs designed for gaming and compute-intensive applications.",
-      "business_item_long_description": "The GeForce RTX 40 Series GPUs are part of NVIDIA's Gaming segment, providing advanced graphics processing capabilities that revolutionize PC gaming and computer graphics. These GPUs support high-performance gaming and complex compute tasks.",
-      "evidence_span": "highlighted by the GeForce RTX 40 Series GPUs and CUDA programming model enabling parallel processing.",
+      "business_item": "CUDA programming model",
+      "business_item_short_description": "A programming model enabling parallel processing for compute-intensive applications.",
+      "business_item_long_description": "The CUDA programming model allows developers to leverage parallel processing capabilities of GPUs, enhancing performance in compute-intensive tasks. It is a key component of NVIDIA's Gaming segment, supporting advanced gaming and AI applications.",
+      "evidence_span": "It includes the CUDA programming model enabling parallel processing for compute-intensive applications",
       "evidence_validated": true,
       "item_in_source": true
     },
     {
       "segment": "Gaming",
-      "business_item": "CUDA programming model",
-      "business_item_short_description": "A programming model enabling parallel processing for gaming and compute applications.",
-      "business_item_long_description": "The CUDA programming model is a software stack included in NVIDIA's Gaming segment that enables parallel processing. It supports gaming and compute-intensive applications by allowing developers to leverage GPU capabilities effectively.",
-      "evidence_span": "highlighted by the GeForce RTX 40 Series GPUs and CUDA programming model enabling parallel processing.",
+      "business_item": "Tensor Core GPUs",
+      "business_item_short_description": "GPUs designed specifically for AI applications.",
+      "business_item_long_description": "Tensor Core GPUs are specialized graphics processing units designed to accelerate AI workloads. They form a critical part of NVIDIA's Gaming segment, supporting both gaming and modern AI applications.",
+      "evidence_span": "and Tensor Core GPUs designed for AI",
+      "evidence_validated": true,
+      "item_in_source": false
+    },
+    {
+      "segment": "Professional Visualization",
+      "business_item": "corporate processors",
+      "business_item_short_description": "Processors designed for corporate use in advanced visualization applications.",
+      "business_item_long_description": "The Professional Visualization segment includes corporate processors that provide the computing power necessary for advanced visualization tasks. These processors support complex graphics and computing technologies to meet the needs of professional markets.",
+      "evidence_span": "The Professional Visualization segment delivers unique value through corporate processors, interconnects, software, algorithms, systems, and services.",
       "evidence_validated": true,
       "item_in_source": true
     },
     {
       "segment": "Professional Visualization",
-      "business_item": "platforms",
-      "business_item_short_description": "Platforms combining processors, interconnects, software, algorithms, systems, and services.",
-      "business_item_long_description": "The Professional Visualization segment delivers platforms that integrate various components such as processors, interconnects, software, algorithms, systems, and services. These platforms are designed to address markets requiring advanced visualization capabilities.",
-      "evidence_span": "The Professional Visualization segment delivers platforms combining processors, interconnects, software, algorithms, systems, and services to address markets requiring advanced visualization capabilities.",
+      "business_item": "interconnects",
+      "business_item_short_description": "Interconnect technologies facilitating communication between components in visualization systems.",
+      "business_item_long_description": "Interconnects in the Professional Visualization segment enable efficient data transfer and communication between various hardware components. This supports the high-performance requirements of advanced visualization applications.",
+      "evidence_span": "The Professional Visualization segment delivers unique value through corporate processors, interconnects, software, algorithms, systems, and services.",
+      "evidence_validated": true,
+      "item_in_source": true
+    },
+    {
+      "segment": "Professional Visualization",
+      "business_item": "software",
+      "business_item_short_description": "Software solutions supporting advanced visualization capabilities.",
+      "business_item_long_description": "The segment offers software that leverages NVIDIA's expertise in graphics and computing technologies to provide advanced visualization capabilities. This software is integral to delivering unique value in professional markets.",
+      "evidence_span": "The Professional Visualization segment delivers unique value through corporate processors, interconnects, software, algorithms, systems, and services.",
+      "evidence_validated": true,
+      "item_in_source": true
+    },
+    {
+      "segment": "Professional Visualization",
+      "business_item": "algorithms",
+      "business_item_short_description": "Algorithms designed to enhance visualization performance and capabilities.",
+      "business_item_long_description": "Algorithms developed within the Professional Visualization segment optimize graphics and computing processes. These algorithms contribute to the advanced visualization capabilities required by professional users.",
+      "evidence_span": "The Professional Visualization segment delivers unique value through corporate processors, interconnects, software, algorithms, systems, and services.",
+      "evidence_validated": true,
+      "item_in_source": true
+    },
+    {
+      "segment": "Professional Visualization",
+      "business_item": "systems",
+      "business_item_short_description": "Complete systems integrating hardware and software for visualization.",
+      "business_item_long_description": "The segment provides systems that combine processors, interconnects, software, and algorithms to deliver comprehensive visualization solutions. These systems address the needs of markets requiring advanced visualization capabilities.",
+      "evidence_span": "The Professional Visualization segment delivers unique value through corporate processors, interconnects, software, algorithms, systems, and services.",
+      "evidence_validated": true,
+      "item_in_source": true
+    },
+    {
+      "segment": "Professional Visualization",
+      "business_item": "services",
+      "business_item_short_description": "Services supporting the deployment and use of visualization technologies.",
+      "business_item_long_description": "Services offered in this segment assist customers in implementing and optimizing NVIDIA's visualization technologies. These services enhance the overall value delivered to professional markets.",
+      "evidence_span": "The Professional Visualization segment delivers unique value through corporate processors, interconnects, software, algorithms, systems, and services.",
       "evidence_validated": true,
       "item_in_source": true
     }

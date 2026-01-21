@@ -1,5 +1,5 @@
 {
   "table_id": "t0024",
-  "confidence": 0.9,
-  "rationale": "This table titled 'Net Sales' disaggregates revenue by the three business segments North America, International, and AWS, includes recent fiscal years 2023 and 2024, and has a Total (Consolidated) Revenue row. It matches the requested business lines and provides granular revenue disaggregation by segment, fulfilling the preference for segment-level totals with recent year columns."
+  "confidence": 0.95,
+  "rationale": "Table t0024 is titled with 'Net Sales' and disaggregates revenue by the three business segments: North America, International, and AWS, with a Consolidated total row. It includes recent fiscal years 2023 and 2024, matches the requested business lines exactly, and is from Item 8 / Notes as indicated in the nearby text context. It shows granular revenue line items by segment and includes a Total Revenue/Net Sales row, fulfilling all constraints."
 }

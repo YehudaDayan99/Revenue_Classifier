@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import functools
 import json
 import os
 from dataclasses import asdict
@@ -8,6 +9,27 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from bs4 import BeautifulSoup
+
+# ============================================================================
+# CACHING LAYER - Avoid redundant LLM calls and HTML parsing within a run
+# ============================================================================
+# These caches are per-process and cleared between runs.
+# Key insight: Same filing → same result, so cache by file path.
+
+_CACHE_HTML_TEXT: Dict[str, str] = {}
+_CACHE_CANDIDATES: Dict[str, List] = {}
+_CACHE_SCOUT: Dict[str, Dict] = {}
+_CACHE_SNIPPETS: Dict[str, List] = {}
+_CACHE_DISCOVERY: Dict[str, Dict] = {}
+
+
+def _clear_caches() -> None:
+    """Clear all caches (call at start of run_pipeline)."""
+    _CACHE_HTML_TEXT.clear()
+    _CACHE_CANDIDATES.clear()
+    _CACHE_SCOUT.clear()
+    _CACHE_SNIPPETS.clear()
+    _CACHE_DISCOVERY.clear()
 
 from revseg.llm_client import OpenAIChatClient
 from revseg.react_agents import (
@@ -80,13 +102,78 @@ def _ensure_filing_dir(ticker: str, *, base_dir: Path, cache_dir: Optional[Path]
 
 
 def _html_text_for_llm(html_path: Path, *, max_chars: int = 250_000) -> str:
+    """Extract text from HTML for LLM consumption (cached)."""
+    cache_key = str(html_path)
+    if cache_key in _CACHE_HTML_TEXT:
+        return _CACHE_HTML_TEXT[cache_key]
+    
     html = html_path.read_text(encoding="utf-8", errors="ignore")
     soup = BeautifulSoup(html, "lxml")
     text = soup.get_text(" ", strip=True)
     text = " ".join(text.split())
     if len(text) > max_chars:
-        return text[:max_chars]
+        text = text[:max_chars]
+    
+    _CACHE_HTML_TEXT[cache_key] = text
     return text
+
+
+def _cached_extract_candidates(html_path: Path, preview_rows: int = 15, preview_cols: int = 10) -> List:
+    """Extract table candidates from HTML (cached)."""
+    cache_key = str(html_path)
+    if cache_key in _CACHE_CANDIDATES:
+        return _CACHE_CANDIDATES[cache_key]
+    
+    candidates = extract_table_candidates_from_html(html_path, preview_rows=preview_rows, preview_cols=preview_cols)
+    _CACHE_CANDIDATES[cache_key] = candidates
+    return candidates
+
+
+def _cached_document_scout(html_path: Path) -> Dict[str, Any]:
+    """Run document scout (cached)."""
+    cache_key = str(html_path)
+    if cache_key in _CACHE_SCOUT:
+        return _CACHE_SCOUT[cache_key]
+    
+    scout = document_scout(html_path)
+    _CACHE_SCOUT[cache_key] = scout
+    return scout
+
+
+def _cached_extract_snippets(html_path: Path, keywords: List[str], window_chars: int, max_windows: int) -> List[Dict]:
+    """Extract keyword windows from HTML (cached)."""
+    cache_key = str(html_path)
+    if cache_key in _CACHE_SNIPPETS:
+        return _CACHE_SNIPPETS[cache_key]
+    
+    snippets = extract_keyword_windows(
+        html_path,
+        keywords=keywords,
+        window_chars=window_chars,
+        max_windows=max_windows,
+    )
+    _CACHE_SNIPPETS[cache_key] = snippets
+    return snippets
+
+
+def _cached_discover_business_lines(
+    llm: OpenAIChatClient,
+    ticker: str,
+    company_name: str,
+    snippets: List[Dict],
+    html_path: Path,
+) -> Dict[str, Any]:
+    """Discover primary business lines (cached by filing path)."""
+    # Cache key uses html_path to ensure per-filing caching
+    cache_key = str(html_path)
+    if cache_key in _CACHE_DISCOVERY:
+        return _CACHE_DISCOVERY[cache_key]
+    
+    discovery = discover_primary_business_lines(
+        llm, ticker=ticker, company_name=company_name, snippets=snippets
+    )
+    _CACHE_DISCOVERY[cache_key] = discovery
+    return discovery
 
 
 def _write_csv(path: Path, fieldnames: List[str], rows: List[Dict[str, Any]]) -> None:
@@ -275,12 +362,16 @@ def run_pipeline(
     validation_tolerance_pct: float = 0.02,
 ) -> Dict[str, Any]:
     """End-to-end run for multiple tickers (latest 10-K per ticker)."""
+    # Clear caches at start of run to ensure fresh state
+    _clear_caches()
+    
     out_dir = Path(out_dir).expanduser().resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
     filings_base_dir = Path(filings_base_dir).expanduser().resolve()
     cache_dir = Path(cache_dir).expanduser().resolve()
 
-    llm = OpenAIChatClient(model=model)
+    # Use higher rate limit for efficiency (modern OpenAI accounts support 500+ RPM)
+    llm = OpenAIChatClient(model=model, rate_limit_rpm=60.0)
 
     artifacts_dir = out_dir.parent / "artifacts"
     artifacts_dir.mkdir(parents=True, exist_ok=True)
@@ -310,8 +401,8 @@ def run_pipeline(
             sec_doc_url = _sec_doc_url_from_filing_ref(filing_ref)
             cik = int(filing_ref["cik"])
 
-            # Stage: candidates
-            candidates = extract_table_candidates_from_html(html_path, preview_rows=15, preview_cols=10)
+            # Stage: candidates (CACHED)
+            candidates = _cached_extract_candidates(html_path, preview_rows=15, preview_cols=10)
             write_candidates_json(candidates, t_art / f"{ticker}_table_candidates.json")
             per["html_path"] = str(html_path)
             per["sec_doc_url"] = sec_doc_url
@@ -319,10 +410,12 @@ def run_pipeline(
             per["income_statement_table_id_guess"] = income_cand.table_id if income_cand else None
             _trace_append(t_art, {"stage": "candidates", "n_candidates": len(candidates), "income_guess": per["income_statement_table_id_guess"]})
 
-            scout = document_scout(html_path)
+            # Document scout (CACHED)
+            scout = _cached_document_scout(html_path)
             (t_art / "scout.json").write_text(json.dumps(scout, indent=2), encoding="utf-8")
-            # Deterministic snippet retrieval (soft preference toward Item 8 / Notes)
-            snippets = extract_keyword_windows(
+            
+            # Snippet retrieval (CACHED)
+            snippets = _cached_extract_snippets(
                 html_path,
                 keywords=[
                     "Item 8",
@@ -340,9 +433,9 @@ def run_pipeline(
             (t_art / "retrieved_snippets.json").write_text(json.dumps(snippets, indent=2, ensure_ascii=False), encoding="utf-8")
             _trace_append(t_art, {"stage": "scout", "n_headings": len(scout.get("headings", [])), "n_snippets": len(snippets)})
 
-            # NEW POC FLOW: text-first discovery -> revenue disaggregation table -> deterministic extraction
-            discovery = discover_primary_business_lines(
-                llm, ticker=ticker, company_name=company_name, snippets=snippets
+            # Business line discovery (CACHED - single LLM call per filing)
+            discovery = _cached_discover_business_lines(
+                llm, ticker=ticker, company_name=company_name, snippets=snippets, html_path=html_path
             )
             (t_art / "business_lines.json").write_text(json.dumps(discovery, indent=2, ensure_ascii=False), encoding="utf-8")
             _trace_append(t_art, {"stage": "discover", "discovery": discovery})

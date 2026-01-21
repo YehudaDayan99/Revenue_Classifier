@@ -4,7 +4,7 @@
       "segment": "Google Cloud",
       "business_item": "cloud computing services",
       "business_item_short_description": "Cloud computing services offered by Google Cloud segment.",
-      "business_item_long_description": "The Google Cloud segment provides cloud computing services, which include various infrastructure offerings. These services are a distinct part of Alphabet's business and are tracked independently for profitability and revenue.",
+      "business_item_long_description": "The Google Cloud segment provides cloud computing services, focusing on cloud-based products and services. These services are part of the segment's infrastructure offerings.",
       "evidence_span": "Google Cloud segment includes cloud computing services and infrastructure offerings.",
       "evidence_validated": true,
       "item_in_source": true
@@ -13,35 +13,35 @@
       "segment": "Google Cloud",
       "business_item": "infrastructure offerings",
       "business_item_short_description": "Infrastructure offerings provided by Google Cloud segment.",
-      "business_item_long_description": "Google Cloud segment offers infrastructure offerings as part of its cloud computing services. These offerings support the segment's distinct business focus within Alphabet and contribute to its independent revenue tracking.",
+      "business_item_long_description": "The Google Cloud segment offers infrastructure offerings as part of its cloud-based products and services. These offerings support the cloud computing services provided by the segment.",
       "evidence_span": "Google Cloud segment includes cloud computing services and infrastructure offerings.",
       "evidence_validated": true,
       "item_in_source": false
     },
     {
       "segment": "Google Services",
-      "business_item": "Google Search",
-      "business_item_short_description": "A consumer-facing product for internet search.",
-      "business_item_long_description": "Google Search is a core consumer product that allows users to search the internet for information. It is a significant part of the Google Services segment, contributing to revenue generation.",
-      "evidence_span": "This includes Google Search, YouTube advertising, Google Network, and Google subscriptions, platforms, and devices.",
+      "business_item": "Google Search and other related services",
+      "business_item_short_description": "Consumer-facing search engine and related services.",
+      "business_item_long_description": "Google Search and other related services provide users with access to information through a powerful search engine and associated tools. These services form a core part of Google's consumer offerings.",
+      "evidence_span": "This includes Google Search and other related services, YouTube advertising, Google Network, and Google subscriptions, platforms, and devices.",
       "evidence_validated": true,
-      "item_in_source": true
+      "item_in_source": false
     },
     {
       "segment": "Google Services",
       "business_item": "YouTube advertising",
       "business_item_short_description": "Advertising services on the YouTube platform.",
-      "business_item_long_description": "YouTube advertising involves providing ad placements on the YouTube platform, targeting consumers and advertisers. It is a key revenue source within the Google Services segment.",
-      "evidence_span": "This includes Google Search, YouTube advertising, Google Network, and Google subscriptions, platforms, and devices.",
+      "business_item_long_description": "YouTube advertising offers advertisers the ability to reach audiences through video ads on the YouTube platform. It is a significant revenue driver within the Google Services segment.",
+      "evidence_span": "This includes Google Search and other related services, YouTube advertising, Google Network, and Google subscriptions, platforms, and devices.",
       "evidence_validated": true,
       "item_in_source": false
     },
     {
       "segment": "Google Services",
       "business_item": "Google Network",
-      "business_item_short_description": "A platform for advertising and content distribution.",
-      "business_item_long_description": "Google Network encompasses platforms that facilitate advertising and content distribution across various partner sites and services. It supports the core business operations of Google Services.",
-      "evidence_span": "This includes Google Search, YouTube advertising, Google Network, and Google subscriptions, platforms, and devices.",
+      "business_item_short_description": "Advertising network services.",
+      "business_item_long_description": "Google Network provides advertising services across a network of partner sites and platforms, enabling advertisers to extend their reach beyond Google's own properties.",
+      "evidence_span": "This includes Google Search and other related services, YouTube advertising, Google Network, and Google subscriptions, platforms, and devices.",
       "evidence_validated": true,
       "item_in_source": true
     },
@@ -49,8 +49,8 @@
       "segment": "Google Services",
       "business_item": "Google subscriptions, platforms, and devices",
       "business_item_short_description": "Subscription services, platforms, and devices offered by Google.",
-      "business_item_long_description": "This category includes various subscription services, platforms, and devices provided by Google, contributing to the overall revenue and operating income of the Google Services segment.",
-      "evidence_span": "This includes Google Search, YouTube advertising, Google Network, and Google subscriptions, platforms, and devices.",
+      "business_item_long_description": "This category includes various subscription-based services, digital platforms, and hardware devices provided by Google to consumers and advertisers, contributing to the segment's revenue growth.",
+      "evidence_span": "This includes Google Search and other related services, YouTube advertising, Google Network, and Google subscriptions, platforms, and devices.",
       "evidence_validated": true,
       "item_in_source": true
     }

@@ -4,7 +4,7 @@
       "segment": "AWS",
       "business_item": "compute",
       "business_item_short_description": "On-demand compute technology services offered by AWS.",
-      "business_item_long_description": "AWS provides on-demand compute services that enable developers and enterprises to run applications and workloads efficiently. These services support a wide range of computing needs for various customers including start-ups and government agencies.",
+      "business_item_long_description": "AWS provides on-demand compute services that enable developers and enterprises to run applications and workloads efficiently. These services support a wide range of computing needs from startups to large organizations.",
       "evidence_span": "AWS serves developers and enterprises of all sizes, including start-ups, government agencies, and academic institutions, by offering a broad set of on-demand technology services such as compute, storage, database, analytics, and machine learning.",
       "evidence_validated": true,
       "item_in_source": true
@@ -13,7 +13,7 @@
       "segment": "AWS",
       "business_item": "storage",
       "business_item_short_description": "On-demand storage technology services offered by AWS.",
-      "business_item_long_description": "AWS offers on-demand storage services that allow customers to store and manage data securely and at scale. These services cater to a diverse customer base including academic institutions and enterprises.",
+      "business_item_long_description": "AWS offers scalable and secure storage services that cater to various data storage needs for developers and enterprises. These services support data management and backup solutions across different industries.",
       "evidence_span": "AWS serves developers and enterprises of all sizes, including start-ups, government agencies, and academic institutions, by offering a broad set of on-demand technology services such as compute, storage, database, analytics, and machine learning.",
       "evidence_validated": true,
       "item_in_source": true
@@ -22,7 +22,7 @@
       "segment": "AWS",
       "business_item": "database",
       "business_item_short_description": "On-demand database technology services offered by AWS.",
-      "business_item_long_description": "AWS provides database services that support the storage, retrieval, and management of data for various applications. These services are designed to meet the needs of developers, enterprises, and government agencies.",
+      "business_item_long_description": "AWS provides database services that allow users to create, manage, and scale databases efficiently. These services support various database engines and are designed for high availability and security.",
       "evidence_span": "AWS serves developers and enterprises of all sizes, including start-ups, government agencies, and academic institutions, by offering a broad set of on-demand technology services such as compute, storage, database, analytics, and machine learning.",
       "evidence_validated": true,
       "item_in_source": true
@@ -31,7 +31,7 @@
       "segment": "AWS",
       "business_item": "analytics",
       "business_item_short_description": "On-demand analytics technology services offered by AWS.",
-      "business_item_long_description": "AWS offers analytics services that help customers analyze and gain insights from their data. These services support a wide range of industries and customer types including academic institutions and start-ups.",
+      "business_item_long_description": "AWS offers analytics services that help organizations process and analyze large volumes of data to gain insights. These services support data visualization, reporting, and real-time analytics.",
       "evidence_span": "AWS serves developers and enterprises of all sizes, including start-ups, government agencies, and academic institutions, by offering a broad set of on-demand technology services such as compute, storage, database, analytics, and machine learning.",
       "evidence_validated": true,
       "item_in_source": true
@@ -40,7 +40,7 @@
       "segment": "AWS",
       "business_item": "machine learning",
       "business_item_short_description": "On-demand machine learning technology services offered by AWS.",
-      "business_item_long_description": "AWS provides machine learning services that enable customers to build, train, and deploy machine learning models at scale. These services are used by developers, enterprises, and government agencies.",
+      "business_item_long_description": "AWS provides machine learning services that enable developers and enterprises to build, train, and deploy machine learning models at scale. These services support various AI applications and workflows.",
       "evidence_span": "AWS serves developers and enterprises of all sizes, including start-ups, government agencies, and academic institutions, by offering a broad set of on-demand technology services such as compute, storage, database, analytics, and machine learning.",
       "evidence_validated": true,
       "item_in_source": true
@@ -49,7 +49,7 @@
       "segment": "AWS",
       "business_item": "sponsored ads",
       "business_item_short_description": "Advertising services offered by AWS to sellers, vendors, publishers, and authors.",
-      "business_item_long_description": "AWS offers sponsored ads as part of its advertising services, helping sellers, vendors, publishers, and authors promote their products and content. These ads are designed to increase visibility and sales through targeted advertising.",
+      "business_item_long_description": "AWS offers sponsored ads as part of its advertising services, helping sellers, vendors, publishers, and authors promote their products and content. These ads are targeted to reach relevant audiences effectively.",
       "evidence_span": "Additionally, AWS offers advertising services to sellers, vendors, publishers, and authors through sponsored ads, display, and video advertising.",
       "evidence_validated": true,
       "item_in_source": true
@@ -58,7 +58,7 @@
       "segment": "AWS",
       "business_item": "display advertising",
       "business_item_short_description": "Display advertising services offered by AWS.",
-      "business_item_long_description": "AWS provides display advertising services that allow sellers, vendors, publishers, and authors to showcase their products and content visually. This service is part of AWS's broader advertising offerings.",
+      "business_item_long_description": "AWS provides display advertising services that allow sellers, vendors, publishers, and authors to showcase their products and content visually across various platforms. This service enhances brand visibility and engagement.",
       "evidence_span": "Additionally, AWS offers advertising services to sellers, vendors, publishers, and authors through sponsored ads, display, and video advertising.",
       "evidence_validated": true,
       "item_in_source": false
@@ -67,7 +67,7 @@
       "segment": "AWS",
       "business_item": "video advertising",
       "business_item_short_description": "Video advertising services offered by AWS.",
-      "business_item_long_description": "AWS offers video advertising services to help sellers, vendors, publishers, and authors promote their content through engaging video formats. This complements other advertising services provided by AWS.",
+      "business_item_long_description": "AWS offers video advertising services that enable sellers, vendors, publishers, and authors to promote their products and content through video formats. This service helps capture audience attention and drive conversions.",
       "evidence_span": "Additionally, AWS offers advertising services to sellers, vendors, publishers, and authors through sponsored ads, display, and video advertising.",
       "evidence_validated": true,
       "item_in_source": true
@@ -75,9 +75,9 @@
     {
       "segment": "International",
       "business_item": "AWS",
-      "business_item_short_description": "Cloud services offered to developers and enterprises.",
-      "business_item_long_description": "AWS provides cloud computing services that support developers and enterprises globally. It is part of the International segment's offerings, enabling various digital and cloud-based solutions.",
-      "evidence_span": "It also serves developers and enterprises through AWS and offers programs for content creators.",
+      "business_item_short_description": "AWS serves developers and enterprises with cloud services.",
+      "business_item_long_description": "AWS offers cloud computing services to developers and enterprises, supporting their technological and operational needs. It is part of the International segment's offerings to business customers.",
+      "evidence_span": "This segment also serves developers and enterprises through AWS and offers programs for content creators.",
       "evidence_validated": true,
       "item_in_source": true
     },
@@ -86,7 +86,7 @@
       "business_item": "fast, free shipping",
       "business_item_short_description": "Fast, free shipping on tens of millions of items.",
       "business_item_long_description": "The North America segment offers fast, free shipping on tens of millions of items, ensuring quick delivery to customers. This service is a key benefit provided to customers in this region.",
-      "evidence_span": "The North America segment provides fast, free shipping on tens of millions of items, access to award-winning movies and series, live sports, and other benefits.",
+      "evidence_span": "The North America segment provides fast, free shipping on tens of millions of items",
       "evidence_validated": true,
       "item_in_source": true
     },
@@ -94,8 +94,8 @@
       "segment": "North America",
       "business_item": "award-winning movies and series",
       "business_item_short_description": "Access to award-winning movies and series.",
-      "business_item_long_description": "Customers in the North America segment have access to award-winning movies and series as part of the benefits offered. This content is part of the entertainment options available to customers.",
-      "evidence_span": "The North America segment provides fast, free shipping on tens of millions of items, access to award-winning movies and series, live sports, and other benefits.",
+      "business_item_long_description": "Customers in the North America segment have access to award-winning movies and series, enhancing the entertainment options available through Amazon's services.",
+      "evidence_span": "access to award-winning movies and series",
       "evidence_validated": true,
       "item_in_source": true
     },
@@ -103,26 +103,26 @@
       "segment": "North America",
       "business_item": "live sports",
       "business_item_short_description": "Access to live sports content.",
-      "business_item_long_description": "The North America segment includes access to live sports as one of the benefits provided to customers. This enhances the entertainment offerings available in this region.",
-      "evidence_span": "The North America segment provides fast, free shipping on tens of millions of items, access to award-winning movies and series, live sports, and other benefits.",
+      "business_item_long_description": "The segment provides customers with access to live sports, adding to the variety of entertainment and content offerings available.",
+      "evidence_span": "live sports, and other benefits",
       "evidence_validated": true,
       "item_in_source": true
     },
     {
       "segment": "North America",
-      "business_item": "North America and International fulfillment networks",
-      "business_item_short_description": "Customer orders fulfilled through North America and International fulfillment networks.",
-      "business_item_long_description": "Customer orders in the North America segment are fulfilled through both North America and International fulfillment networks. These networks support efficient order processing and delivery.",
-      "evidence_span": "Customer orders are fulfilled through North America and International fulfillment networks, co-sourced and outsourced arrangements, digital delivery, and physical stores.",
+      "business_item": "North America fulfillment networks",
+      "business_item_short_description": "Fulfillment of customer orders through North America fulfillment networks.",
+      "business_item_long_description": "Customer orders in the North America segment are fulfilled through Amazon-operated North America fulfillment networks, ensuring efficient processing and delivery.",
+      "evidence_span": "Customer orders are fulfilled through North America fulfillment networks operated by Amazon",
       "evidence_validated": true,
-      "item_in_source": true
+      "item_in_source": false
     },
     {
       "segment": "North America",
       "business_item": "digital delivery",
-      "business_item_short_description": "Customer orders fulfilled via digital delivery.",
-      "business_item_long_description": "The North America segment fulfills customer orders through digital delivery methods, enabling quick and efficient access to digital products and services.",
-      "evidence_span": "Customer orders are fulfilled through North America and International fulfillment networks, co-sourced and outsourced arrangements, digital delivery, and physical stores.",
+      "business_item_short_description": "Delivery of products through digital means.",
+      "business_item_long_description": "The segment includes digital delivery as a method to fulfill customer orders, complementing physical shipping and store options.",
+      "evidence_span": "digital delivery, and physical stores",
       "evidence_validated": true,
       "item_in_source": true
     }

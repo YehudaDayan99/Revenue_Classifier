@@ -2,34 +2,31 @@
   "rows": [
     {
       "segment": "AWS",
-      "segment_description": "AWS serves developers and enterprises of all sizes, including start-ups, government agencies, and academic institutions, by offering a broad set of on-demand technology services such as compute, storage, database, analytics, and machine learning. It also provides programs for content creators like authors, independent publishers, musicians, filmmakers, Twitch streamers, and app developers to publish and sell content. Additionally, AWS offers advertising services to sellers, vendors, publishers, and authors through sponsored ads, display, and video advertising.",
+      "segment_description": "AWS serves developers and enterprises of all sizes, including start-ups, government agencies, and academic institutions, by offering a broad set of on-demand technology services such as compute, storage, database, analytics, and machine learning. It also provides programs for content creators like authors, independent publishers, musicians, filmmakers, Twitch streamers, skill and app developers to publish and sell content. Additionally, AWS offers advertising services to sellers, vendors, publishers, and authors through sponsored ads, display, and video advertising.",
       "key_products_services": [
         "AWS",
         "sponsored ads",
         "display advertising",
         "video advertising"
       ],
-      "primary_source": "AWS text snippet and revenue items"
+      "primary_source": "AWS segment text snippet and revenue items"
     },
     {
       "segment": "International",
-      "segment_description": "The International segment includes fulfillment of customer orders through global fulfillment networks, co-sourced and outsourced arrangements, digital delivery, and physical stores. It supports sellers by enabling them to grow their businesses, sell products in Amazon stores, and fulfill orders using Amazon's services, earning fees from these seller programs. It also serves developers and enterprises through AWS and offers programs for content creators.",
+      "segment_description": "The International segment includes fulfillment of customer orders through international fulfillment networks, co-sourced and outsourced arrangements in certain countries, digital delivery, and physical stores. It supports sellers by offering programs that enable them to grow their businesses, sell products in Amazon stores, and fulfill orders using Amazon's services. This segment also serves developers and enterprises through AWS and offers programs for content creators.",
       "key_products_services": [
-        "North America",
         "International",
         "AWS"
       ],
-      "primary_source": "International text snippet and revenue items"
+      "primary_source": "International segment text snippet and revenue items"
     },
     {
       "segment": "North America",
-      "segment_description": "The North America segment provides fast, free shipping on tens of millions of items, access to award-winning movies and series, live sports, and other benefits. Customer orders are fulfilled through North America and International fulfillment networks, co-sourced and outsourced arrangements, digital delivery, and physical stores. Customer service centers operate globally to support this segment.",
+      "segment_description": "The North America segment provides fast, free shipping on tens of millions of items, access to award-winning movies and series, live sports, and other benefits. Customer orders are fulfilled through North America fulfillment networks operated by Amazon, co-sourced and outsourced arrangements, digital delivery, and physical stores. Customer service centers are also operated globally to support this segment.",
       "key_products_services": [
-        "North America",
-        "International",
-        "AWS"
+        "North America"
       ],
-      "primary_source": "North America text snippet and revenue items"
+      "primary_source": "North America segment text snippet and revenue items"
     }
   ]
 }

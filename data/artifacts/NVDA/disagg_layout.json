@@ -14,5 +14,5 @@
   "total_row_regex": "^Total revenue$",
   "exclude_row_regex": "",
   "units_multiplier": 1000000,
-  "notes": "Segment and Item columns are the same (column 0) listing business lines; year columns correspond to recent fiscal years with revenue values in millions; total row identified by exact label 'Total revenue'."
+  "notes": "Segment and Item columns are the same (column 0) with business lines; year columns correspond to recent fiscal years 2025, 2024, 2023 as indicated by 'Year Ended' headers and dates; units are in millions."
 }

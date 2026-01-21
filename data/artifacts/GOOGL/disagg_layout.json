@@ -12,5 +12,5 @@
   "total_row_regex": "(?i)^Total revenues$",
   "exclude_row_regex": "(?i)Hedging gains",
   "units_multiplier": 1000000,
-  "notes": "No explicit segment column; first column is product/item; years 2023 and 2024 identified in columns 9 and 15; total row labeled 'Total revenues'; exclude hedging gains row; units in millions."
+  "notes": "No explicit segment column; item/product in first column; years 2023 and 2024 in columns 9 and 15; total row labeled 'Total revenues'; exclude hedging gains rows."
 }

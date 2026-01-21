@@ -1,5 +1,5 @@
 {
   "table_id": "t0031",
   "confidence": 0.9,
-  "rationale": "Table t0031 disaggregates revenue by business lines including 'Family of Apps' and 'Reality Labs' and includes a 'Total revenue' row for recent fiscal years 2022, 2023, and 2024. It matches the preferred segment/product line granularity and aligns with the requested business lines."
+  "rationale": "Table t0031 disaggregates revenue by business lines including 'Family of Apps' and 'Reality Labs' and shows a 'Total revenue' row for recent fiscal years 2022, 2023, and 2024. It matches the preferred segment/product line granularity and includes total revenue, aligning well with the requested business lines."
 }
