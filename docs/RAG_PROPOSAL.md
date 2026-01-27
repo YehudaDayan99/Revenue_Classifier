@@ -1,10 +1,26 @@
 # RAG-Enhanced Revenue Line Description Extraction
 
-## Proposal for Semantic Search Integration (v2 - Revised)
+## Proposal for Semantic Search Integration (v3 - Final)
 
 **Date**: January 2026  
-**Status**: Proposal (Revised with Developer Review)  
-**Estimated Effort**: 3-4 days  
+**Status**: Approved with Modifications  
+**Estimated Effort**: 4-5 days  
+
+---
+
+## v3 Change Summary (Developer Review Response)
+
+| # | Reviewer Recommendation | Response | Rationale |
+|---|------------------------|----------|-----------|
+| 1 | TOC: detection + exclusion, not destructive regex | ✅ **Agree** | Regex is brittle across filers; tagging preserves original text for debugging |
+| 2 | DOM-based table context, not character offsets | ✅ **Agree** | Parser differences cause offset drift; DOM adjacency is semantic |
+| 3 | Multi-candidate section boundaries with density checks | ✅ **Agree** | Single-match vulnerable to TOC; body-density filters false positives |
+| 4 | Calibrated thresholds, not hard-coded | ✅ **Agree** | Score distributions vary by model/corpus; P90 noise baseline is principled |
+| 5 | Evidence coverage gate (preferred section required) | ✅ **Agree** | Prevents plausible-but-wrong from generic "compute" discussions |
+| 6 | Extractive-first product enumeration | ✅ **Agree** | LLM filters known candidates > LLM generates from scratch |
+| 7 | QA artifact per ticker | ✅ **Agree** | Regression testing is essential for maintainability |
+
+**No pushback on any point.** All recommendations improve robustness and testability.
 
 ---
 
@@ -187,54 +203,168 @@ Implement **Table-Local-First RAG** with:
 
 ## Pre-RAG Prerequisites (Fix Deterministic Bugs First)
 
-### 1. TOC Stripping
+### 1. TOC Detection (Non-Destructive)
 
-Before any chunking/embedding, strip the Table of Contents to prevent junk retrieval:
+**Change from v2**: Don't strip TOC with regex (brittle, can delete real content).
+Instead, **tag chunks as `is_toc=True`** and exclude at retrieval time.
 
 ```python
 import re
+from typing import Tuple
 
-TOC_PATTERNS = [
-    # SEC filings typically have explicit TOC markers
-    re.compile(r'TABLE\s+OF\s+CONTENTS.*?(?=PART\s+I[^V]|ITEM\s+1[^0-9])', re.IGNORECASE | re.DOTALL),
-    # Alternative: detect dense "Item N" listings
-    re.compile(r'(Item\s+\d+[A-Z]?\s*\.{2,}.*\n){5,}', re.IGNORECASE),
+# TOC detection heuristics
+TOC_INDICATORS = [
+    # Dense "Item X ... page" patterns
+    re.compile(r'Item\s+\d+[A-Z]?\s*\.{2,}\s*\d+', re.IGNORECASE),
+    # Link-heavy regions (many anchor tags per line)
+    re.compile(r'(<a\s+[^>]*href[^>]*>.*?</a>\s*){3,}', re.IGNORECASE),
+    # Page number patterns at end of lines
+    re.compile(r'\.\s*\d{1,3}\s*$', re.MULTILINE),
 ]
 
-def strip_toc(text: str) -> str:
-    """Remove Table of Contents section to prevent junk retrieval."""
-    for pattern in TOC_PATTERNS:
-        text = pattern.sub('', text)
-    return text
+def detect_toc_regions(text: str) -> list[Tuple[int, int]]:
+    """
+    Detect TOC regions by heuristics. Returns list of (start, end) char ranges.
+    
+    Heuristics:
+    1. Dense "Item X ... page" listings (>5 in close proximity)
+    2. High ratio of dotted leaders to regular text
+    3. Low paragraph density (short lines, many numbers)
+    """
+    toc_regions = []
+    
+    # Find dense Item listings
+    item_matches = list(re.finditer(
+        r'Item\s+\d+[A-Z]?\s*[\.\s]{2,}',
+        text, re.IGNORECASE
+    ))
+    
+    # If 5+ item matches within 2000 chars, mark as TOC region
+    for i, match in enumerate(item_matches):
+        if i + 4 < len(item_matches):
+            span_start = match.start()
+            span_end = item_matches[i + 4].end()
+            if span_end - span_start < 2000:
+                # Expand to include full TOC block
+                block_start = max(0, span_start - 500)
+                block_end = min(len(text), span_end + 500)
+                toc_regions.append((block_start, block_end))
+    
+    return _merge_overlapping_regions(toc_regions)
+
+
+def is_toc_chunk(chunk_text: str, char_start: int, toc_regions: list) -> bool:
+    """Check if chunk falls within a TOC region."""
+    for toc_start, toc_end in toc_regions:
+        if char_start >= toc_start and char_start < toc_end:
+            return True
+    
+    # Additional heuristic: high density of dotted leaders
+    dotted_ratio = len(re.findall(r'\.{3,}', chunk_text)) / max(1, len(chunk_text) / 100)
+    if dotted_ratio > 0.5:
+        return True
+    
+    return False
 ```
 
-### 2. Bidirectional Table-Local Context
+**Why this is better**: 
+- Non-destructive: original text intact for debugging
+- Reversible: can re-evaluate TOC detection without re-parsing
+- More robust: multiple heuristics, not single regex
 
-Current approach extracts `text[idx-800 : idx+2500]` (unidirectional). Fix to ±N chars:
+### 2. DOM-Based Table-Local Context
+
+**Change from v2**: Don't use character offsets (fragile with whitespace normalization).
+Use **DOM adjacency** to find semantically related blocks.
 
 ```python
-def build_table_local_context(
-    html_text: str,
-    table_start_char: int,
-    table_end_char: int,
-    context_chars: int = 5000
+from bs4 import BeautifulSoup, Tag
+from typing import List, Optional
+
+def build_table_local_context_dom(
+    soup: BeautifulSoup,
+    table_element: Tag,
+    sibling_blocks: int = 3
 ) -> str:
     """
-    Build bidirectional context around the accepted revenue table.
+    Build table-local context using DOM structure.
+    
+    Includes:
+    - Table caption (if present)
+    - N preceding sibling blocks (paragraphs, divs)
+    - N following sibling blocks
+    - Footnote blocks semantically tied to table
     
     Args:
-        table_start_char: Character position where table HTML starts
-        table_end_char: Character position where table HTML ends
-        context_chars: Characters to include before AND after table
+        soup: Parsed HTML document
+        table_element: The <table> tag
+        sibling_blocks: Number of sibling blocks to include each side
     
     Returns:
-        Text: [pre-context] + [table caption + footnotes] + [post-context]
+        Combined text from table context
     """
-    start = max(0, table_start_char - context_chars)
-    end = min(len(html_text), table_end_char + context_chars)
+    context_parts = []
     
-    return html_text[start:end]
+    # 1. Table caption
+    caption = table_element.find('caption')
+    if caption:
+        context_parts.append(f"[CAPTION] {caption.get_text(strip=True)}")
+    
+    # 2. Preceding siblings (headings, paragraphs)
+    preceding = []
+    for sibling in table_element.find_previous_siblings():
+        if len(preceding) >= sibling_blocks:
+            break
+        if _is_content_block(sibling):
+            preceding.append(sibling.get_text(separator=' ', strip=True))
+    
+    # Add in correct order (closest first)
+    for text in reversed(preceding):
+        context_parts.append(f"[BEFORE] {text}")
+    
+    # 3. Table content (for reference)
+    # context_parts.append(f"[TABLE] {table_element.get_text(separator=' ', strip=True)[:2000]}")
+    
+    # 4. Following siblings (footnotes often immediately after)
+    following_count = 0
+    for sibling in table_element.find_next_siblings():
+        if following_count >= sibling_blocks:
+            break
+        if _is_content_block(sibling):
+            text = sibling.get_text(separator=' ', strip=True)
+            
+            # Check if this looks like a footnote block
+            if _is_footnote_block(text):
+                context_parts.append(f"[FOOTNOTE] {text}")
+            else:
+                context_parts.append(f"[AFTER] {text}")
+            
+            following_count += 1
+    
+    return "\n\n".join(context_parts)
+
+
+def _is_content_block(element: Tag) -> bool:
+    """Check if element is a content-bearing block."""
+    if not isinstance(element, Tag):
+        return False
+    if element.name in ('p', 'div', 'span', 'td', 'section'):
+        text = element.get_text(strip=True)
+        return len(text) > 20  # Skip empty/tiny elements
+    return False
+
+
+def _is_footnote_block(text: str) -> bool:
+    """Detect if text block is a footnote definition."""
+    # Footnote patterns: (1) ..., (a) ..., [1] ...
+    footnote_pattern = re.compile(r'^\s*[\(\[]?\d+[\)\]]?\s*[A-Z]', re.MULTILINE)
+    return bool(footnote_pattern.search(text[:200]))
 ```
+
+**Why this is better**:
+- Parser-agnostic: works regardless of whitespace normalization
+- Semantic: finds actual related content, not arbitrary character windows
+- Footnote-aware: explicitly captures footnote blocks that define terms
 
 ---
 
@@ -327,22 +457,74 @@ def chunk_10k_structured(
     return chunks
 
 
-def _identify_sections(text: str) -> dict:
-    """Identify section boundaries in 10-K text."""
+def _identify_sections(text: str, toc_regions: list) -> dict:
+    """
+    Identify section boundaries with multiple-candidate detection.
+    
+    Change from v2: Don't use single-match. Find ALL candidates,
+    then select first that passes "not TOC" + "body-like density" checks.
+    """
     sections = {}
     
     for name, pattern in SECTION_PATTERNS.items():
-        match = pattern.search(text)
-        if match:
-            # Find next section start as this section's end
+        # Find ALL matches, not just first
+        candidates = list(pattern.finditer(text))
+        
+        for match in candidates:
             start = match.start()
+            
+            # Check 1: Not in TOC region
+            if _in_toc_region(start, toc_regions):
+                continue
+            
+            # Check 2: Body-like density (paragraphs, not lists)
+            window = text[start:start + 2000]
+            if not _has_body_density(window):
+                continue
+            
+            # This candidate passes checks
             end = _find_next_section_start(text, start + 100) or len(text)
             sections[name] = (start, end)
-    
-    # Add "other" for content not in identified sections
-    # (implementation simplified for clarity)
+            break  # Use first valid candidate
     
     return sections
+
+
+def _in_toc_region(char_pos: int, toc_regions: list) -> bool:
+    """Check if position falls within any TOC region."""
+    for toc_start, toc_end in toc_regions:
+        if toc_start <= char_pos < toc_end:
+            return True
+    return False
+
+
+def _has_body_density(text: str) -> bool:
+    """
+    Check if text has body-like density (paragraphs, not TOC/lists).
+    
+    Heuristics:
+    - Low ratio of dotted leaders
+    - Higher paragraph density (avg line length > 60 chars)
+    - Few page-number patterns
+    """
+    # Dotted leader ratio
+    dotted_count = len(re.findall(r'\.{3,}', text))
+    if dotted_count > 5:
+        return False
+    
+    # Average line length
+    lines = [l for l in text.split('\n') if l.strip()]
+    if lines:
+        avg_len = sum(len(l) for l in lines) / len(lines)
+        if avg_len < 40:  # Too short, likely TOC or index
+            return False
+    
+    # Page number density
+    page_nums = len(re.findall(r'\b\d{1,3}\s*$', text, re.MULTILINE))
+    if page_nums > 10:
+        return False
+    
+    return True
 
 
 def _detect_heading(chunk_text: str) -> Optional[str]:
@@ -417,16 +599,22 @@ class TwoTierIndex:
         self,
         query_embedding: List[float],
         top_k: int = 5,
-        local_threshold: float = 0.70,
-        global_threshold: float = 0.60,
+        local_threshold: float = None,  # Use calibrated value
+        global_threshold: float = None,  # Use calibrated value
         prefer_sections: List[str] = None
     ) -> Tuple[List[Chunk], List[float], str]:
         """
         Two-tier retrieval with quality controls.
         
+        Thresholds are calibrated per corpus (see ThresholdCalibrator).
+        Defaults: local=0.70, global=0.60 if not calibrated.
+        
         Returns:
             (chunks, scores, tier_used)
         """
+        # Use calibrated or default thresholds
+        local_threshold = local_threshold or self.calibrated_local_threshold or 0.70
+        global_threshold = global_threshold or self.calibrated_global_threshold or 0.60
         query = np.array([query_embedding], dtype=np.float32)
         faiss.normalize_L2(query)
         
@@ -570,7 +758,123 @@ class TwoTierIndex:
         )
 ```
 
-### 3. Rich Query Construction
+### 3. Threshold Calibration Harness
+
+**Change from v2**: Don't hard-code thresholds. Calibrate per corpus using known-good pairs.
+
+```python
+from dataclasses import dataclass
+from typing import List, Tuple
+import numpy as np
+
+@dataclass
+class CalibrationPair:
+    """Known-good query-chunk pair for calibration."""
+    ticker: str
+    query: str
+    expected_chunk_text: str  # Substring that should be in top results
+    source: str  # "footnote", "table_local", "item1", etc.
+
+# Known-good pairs from manual inspection
+CALIBRATION_PAIRS = [
+    # AMZN footnotes (should score high on table-local)
+    CalibrationPair(
+        ticker="AMZN",
+        query="AMZN FY2024 revenue line 'Online stores' products services",
+        expected_chunk_text="Includes product sales and digital media content",
+        source="footnote"
+    ),
+    CalibrationPair(
+        ticker="AMZN", 
+        query="AMZN FY2024 revenue line 'Third-party seller services'",
+        expected_chunk_text="commissions and any related fulfillment and shipping fees",
+        source="footnote"
+    ),
+    # MSFT segment note (should score high on note_segment)
+    CalibrationPair(
+        ticker="MSFT",
+        query="MSFT FY2025 revenue line 'Intelligent Cloud' products services",
+        expected_chunk_text="Azure",
+        source="note_segment"
+    ),
+    # Add more known-good pairs...
+]
+
+class ThresholdCalibrator:
+    """
+    Calibrate retrieval thresholds using known-good pairs.
+    
+    Method:
+    1. For each known-good pair, compute score of expected chunk
+    2. Compute score distribution of "noise" chunks (non-matching)
+    3. Set threshold at P90 of noise scores (allows 10% false positives)
+    """
+    
+    def calibrate(
+        self,
+        index: 'TwoTierIndex',
+        pairs: List[CalibrationPair],
+        noise_percentile: float = 90
+    ) -> Tuple[float, float]:
+        """
+        Returns (local_threshold, global_threshold).
+        """
+        local_good_scores = []
+        local_noise_scores = []
+        global_good_scores = []
+        global_noise_scores = []
+        
+        for pair in pairs:
+            query_emb = embed_query(pair.query)
+            
+            # Get all scores from both tiers
+            if index.local_index and index.local_index.ntotal > 0:
+                local_scores, local_indices = index.local_index.search(
+                    np.array([query_emb], dtype=np.float32), 
+                    index.local_index.ntotal
+                )
+                
+                for i, score in zip(local_indices[0], local_scores[0]):
+                    chunk = index.local_chunks[i]
+                    if pair.expected_chunk_text.lower() in chunk.text.lower():
+                        local_good_scores.append(score)
+                    else:
+                        local_noise_scores.append(score)
+            
+            # Similar for global index...
+            global_scores, global_indices = index.full_index.search(
+                np.array([query_emb], dtype=np.float32),
+                min(100, index.full_index.ntotal)
+            )
+            
+            for i, score in zip(global_indices[0], global_scores[0]):
+                chunk = index.full_chunks[i]
+                if pair.expected_chunk_text.lower() in chunk.text.lower():
+                    global_good_scores.append(score)
+                else:
+                    global_noise_scores.append(score)
+        
+        # Set thresholds at noise percentile
+        local_threshold = np.percentile(local_noise_scores, noise_percentile) if local_noise_scores else 0.70
+        global_threshold = np.percentile(global_noise_scores, noise_percentile) if global_noise_scores else 0.60
+        
+        # Ensure threshold doesn't exceed good scores
+        if local_good_scores:
+            local_threshold = min(local_threshold, min(local_good_scores) - 0.05)
+        if global_good_scores:
+            global_threshold = min(global_threshold, min(global_good_scores) - 0.05)
+        
+        return max(0.50, local_threshold), max(0.45, global_threshold)
+```
+
+**Why this is better**:
+- Data-driven: thresholds based on actual score distributions
+- Adaptive: can recalibrate when embedding model changes
+- Transparent: can inspect which pairs drive threshold
+
+---
+
+### 4. Rich Query Construction
 
 ```python
 def build_rag_query(
@@ -603,11 +907,19 @@ def build_rag_query(
 #        Use definitions from revenue recognition note or segment note."
 ```
 
-### 4. Auditable Generation
+### 5. Auditable Generation with Evidence Gate
+
+**Changes from v2**:
+1. Add **evidence coverage gate**: require ≥1 chunk from preferred section or table-local
+2. Add **extractive-first product enumeration**: deterministic pass before LLM
 
 ```python
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Set
+import re
+
+# Preferred sections for description extraction
+PREFERRED_SECTIONS = {'note_revenue', 'note_segment', 'item1', 'item7'}
 
 @dataclass
 class DescriptionResult:
@@ -619,6 +931,85 @@ class DescriptionResult:
     evidence_quotes: List[str]
     retrieval_tier: str  # "tier1_local" | "tier2_full" | "tier2_empty"
     validated: bool      # True if quotes verified in source
+    evidence_gate_passed: bool  # True if ≥1 chunk from preferred section
+
+
+def extract_candidate_products(chunks: List[Chunk]) -> Set[str]:
+    """
+    Extractive-first: Pull candidate product/service names from chunks
+    using deterministic patterns BEFORE LLM filtering.
+    
+    Patterns:
+    - Capitalized noun phrases (e.g., "Azure", "DGX Systems")
+    - Trademark patterns (®, ™)
+    - Model names (alphanumeric: "H100", "A100")
+    - Quoted terms
+    """
+    candidates = set()
+    
+    for chunk in chunks:
+        text = chunk.text
+        
+        # Pattern 1: Capitalized multi-word phrases (2-4 words)
+        cap_phrases = re.findall(
+            r'\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})\b',
+            text
+        )
+        candidates.update(cap_phrases)
+        
+        # Pattern 2: Trademark symbols
+        trademark = re.findall(r'(\b\w+[®™])', text)
+        candidates.update(tm.rstrip('®™') for tm in trademark)
+        
+        # Pattern 3: Product model patterns (letters + numbers)
+        models = re.findall(r'\b([A-Z]{1,4}\d{2,4}[A-Z]?)\b', text)
+        candidates.update(models)
+        
+        # Pattern 4: Quoted product names
+        quoted = re.findall(r'"([^"]{3,30})"', text)
+        candidates.update(quoted)
+        
+        # Pattern 5: "including X, Y, and Z" patterns
+        including = re.findall(
+            r'including\s+([A-Z][^,\.]{2,20}(?:,\s*[A-Z][^,\.]{2,20})*)',
+            text, re.IGNORECASE
+        )
+        for match in including:
+            items = re.split(r',\s*(?:and\s+)?', match)
+            candidates.update(i.strip() for i in items if i.strip())
+    
+    # Filter out common false positives
+    stopwords = {
+        'The', 'This', 'These', 'Our', 'We', 'Company', 'Revenue',
+        'Services', 'Products', 'Business', 'Segment', 'Total',
+        'United States', 'North America', 'International'
+    }
+    candidates = {c for c in candidates if c not in stopwords and len(c) > 2}
+    
+    return candidates
+
+
+def check_evidence_gate(
+    chunks: List[Chunk],
+    retrieval_tier: str
+) -> bool:
+    """
+    Evidence coverage gate: require ≥1 chunk from preferred section
+    OR from table-local tier.
+    
+    Prevents plausible-but-wrong narratives from generic discussions.
+    """
+    # Tier 1 (table-local) always passes
+    if retrieval_tier == "tier1_local":
+        return True
+    
+    # Tier 2: check if any chunk is from preferred section
+    for chunk in chunks:
+        if chunk.section in PREFERRED_SECTIONS:
+            return True
+    
+    return False
+
 
 def generate_description_with_evidence(
     llm: OpenAIChatClient,
@@ -631,12 +1022,13 @@ def generate_description_with_evidence(
     """
     Generate description with auditable evidence.
     
-    LLM must output:
-    - description: 1-2 sentences
-    - products_services_list: specific items mentioned
-    - evidence_chunk_ids: which chunks support the description
-    - evidence_quotes: exact quoted text
+    Process:
+    1. Check evidence gate (≥1 chunk from preferred section or table-local)
+    2. Extract candidate products deterministically
+    3. LLM filters/deduplicates candidates and generates description
+    4. Post-validate quotes exist in chunks
     """
+    # Step 0: Empty chunks
     if not chunks:
         return DescriptionResult(
             revenue_line=revenue_line,
@@ -645,8 +1037,26 @@ def generate_description_with_evidence(
             evidence_chunk_ids=[],
             evidence_quotes=[],
             retrieval_tier=retrieval_tier,
-            validated=True  # Empty is valid
+            validated=True,
+            evidence_gate_passed=False
         )
+    
+    # Step 1: Evidence gate
+    gate_passed = check_evidence_gate(chunks, retrieval_tier)
+    if not gate_passed:
+        return DescriptionResult(
+            revenue_line=revenue_line,
+            description="",
+            products_services_list=[],
+            evidence_chunk_ids=[],
+            evidence_quotes=[],
+            retrieval_tier=retrieval_tier,
+            validated=True,
+            evidence_gate_passed=False
+        )
+    
+    # Step 2: Extractive-first product candidates
+    candidate_products = extract_candidate_products(chunks)
     
     # Build context with chunk IDs
     context_parts = []
@@ -657,36 +1067,40 @@ def generate_description_with_evidence(
         )
     context = "\n\n---\n\n".join(context_parts)
     
+    # Step 3: LLM call with candidate products
     system = """You are extracting product/service descriptions from SEC 10-K filings.
 
 OUTPUT REQUIREMENTS (strict JSON):
 {
   "description": "1-2 sentences describing what this revenue line includes. Use company language.",
-  "products_services_list": ["specific", "products", "or", "services", "mentioned"],
+  "products_services_list": ["specific", "products", "services"],
   "evidence_chunk_ids": ["chunk_0001", "chunk_0042"],
-  "evidence_quotes": ["exact quoted text from chunks that support description"]
+  "evidence_quotes": ["exact quoted text supporting description"]
 }
 
 RULES:
 1. Use ONLY information from the provided chunks.
 2. Quote or closely paraphrase the company's own words.
-3. List specific products/services mentioned (e.g., "DGX systems", "Azure", not generic terms).
+3. For products_services_list: FILTER the candidate_products to keep only those 
+   that are EXPLICITLY mentioned as part of this revenue line in the chunks.
 4. Include chunk_ids for ALL chunks you used.
-5. Include EXACT quotes that support your description.
+5. Include EXACT quotes (10-50 words) that support your description.
 6. If no relevant information found, return empty strings/arrays.
-7. Do NOT hallucinate products not mentioned in the chunks."""
+7. Do NOT add products not in candidate_products unless clearly stated in chunks."""
 
     user = f"""Revenue line: {revenue_line}
 Revenue group: {revenue_group}
 
+Candidate products (filter these): {sorted(candidate_products)[:30]}
+
 Retrieved chunks from 10-K:
 {context}
 
-Extract description and evidence for "{revenue_line}"."""
+Extract description and filter products for "{revenue_line}"."""
 
     result = llm.json_call(system=system, user=user, max_output_tokens=500)
     
-    # Post-validation: verify quotes exist in chunks
+    # Step 4: Post-validation
     chunk_texts = {c.chunk_id: c.text for c in chunks}
     validated = True
     
@@ -696,8 +1110,7 @@ Extract description and evidence for "{revenue_line}"."""
             break
     
     for quote in result.get("evidence_quotes", []):
-        # Check if quote (or close variant) exists in any chunk
-        quote_lower = quote.lower()[:50]  # First 50 chars
+        quote_lower = quote.lower()[:50]
         found = any(quote_lower in c.text.lower() for c in chunks)
         if not found:
             validated = False
@@ -710,9 +1123,15 @@ Extract description and evidence for "{revenue_line}"."""
         evidence_chunk_ids=result.get("evidence_chunk_ids", []) if validated else [],
         evidence_quotes=result.get("evidence_quotes", []) if validated else [],
         retrieval_tier=retrieval_tier,
-        validated=validated
+        validated=validated,
+        evidence_gate_passed=gate_passed
     )
 ```
+
+**Why these changes are better**:
+- **Evidence gate**: Prevents "Compute capacity constraints" from risk factors being used
+- **Extractive-first**: LLM filters from known candidates, not generating from scratch
+- **Grounded**: Products must be in chunks AND pass LLM relevance check
 
 ---
 
@@ -722,9 +1141,10 @@ Extract description and evidence for "{revenue_line}"."""
 
 | Task | Rationale |
 |------|-----------|
-| CSV1 line descriptions | Narrative descriptions in Item 1/7, Notes |
-| CSV2 segment descriptions | Segment note text extraction |
+| **CSV1 line descriptions** | Narrative descriptions in Item 1/7, Notes |
 | Product/service enumeration | Lists spread across sections |
+
+> **Note**: Focus is CSV1. CSV2/CSV3 are out of scope for now.
 
 ### ❌ Do NOT Use RAG For
 
@@ -733,6 +1153,129 @@ Extract description and evidence for "{revenue_line}"."""
 | Table selection | Deterministic gating works well | `table_kind.py` |
 | Numeric extraction | Tables are structured, not semantic | Layout inference |
 | Validation | Math-based reconciliation | `validation.py` |
+
+---
+
+## CSV1 QA Artifact
+
+**New in v3**: Write per-ticker QA artifact for regression testing.
+
+```python
+from dataclasses import dataclass, asdict
+from typing import List, Dict, Optional
+from pathlib import Path
+import json
+
+@dataclass
+class CSV1DescCoverage:
+    """QA artifact for CSV1 description coverage."""
+    ticker: str
+    fiscal_year: int
+    total_lines: int
+    lines_with_description: int
+    coverage_pct: float
+    missing_labels: List[str]
+    line_details: List[Dict]  # Per-line: label, has_desc, tier, chunk_ids
+
+def write_csv1_qa_artifact(
+    ticker: str,
+    fiscal_year: int,
+    results: List[DescriptionResult],
+    output_dir: Path
+) -> CSV1DescCoverage:
+    """
+    Write csv1_desc_coverage.json for regression testing.
+    
+    Example output:
+    {
+        "ticker": "NVDA",
+        "fiscal_year": 2025,
+        "total_lines": 6,
+        "lines_with_description": 5,
+        "coverage_pct": 83.3,
+        "missing_labels": ["OEM and Other"],
+        "line_details": [
+            {
+                "revenue_line": "Compute",
+                "has_description": true,
+                "retrieval_tier": "tier2_full",
+                "evidence_gate_passed": true,
+                "top_chunk_ids": ["chunk_0142", "chunk_0143"],
+                "top_sections": ["item1", "note_segment"]
+            },
+            ...
+        ]
+    }
+    """
+    total = len(results)
+    with_desc = sum(1 for r in results if r.description)
+    missing = [r.revenue_line for r in results if not r.description]
+    
+    line_details = []
+    for r in results:
+        # Get top sections from chunk IDs
+        top_sections = list(set(
+            # Would need chunk metadata lookup in real impl
+        ))[:3]
+        
+        line_details.append({
+            "revenue_line": r.revenue_line,
+            "has_description": bool(r.description),
+            "retrieval_tier": r.retrieval_tier,
+            "evidence_gate_passed": r.evidence_gate_passed,
+            "validated": r.validated,
+            "top_chunk_ids": r.evidence_chunk_ids[:3],
+            "products_found": len(r.products_services_list),
+        })
+    
+    coverage = CSV1DescCoverage(
+        ticker=ticker,
+        fiscal_year=fiscal_year,
+        total_lines=total,
+        lines_with_description=with_desc,
+        coverage_pct=round(100 * with_desc / total, 1) if total > 0 else 0,
+        missing_labels=missing,
+        line_details=line_details
+    )
+    
+    # Write artifact
+    output_path = output_dir / f"{ticker}_csv1_desc_coverage.json"
+    output_path.write_text(json.dumps(asdict(coverage), indent=2))
+    
+    return coverage
+
+
+def run_regression_check(
+    current: CSV1DescCoverage,
+    baseline: CSV1DescCoverage
+) -> Dict:
+    """
+    Compare current run against baseline for regression.
+    
+    Returns dict with:
+    - coverage_delta: change in coverage %
+    - new_missing: labels that were covered but now missing
+    - new_covered: labels that were missing but now covered
+    """
+    baseline_covered = set(
+        d["revenue_line"] for d in baseline.line_details if d["has_description"]
+    )
+    current_covered = set(
+        d["revenue_line"] for d in current.line_details if d["has_description"]
+    )
+    
+    return {
+        "coverage_delta": current.coverage_pct - baseline.coverage_pct,
+        "new_missing": list(baseline_covered - current_covered),
+        "new_covered": list(current_covered - baseline_covered),
+        "regression": len(baseline_covered - current_covered) > 0
+    }
+```
+
+**Why this is valuable**:
+- **Regression testing**: Detect when changes break previously-working descriptions
+- **Debugging**: Know exactly which tier/chunks were used for each line
+- **Coverage tracking**: Monitor improvement over time
 
 ---
 
@@ -798,35 +1341,50 @@ FAISS binary indexes support memory-mapped loading for instant access.
 
 ---
 
-## Implementation Plan (Revised)
+## Implementation Plan (v3 - Final)
 
 ### Phase 0: Pre-RAG Fixes (Day 1 - AM)
-- [ ] Implement `strip_toc()` function
-- [ ] Implement `build_table_local_context()` with ±5000 chars
-- [ ] Add `table_start_char`, `table_end_char` tracking to table selection
+- [ ] Implement `detect_toc_regions()` with non-destructive tagging
+- [ ] Implement `is_toc_chunk()` heuristics
+- [ ] Implement `build_table_local_context_dom()` using BeautifulSoup
+- [ ] Add DOM-based table element tracking to table selection
 
 ### Phase 1: Structure-Aware Chunking (Day 1 - PM)
-- [ ] Implement `Chunk` dataclass with metadata
+- [ ] Implement `Chunk` dataclass with metadata (`section`, `heading`, `is_toc`)
 - [ ] Implement `chunk_10k_structured()` with section detection
-- [ ] Add `_identify_sections()` for Item 1/7/8, Notes
+- [ ] Implement `_identify_sections()` with multiple-candidate selection
+- [ ] Add `_has_body_density()` checks for TOC rejection
 
 ### Phase 2: Two-Tier Index (Day 2)
-- [ ] Implement `TwoTierIndex` class
-- [ ] Add FAISS binary save/load
-- [ ] Implement `retrieve()` with thresholds
-- [ ] Add MMR deduplication
+- [ ] Implement `TwoTierIndex` class with table-local + full-filing indexes
+- [ ] Add FAISS binary save/load (not JSON embeddings)
+- [ ] Implement `retrieve()` with tier fallback
+- [ ] Add MMR deduplication and section boosting
 
-### Phase 3: Rich Query & Generation (Day 3)
-- [ ] Implement `build_rag_query()` with context
-- [ ] Implement `generate_description_with_evidence()`
-- [ ] Add post-validation for evidence quotes
-- [ ] Integrate with pipeline (flag: `--use-rag`)
+### Phase 3: Threshold Calibration (Day 3 - AM)
+- [ ] Define `CalibrationPair` dataset (AMZN footnotes, MSFT notes)
+- [ ] Implement `ThresholdCalibrator` with percentile-based thresholds
+- [ ] Run calibration on known-good pairs
+- [ ] Document calibrated thresholds per embedding model
 
-### Phase 4: Testing & Tuning (Day 4)
-- [ ] Test on NVDA (hardest case)
+### Phase 4: Generation & Evidence Gate (Day 3 - PM)
+- [ ] Implement `extract_candidate_products()` (extractive-first)
+- [ ] Implement `check_evidence_gate()` (preferred section check)
+- [ ] Implement `generate_description_with_evidence()` with LLM
+- [ ] Add post-validation for quotes
+
+### Phase 5: Pipeline Integration & QA (Day 4)
+- [ ] Add `--use-rag` flag to pipeline
+- [ ] Implement `write_csv1_qa_artifact()` per ticker
+- [ ] Implement `run_regression_check()` against baseline
+- [ ] Update CSV1 output with new descriptions
+
+### Phase 6: Testing & Sign-Off (Day 5)
+- [ ] Test on NVDA (hardest case - expect 5/6 coverage)
 - [ ] Test on all 6 tickers
-- [ ] Tune thresholds (local: 0.70, global: 0.60)
 - [ ] Compare: RAG vs current vs manual
+- [ ] Document final coverage metrics
+- [ ] Create baseline artifacts for future regression
 
 ### Dependencies
 
@@ -837,17 +1395,20 @@ pip install faiss-cpu numpy
 
 ---
 
-## Risks & Mitigations (Revised)
+## Risks & Mitigations (v3)
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|------------|
-| TOC chunks retrieved | Medium | Junk descriptions | **Strip TOC before chunking** |
-| Table-local misses context | Medium | Empty tier 1 | **Fall back to tier 2** |
-| Ambiguous label retrieval | Medium | Wrong context | **Rich query with revenue group** |
-| LLM hallucinates products | Medium | Wrong items | **Evidence validation** |
+| TOC chunks retrieved | Low | Junk descriptions | **Non-destructive detection + exclusion at retrieval** |
+| DOM parsing fails | Low | Missing context | **Fallback to character-based extraction** |
+| Table-local misses context | Medium | Empty tier 1 | **Fall back to tier 2 with section filtering** |
+| Ambiguous label retrieval | Medium | Wrong context | **Rich query + evidence gate (preferred sections)** |
+| LLM hallucinates products | Low | Wrong items | **Extractive-first + evidence validation** |
+| Threshold miscalibration | Medium | Over/under retrieval | **Calibration harness with known-good pairs** |
 | Near-duplicate chunks | Low | Redundant context | **MMR deduplication** |
-| Storage grows large | Low | Disk space | **FAISS binary, not JSON** |
-| Section detection fails | Low | Wrong metadata | **Fallback to "other" section** |
+| Storage grows large | Low | Disk space | **FAISS binary, not JSON embeddings** |
+| Section detection fails | Low | Wrong metadata | **Multiple candidates + body-density checks** |
+| Regression undetected | Medium | Quality degradation | **csv1_desc_coverage.json + regression checks** |
 
 ---
 
@@ -881,18 +1442,24 @@ pip install faiss-cpu numpy
 
 ## Decision Checkpoint
 
-**Proceed with Table-Local-First RAG if**:
-- [x] Agree that TOC stripping is highest ROI fix
-- [x] Agree that two-tier retrieval balances precision/recall
-- [x] Agree that structure-aware chunking improves relevance
-- [x] Agree that auditable evidence is critical for QA
-- [ ] 3-4 day implementation effort is acceptable
-- [ ] FAISS dependency is acceptable
+**v3 Changes Accepted**:
+- [x] TOC handling: Non-destructive detection + exclusion (not regex deletion)
+- [x] Table-local context: DOM-based, not character offsets
+- [x] Section detection: Multiple candidates with body-density checks
+- [x] Thresholds: Calibrated per corpus, not hard-coded
+- [x] Evidence gate: Require ≥1 chunk from preferred section
+- [x] Product enumeration: Extractive-first, then LLM filter
+- [x] QA artifact: `csv1_desc_coverage.json` per ticker
+
+**Proceed with Implementation if**:
+- [ ] 4-5 day implementation effort is acceptable
+- [ ] FAISS + BeautifulSoup dependencies are acceptable
+- [ ] CSV1-only focus (CSV2/CSV3 deferred) is acceptable
 
 **Alternative (if RAG deferred)**:
-- Fix TOC stripping alone (+10-15% coverage)
-- Fix bidirectional context (+5-10% coverage)
-- Total: 76% → ~90% without RAG
+- Fix TOC detection alone (+10-15% coverage)
+- Fix DOM-based context (+5-10% coverage)
+- Total: 76% → ~90% without semantic search
 
 ---
 
