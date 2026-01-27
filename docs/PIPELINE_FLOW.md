@@ -1,262 +1,781 @@
-# Revenue Segmentation Pipeline
+# CSV1 Revenue Segmentation Pipeline
 
 ## Objective
 
 > **Extract, for a given company's latest 10-K fiscal year, the complete set of revenue line items that are explicitly quantified in the filing and that represent products and/or services, and map each line item to the company's reported operating/business segments, producing a dataset that (a) is traceable to evidence in the filing and (b) reconciles to total revenue under a defined reconciliation policy.**
 
-## Overview
+---
 
-This pipeline extracts revenue segmentation data from SEC 10-K filings using a combination of **LLM agents** and **deterministic extraction**. The goal is to produce structured output showing how a company's revenue breaks down by business segment and product/service line.
-
-### Design Principles
-
-1. **Evidence-based**: All extracted items must be traceable to the filing text
-2. **Products/Services only**: Adjustments (hedging, corporate) are excluded from primary output
-3. **Reconciliation**: Internal validation ensures extracted items sum to total revenue
-4. **Company language**: Descriptions use direct quotes from 10-K footnotes and text
+## Pipeline Flow Schema
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           PIPELINE FLOW                                      │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│   10-K Filing (HTML)                                                         │
-│         │                                                                    │
-│         ▼                                                                    │
-│   ┌─────────────┐     ┌──────────────┐     ┌─────────────────┐              │
-│   │   Scout     │────▶│   Discover   │────▶│  Table Select   │              │
-│   │  (extract   │     │  (identify   │     │  (find best     │              │
-│   │  headings,  │     │  segments)   │     │  revenue table) │              │
-│   │  snippets)  │     │              │     │                 │              │
-│   └─────────────┘     └──────────────┘     └────────┬────────┘              │
-│                                                      │                       │
-│         [LLM: gpt-4.1-mini - fast model]            ▼                       │
-│                              ┌─────────────────────────────────────┐        │
-│                              │         Layout Inference            │        │
-│                              │   (identify columns, rows, units)   │        │
-│                              └────────────────┬────────────────────┘        │
-│                                               │                              │
-│                                               ▼                              │
-│   ┌─────────────────────────────────────────────────────────────────┐       │
-│   │                  Deterministic Extraction                        │       │
-│   │   • Parse table grid (no LLM)                                    │       │
-│   │   • Map items to segments (using mappings.py)                    │       │
-│   │   • Extract revenue values for target fiscal year                │       │
-│   │   • Validate against table total or SEC API                      │       │
-│   └─────────────────────────────────────────────────────────────────┘       │
-│                                               │                              │
-│                                               ▼                              │
-│   ┌─────────────────────────────────────────────────────────────────┐       │
-│   │              Description Extraction (Footnotes)                  │       │
-│   │   • Extract table footnote definitions (1), (2), etc.            │       │
-│   │   • Search 400k chars for "_____" separator + footnotes          │       │
-│   │   • Fallback: LLM section search (Item 1, MD&A, Notes)           │       │
-│   └─────────────────────────────────────────────────────────────────┘       │
-│                                               │                              │
-│         [LLM: gpt-4.1 - quality model]       ▼                              │
-│   ┌─────────────┐     ┌──────────────┐     ┌─────────────────┐              │
-│   │    CSV1     │     │    CSV2      │     │     CSV3        │              │
-│   │  (revenue   │     │  (segment    │     │  (detailed      │              │
-│   │  + descrip) │     │  descrip.)   │     │   items)        │              │
-│   └─────────────┘     └──────────────┘     └─────────────────┘              │
-│                        [optional]            [optional]                      │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                          CSV1 REVENUE EXTRACTION PIPELINE                                    │
+├─────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                              │
+│   INPUT: Ticker Symbol (e.g., "MSFT")                                                       │
+│         │                                                                                    │
+│         ▼                                                                                    │
+│   ┌───────────────────────────────────────────────────────────────────────────────────────┐ │
+│   │  PHASE 1: DOCUMENT ACQUISITION                                                         │ │
+│   │  ┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐               │ │
+│   │  │  SEC EDGAR API  │─────▶│  Download 10-K  │─────▶│  Parse HTML     │               │ │
+│   │  │  (REST)         │      │  (cache to disk)│      │  (BeautifulSoup)│               │ │
+│   │  │                 │      │                 │      │                 │               │ │
+│   │  │  Rate: 10 req/s │      │  Files:         │      │  Output:        │               │ │
+│   │  │  User-Agent req │      │  - primary.htm  │      │  - Text (400k)  │               │ │
+│   │  │                 │      │  - filing_ref   │      │  - Tables []    │               │ │
+│   │  └─────────────────┘      └─────────────────┘      └────────┬────────┘               │ │
+│   └──────────────────────────────────────────────────────────────┼───────────────────────┘ │
+│                                                                   │                         │
+│   ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─│─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ │
+│                                                                   │                         │
+│   ┌───────────────────────────────────────────────────────────────▼───────────────────────┐ │
+│   │  PHASE 2: DOCUMENT UNDERSTANDING (LLM: gpt-4.1-mini)                                  │ │
+│   │                                                                                        │ │
+│   │  ┌─────────────────────────────────────────────────────────────────────────────────┐  │ │
+│   │  │  2A. SCOUT AGENT                                                                 │  │ │
+│   │  │  ┌─────────────┐     ┌─────────────────────┐     ┌─────────────────────┐        │  │ │
+│   │  │  │ Heading     │     │ Keyword Windows     │     │ Table Candidates    │        │  │ │
+│   │  │  │ Extraction  │     │ (±2500 chars)       │     │ (~80-150 tables)    │        │  │ │
+│   │  │  │             │     │                     │     │                     │        │  │ │
+│   │  │  │ Regex:      │     │ Keywords:           │     │ Each table has:     │        │  │ │
+│   │  │  │ ITEM\s*\d+  │     │ "segment"           │     │ - preview (15x10)   │        │  │ │
+│   │  │  │ NOTE\s*\d+  │     │ "disaggregation"    │     │ - numeric_ratio     │        │  │ │
+│   │  │  │             │     │ "revenue by"        │     │ - caption_text      │        │  │ │
+│   │  │  │             │     │ "net sales"         │     │ - row_label_preview │        │  │ │
+│   │  │  └─────────────┘     └─────────────────────┘     └─────────────────────┘        │  │ │
+│   │  └─────────────────────────────────────────────────────────────────────────────────┘  │ │
+│   │                                          │                                             │ │
+│   │                                          ▼                                             │ │
+│   │  ┌─────────────────────────────────────────────────────────────────────────────────┐  │ │
+│   │  │  2B. DISCOVERY AGENT (LLM Call #1)                                               │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Prompt: "What are the primary business segments/product categories for {ticker}?"│  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Output JSON:                                                                     │  │ │
+│   │  │  {                                                                                │  │ │
+│   │  │    "segments": ["Intelligent Cloud", "Productivity and Business Processes", ...], │  │ │
+│   │  │    "include_segments_optional": ["Other", "Corporate"]                            │  │ │
+│   │  │  }                                                                                │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Function: discover_primary_business_lines()                                      │  │ │
+│   │  └─────────────────────────────────────────────────────────────────────────────────┘  │ │
+│   │                                          │                                             │ │
+│   │                                          ▼                                             │ │
+│   │  ┌─────────────────────────────────────────────────────────────────────────────────┐  │ │
+│   │  │  2C. TABLE KIND GATE (Deterministic - No LLM)                                    │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Reject tables matching NEGATIVE patterns:                                        │  │ │
+│   │  │  • r"(?:unearned|deferred)\s+revenue"  → Liability tables                        │  │ │
+│   │  │  • r"remaining\s+performance\s+obligation"  → RPO tables                         │  │ │
+│   │  │  • r"lease\s+(?:liability|payment|income)"  → Lease tables                       │  │ │
+│   │  │  • r"derivative|hedge|fair\s+value"  → Financial instrument tables               │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Function: tablekind_gate() in table_kind.py                                      │  │ │
+│   │  └─────────────────────────────────────────────────────────────────────────────────┘  │ │
+│   │                                          │                                             │ │
+│   │                                          ▼                                             │ │
+│   │  ┌─────────────────────────────────────────────────────────────────────────────────┐  │ │
+│   │  │  2D. TABLE SELECTION AGENT (LLM Call #2)                                         │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Prompt: "Select the table that best disaggregates revenue by {segments}"        │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Input: Top 80 gated candidates with previews                                     │  │ │
+│   │  │  Output: { "table_id": "t0073", "confidence": 0.92, "reason": "..." }            │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Function: select_revenue_disaggregation_table()                                  │  │ │
+│   │  └─────────────────────────────────────────────────────────────────────────────────┘  │ │
+│   └────────────────────────────────────────────────────────────────────────────────────────┘ │
+│                                                                   │                         │
+│   ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─│─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ │
+│                                                                   │                         │
+│   ┌───────────────────────────────────────────────────────────────▼───────────────────────┐ │
+│   │  PHASE 3: TABLE EXTRACTION                                                            │ │
+│   │                                                                                        │ │
+│   │  ┌─────────────────────────────────────────────────────────────────────────────────┐  │ │
+│   │  │  3A. LAYOUT INFERENCE AGENT (LLM Call #3)                                        │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Prompt: "For table {id}, identify label column, year columns, units"            │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Output JSON:                                                                     │  │ │
+│   │  │  {                                                                                │  │ │
+│   │  │    "label_col": 0,                                                                │  │ │
+│   │  │    "year_cols": { "2024": 15, "2023": 17, "2022": 19 },                           │  │ │
+│   │  │    "header_rows": [0, 1],                                                         │  │ │
+│   │  │    "units_multiplier": 1000000,                                                   │  │ │
+│   │  │    "total_row_regex": "^total\\s+(?:net\\s+)?(?:revenue|sales)"                   │  │ │
+│   │  │  }                                                                                │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Function: infer_disaggregation_layout()                                          │  │ │
+│   │  └─────────────────────────────────────────────────────────────────────────────────┘  │ │
+│   │                                          │                                             │ │
+│   │                                          ▼                                             │ │
+│   │  ┌─────────────────────────────────────────────────────────────────────────────────┐  │ │
+│   │  │  3B. DETERMINISTIC EXTRACTION (No LLM)                                           │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  ┌─────────────────────────────────────────────────────────────────────────────┐│  │ │
+│   │  │  │ Step 1: Parse HTML Table to Grid                                            ││  │ │
+│   │  │  │ Function: extract_table_grid_normalized()                                   ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ Handles iXBRL quirks:                                                       ││  │ │
+│   │  │  │ • Split currency symbols: "$" in one cell, "123" in next                    ││  │ │
+│   │  │  │ • Hidden/collapsed rows (visibility: collapse)                              ││  │ │
+│   │  │  │ • Spacer columns with no data                                               ││  │ │
+│   │  │  │ • Nested tables (flattens to single grid)                                   ││  │ │
+│   │  │  └─────────────────────────────────────────────────────────────────────────────┘│  │ │
+│   │  │                                          │                                       │  │ │
+│   │  │                                          ▼                                       │  │ │
+│   │  │  ┌─────────────────────────────────────────────────────────────────────────────┐│  │ │
+│   │  │  │ Step 2: Dimension Detection                                                 ││  │ │
+│   │  │  │ Function: detect_dimension()                                                ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ Classifies table as:                                                        ││  │ │
+│   │  │  │ • "product_service" - AAPL style (iPhone, Mac, iPad, Services)              ││  │ │
+│   │  │  │ • "segment" - MSFT style (Intelligent Cloud, PBP, MPC)                      ││  │ │
+│   │  │  │ • "end_market" - NVDA style (Compute, Gaming, Automotive)                   ││  │ │
+│   │  │  │ • "revenue_source" - META style (Advertising, Other revenue)                ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ Regex patterns:                                                             ││  │ │
+│   │  │  │ • r"revenue\s+by\s+(?:product|service)" → product_service                   ││  │ │
+│   │  │  │ • r"(?:reportable\s+)?segment" → segment                                    ││  │ │
+│   │  │  │ • r"end\s+market" → end_market                                              ││  │ │
+│   │  │  └─────────────────────────────────────────────────────────────────────────────┘│  │ │
+│   │  │                                          │                                       │  │ │
+│   │  │                                          ▼                                       │  │ │
+│   │  │  ┌─────────────────────────────────────────────────────────────────────────────┐│  │ │
+│   │  │  │ Step 3: Row Classification & Value Extraction                               ││  │ │
+│   │  │  │ Function: extract_revenue_unified()                                         ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ For each row:                                                               ││  │ │
+│   │  │  │ ┌─────────────────────────────────────────────────────────────────────────┐││  │ │
+│   │  │  │ │ 1. Is it a TOTAL row?                                                   │││  │ │
+│   │  │  │ │    Regex: r"^total\s+(?:net\s+)?(?:revenue|sales)"                      │││  │ │
+│   │  │  │ │    → row_type = "total", skip from output                               │││  │ │
+│   │  │  │ │                                                                         │││  │ │
+│   │  │  │ │ 2. Is it a SUBTOTAL row?                                                │││  │ │
+│   │  │  │ │    Check is_subtotal_row() in mappings.py                               │││  │ │
+│   │  │  │ │    Examples: "Google Services total", "Google advertising"              │││  │ │
+│   │  │  │ │    → row_type = "subtotal", skip to avoid double-counting               │││  │ │
+│   │  │  │ │                                                                         │││  │ │
+│   │  │  │ │ 3. Is it an ADJUSTMENT row?                                             │││  │ │
+│   │  │  │ │    Regex: r"hedge|corporate|intersegment|elimination"                   │││  │ │
+│   │  │  │ │    → row_type = "adjustment", used for validation only                  │││  │ │
+│   │  │  │ │                                                                         │││  │ │
+│   │  │  │ │ 4. Otherwise → row_type = "revenue_item"                                │││  │ │
+│   │  │  │ │    Extract value: parse "$1,234" or "(500)" → int                       │││  │ │
+│   │  │  │ │    Apply units_multiplier: value * 1_000_000                            │││  │ │
+│   │  │  │ └─────────────────────────────────────────────────────────────────────────┘││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ Output: List[ExtractedRow] with:                                            ││  │ │
+│   │  │  │ • item: "iPhone", segment: "Product", value: 209586000000                   ││  │ │
+│   │  │  │ • row_type: "revenue_item", dimension: "product_service"                    ││  │ │
+│   │  │  └─────────────────────────────────────────────────────────────────────────────┘│  │ │
+│   │  │                                          │                                       │  │ │
+│   │  │                                          ▼                                       │  │ │
+│   │  │  ┌─────────────────────────────────────────────────────────────────────────────┐│  │ │
+│   │  │  │ Step 4: Segment Mapping                                                     ││  │ │
+│   │  │  │ Function: get_segment_for_item() in mappings.py                             ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ Maps items to Revenue Groups using company-specific dictionaries:           ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ MSFT_ITEM_TO_SEGMENT = {                                                    ││  │ │
+│   │  │  │   "LinkedIn": "Productivity and Business Processes",                        ││  │ │
+│   │  │  │   "Server products": "Intelligent Cloud",                                   ││  │ │
+│   │  │  │   "Gaming": "More Personal Computing",                                      ││  │ │
+│   │  │  │ }                                                                           ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ NVDA_ITEM_TO_SEGMENT = {                                                    ││  │ │
+│   │  │  │   "Compute": "Compute & Networking",                                        ││  │ │
+│   │  │  │   "Gaming": "Graphics",                                                     ││  │ │
+│   │  │  │ }                                                                           ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ Fallback: If no mapping, use "Product/Service disclosure"                   ││  │ │
+│   │  │  └─────────────────────────────────────────────────────────────────────────────┘│  │ │
+│   │  │                                          │                                       │  │ │
+│   │  │                                          ▼                                       │  │ │
+│   │  │  ┌─────────────────────────────────────────────────────────────────────────────┐│  │ │
+│   │  │  │ Step 5: Validation                                                          ││  │ │
+│   │  │  │ Function: validate_extraction() in extraction/validation.py                 ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ Rule: |segment_sum + adjustment_sum - reference_total| / reference_total < 2%│  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ Reference priority:                                                         ││  │ │
+│   │  │  │ 1. Table's own "Total revenue" row (self-consistent)                        ││  │ │
+│   │  │  │ 2. SEC CompanyFacts API (external validation)                               ││  │ │
+│   │  │  │    API: https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json            ││  │ │
+│   │  │  │    Field: facts.us-gaap.Revenues.units.USD[fiscal_year].val                 ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ If validation fails → retry with next-best table (max 3 attempts)           ││  │ │
+│   │  │  └─────────────────────────────────────────────────────────────────────────────┘│  │ │
+│   │  └─────────────────────────────────────────────────────────────────────────────────┘  │ │
+│   └────────────────────────────────────────────────────────────────────────────────────────┘ │
+│                                                                   │                         │
+│   ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─│─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ │
+│                                                                   │                         │
+│   ┌───────────────────────────────────────────────────────────────▼───────────────────────┐ │
+│   │  PHASE 4: DESCRIPTION EXTRACTION (LLM: gpt-4.1)                                       │ │
+│   │                                                                                        │ │
+│   │  ┌─────────────────────────────────────────────────────────────────────────────────┐  │ │
+│   │  │  OPTION A: LEGACY KEYWORD-BASED (Default)                                        │  │ │
+│   │  │  Function: describe_revenue_lines() in react_agents.py                           │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Process:                                                                         │  │ │
+│   │  │  1. FOOTNOTE EXTRACTION (first priority)                                          │  │ │
+│   │  │     • Detect marker in label: "Online stores (1)" → footnote #1                  │  │ │
+│   │  │     • Search for separator: r"_{5,}" (5+ underscores)                            │  │ │
+│   │  │     • Extract: r"\(1\)\s+([A-Z].*?)(?=\(\d+\)|$)" → footnote text                │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  2. SECTION-AWARE SEARCH (fallback)                                               │  │ │
+│   │  │     • Extract sections: Item 1 (Business), Item 7 (MD&A), Item 8 (Notes)         │  │ │
+│   │  │     • Regex: r"ITEM\s*1[^0-9A-Z].*?BUSINESS" to find boundaries                  │  │ │
+│   │  │     • Search for revenue line label in sections, extract ±2500 char window       │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  3. LLM SUMMARIZATION (LLM Call #4)                                               │  │ │
+│   │  │     • Send evidence snippets to gpt-4.1                                           │  │ │
+│   │  │     • Prompt: "Extract 1-2 sentence description using company language"          │  │ │
+│   │  │     • Output: { "rows": [{ "revenue_line": "...", "description": "..." }] }      │  │ │
+│   │  └─────────────────────────────────────────────────────────────────────────────────┘  │ │
+│   │                                                                                        │ │
+│   │                               ─── OR ───                                               │ │
+│   │                                                                                        │ │
+│   │  ┌─────────────────────────────────────────────────────────────────────────────────┐  │ │
+│   │  │  OPTION B: RAG-BASED (--use-rag flag)                                            │  │ │
+│   │  │  Module: revseg/rag/                                                              │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  ┌─────────────────────────────────────────────────────────────────────────────┐│  │ │
+│   │  │  │ 4B.1 PREPROCESSING (one-time per filing)                                    ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ a) TOC Detection (non-destructive)                                          ││  │ │
+│   │  │  │    Function: detect_toc_regions()                                           ││  │ │
+│   │  │  │    Regex: r"Item\s+\d+[A-Z]?\s*[\.\s]{2,}" (5+ in 2000 chars = TOC)         ││  │ │
+│   │  │  │    Output: chunks marked is_toc=True, excluded at retrieval                 ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ b) Section Identification                                                   ││  │ │
+│   │  │  │    Function: _identify_sections()                                           ││  │ │
+│   │  │  │    Patterns:                                                                ││  │ │
+│   │  │  │    • item1: r"ITEM\s*1[^0-9A-Z].*?BUSINESS"                                 ││  │ │
+│   │  │  │    • item7: r"ITEM\s*7[^A-Z].*?MANAGEMENT.{0,30}DISCUSSION"                 ││  │ │
+│   │  │  │    • note_segment: r"NOTE\s*\d+\s*[-–—]?\s*(SEGMENT|OPERATING)"             ││  │ │
+│   │  │  │    • note_revenue: r"NOTE\s*\d+\s*[-–—]?\s*REVENUE"                         ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ c) Structure-Aware Chunking                                                 ││  │ │
+│   │  │  │    Function: chunk_10k_structured()                                         ││  │ │
+│   │  │  │    • 800 chars per chunk, 100 char overlap                                  ││  │ │
+│   │  │  │    • Each chunk has: section, heading, char_range, is_toc                   ││  │ │
+│   │  │  │    • ~400-600 chunks per 10-K                                               ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ d) Embedding Generation                                                     ││  │ │
+│   │  │  │    API: OpenAI text-embedding-3-small (1536 dims)                           ││  │ │
+│   │  │  │    Cost: ~$0.002 per 10-K (100k tokens)                                     ││  │ │
+│   │  │  │    Function: embed_chunks() batches 100 chunks/request                      ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ e) FAISS Index Build                                                        ││  │ │
+│   │  │  │    Class: TwoTierIndex                                                      ││  │ │
+│   │  │  │    • Tier 1: table-local chunks (DOM siblings, footnotes)                   ││  │ │
+│   │  │  │    • Tier 2: full-filing chunks (~500 chunks)                               ││  │ │
+│   │  │  │    Storage: data/embeddings/{ticker}/*.faiss + metadata.json                ││  │ │
+│   │  │  └─────────────────────────────────────────────────────────────────────────────┘│  │ │
+│   │  │                                          │                                       │  │ │
+│   │  │                                          ▼                                       │  │ │
+│   │  │  ┌─────────────────────────────────────────────────────────────────────────────┐│  │ │
+│   │  │  │ 4B.2 RETRIEVAL (per revenue line)                                           ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ a) Rich Query Construction                                                  ││  │ │
+│   │  │  │    Function: build_rag_query()                                              ││  │ │
+│   │  │  │    Example: "NVIDIA (NVDA) FY2025 revenue line 'Compute' in segment         ││  │ │
+│   │  │  │             'Compute & Networking'. Products and services included.          ││  │ │
+│   │  │  │             Use definitions from revenue/segment note."                     ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ b) Two-Tier Retrieval                                                       ││  │ │
+│   │  │  │    Function: TwoTierIndex.retrieve()                                        ││  │ │
+│   │  │  │    • Tier 1: table-local, threshold=0.55, if score≥threshold → use         ││  │ │
+│   │  │  │    • Tier 2: full-filing, threshold=0.45, section boosting                  ││  │ │
+│   │  │  │      - Boost 1.15x: note_*, item1, item7, table_footnote                    ││  │ │
+│   │  │  │      - Reduce 0.75x: item1a (risk factors), liquidity                       ││  │ │
+│   │  │  │    • MMR deduplication (remove chunks with >85% text similarity)            ││  │ │
+│   │  │  │    Output: top 5 chunks with scores                                         ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ c) Evidence Gate                                                            ││  │ │
+│   │  │  │    Function: check_evidence_gate()                                          ││  │ │
+│   │  │  │    Pass if: tier1_local OR ≥1 chunk from preferred_section OR max_score≥0.55│  │ │
+│   │  │  │    Fail → return empty description (don't hallucinate)                      ││  │ │
+│   │  │  └─────────────────────────────────────────────────────────────────────────────┘│  │ │
+│   │  │                                          │                                       │  │ │
+│   │  │                                          ▼                                       │  │ │
+│   │  │  ┌─────────────────────────────────────────────────────────────────────────────┐│  │ │
+│   │  │  │ 4B.3 GENERATION (LLM Call #4)                                               ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ a) Extractive-First Products                                                ││  │ │
+│   │  │  │    Function: extract_candidate_products()                                   ││  │ │
+│   │  │  │    Deterministic patterns:                                                  ││  │ │
+│   │  │  │    • Capitalized phrases: r"\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})\b"       ││  │ │
+│   │  │  │    • Trademarks: r"(\b\w+[®™])"                                             ││  │ │
+│   │  │  │    • Model numbers: r"\b([A-Z]{1,4}\d{2,4}[A-Z]?)\b"                        ││  │ │
+│   │  │  │    • "including X, Y" patterns                                              ││  │ │
+│   │  │  │    Output: candidate set for LLM to filter                                  ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ b) LLM Generation                                                           ││  │ │
+│   │  │  │    Function: generate_description_with_evidence()                           ││  │ │
+│   │  │  │    Model: gpt-4.1                                                           ││  │ │
+│   │  │  │    Prompt: "Extract description from chunks. Filter candidate_products      ││  │ │
+│   │  │  │             to only those EXPLICITLY mentioned for this revenue line."      ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │    Output JSON:                                                             ││  │ │
+│   │  │  │    {                                                                        ││  │ │
+│   │  │  │      "description": "1-2 sentences in company language",                    ││  │ │
+│   │  │  │      "products_services_list": ["Azure", "DGX", ...],                       ││  │ │
+│   │  │  │      "evidence_chunk_ids": ["chunk_0142", "chunk_0143"],                    ││  │ │
+│   │  │  │      "evidence_quotes": ["exact text from filing"]                          ││  │ │
+│   │  │  │    }                                                                        ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ c) Post-Validation                                                          ││  │ │
+│   │  │  │    • Verify evidence_chunk_ids exist in retrieved set                       ││  │ │
+│   │  │  │    • Verify evidence_quotes[:50] found in chunk text                        ││  │ │
+│   │  │  │    • If validation fails → return empty (don't use hallucinated text)       ││  │ │
+│   │  │  └─────────────────────────────────────────────────────────────────────────────┘│  │ │
+│   │  │                                          │                                       │  │ │
+│   │  │                                          ▼                                       │  │ │
+│   │  │  ┌─────────────────────────────────────────────────────────────────────────────┐│  │ │
+│   │  │  │ 4B.4 QA ARTIFACT                                                            ││  │ │
+│   │  │  │ Function: write_csv1_qa_artifact()                                          ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ Output: data/artifacts/{ticker}/{ticker}_csv1_desc_coverage.json            ││  │ │
+│   │  │  │ {                                                                           ││  │ │
+│   │  │  │   "ticker": "NVDA",                                                         ││  │ │
+│   │  │  │   "coverage_pct": 83.3,                                                     ││  │ │
+│   │  │  │   "missing_labels": ["OEM and Other"],                                      ││  │ │
+│   │  │  │   "tier1_count": 2, "tier2_count": 3,                                       ││  │ │
+│   │  │  │   "line_details": [{ "revenue_line": "Compute", ... }]                      ││  │ │
+│   │  │  │ }                                                                           ││  │ │
+│   │  │  └─────────────────────────────────────────────────────────────────────────────┘│  │ │
+│   │  └─────────────────────────────────────────────────────────────────────────────────┘  │ │
+│   └────────────────────────────────────────────────────────────────────────────────────────┘ │
+│                                                                   │                         │
+│   ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─│─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ │
+│                                                                   │                         │
+│   ┌───────────────────────────────────────────────────────────────▼───────────────────────┐ │
+│   │  PHASE 5: OUTPUT GENERATION                                                           │ │
+│   │                                                                                        │ │
+│   │  ┌─────────────────────────────────────────────────────────────────────────────────┐  │ │
+│   │  │  5A. FOOTNOTE STRIPPING                                                          │  │ │
+│   │  │  Function: _clean_revenue_line()                                                  │  │ │
+│   │  │  Regex: r"\s*\(\d+\)\s*$"                                                         │  │ │
+│   │  │  "Online stores (1)" → "Online stores"                                            │  │ │
+│   │  └─────────────────────────────────────────────────────────────────────────────────┘  │ │
+│   │                                          │                                             │ │
+│   │                                          ▼                                             │ │
+│   │  ┌─────────────────────────────────────────────────────────────────────────────────┐  │ │
+│   │  │  5B. REVENUE GROUP ASSIGNMENT                                                    │  │ │
+│   │  │  Function: _get_revenue_group()                                                   │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Priority:                                                                        │  │ │
+│   │  │  1. Explicit mapping from mappings.py (company-specific)                         │  │ │
+│   │  │  2. If dimension="segment" → use row's segment name                              │  │ │
+│   │  │  3. Fallback → "Product/Service disclosure"                                      │  │ │
+│   │  └─────────────────────────────────────────────────────────────────────────────────┘  │ │
+│   │                                          │                                             │ │
+│   │                                          ▼                                             │ │
+│   │  ┌─────────────────────────────────────────────────────────────────────────────────┐  │ │
+│   │  │  5C. UNIT CONVERSION                                                             │  │ │
+│   │  │  Function: _to_millions()                                                         │  │ │
+│   │  │  209586000000 → 209586.0 ($ millions)                                             │  │ │
+│   │  └─────────────────────────────────────────────────────────────────────────────────┘  │ │
+│   │                                          │                                             │ │
+│   │                                          ▼                                             │ │
+│   │  ┌─────────────────────────────────────────────────────────────────────────────────┐  │ │
+│   │  │  5D. CSV1 OUTPUT                                                                 │  │ │
+│   │  │  File: data/outputs/csv1_segment_revenue.csv                                      │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Schema:                                                                          │  │ │
+│   │  │  ┌────────────────────────────────────────────────────────────────────────────┐  │  │ │
+│   │  │  │ Company Name | Ticker | Fiscal Year | Revenue Group (Reportable Segment) | │  │  │ │
+│   │  │  │ Revenue Line | Line Item description (company language) | Revenue ($m)    │  │  │ │
+│   │  │  └────────────────────────────────────────────────────────────────────────────┘  │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  Example:                                                                         │  │ │
+│   │  │  NVIDIA CORP,NVDA,2025,Compute & Networking,Compute,"The Compute revenue line    │  │ │
+│   │  │  includes data center compute platforms for accelerated computing and AI...",    │  │ │
+│   │  │  102196.0                                                                         │  │ │
+│   │  └─────────────────────────────────────────────────────────────────────────────────┘  │ │
+│   └────────────────────────────────────────────────────────────────────────────────────────┘ │
+│                                                                                              │
+└─────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Part 1: How It Works (Intuitive)
+## Part 1: Intuitive Description
 
-### The Problem
-10-K filings contain revenue data in HTML tables, but these tables vary widely:
-- Different structures (AAPL uses product categories, MSFT uses reportable segments)
-- Different locations (Item 1, Item 7, Item 8 / Notes)
-- Different formats (iXBRL with split cells, nested tables)
-- **Footnotes** contain the descriptions but appear after tables with `___` separators
+### The Challenge
 
-### The Solution: Agent-Based Approach
+SEC 10-K filings contain detailed revenue breakdowns, but extracting them is hard because:
 
-**1. Scout Agent** — Scans the document to extract:
-- Section headings (to understand document structure)
-- Text snippets containing revenue/segment keywords
-- All table candidates with metadata (location, preview, numeric density)
+1. **Varied Structures**: AAPL lists products (iPhone, Mac), MSFT lists segments (Intelligent Cloud), GOOGL lists both plus sub-categories
+2. **Hidden in Tables**: Revenue tables are buried among 80-150 tables (balance sheets, expenses, leases, derivatives)
+3. **iXBRL Complexity**: Currency symbols split across cells, hidden rows, nested tables
+4. **Descriptions in Footnotes**: "Online stores (1)" where `(1)` refers to a footnote 3000 characters away
 
-**2. Discovery Agent** — Identifies business segments:
-- Prompt asks: *"What are the primary business segments or product categories?"*
-- Returns segment names (e.g., "Intelligent Cloud", "iPhone", "Google Services")
-- Flags optional adjustment lines (e.g., "Corporate", "Hedging")
+### The Solution: Multi-Phase Agent Pipeline
 
-**3. Table Selection Agent** — Finds the best revenue table:
-- Receives ranked table candidates with previews
-- Prompt asks: *"Select the table that disaggregates revenue by these segments"*
-- Prefers granular tables (product/service level) over segment totals
-- Prefers Item 8 / Notes over Item 7 narrative
+**Phase 1: Document Acquisition**
+- Download 10-K from SEC EDGAR API (respecting 10 req/sec limit)
+- Parse HTML with BeautifulSoup, extract up to 400k chars of text
 
-**4. Layout Inference Agent** — Understands table structure:
-- Prompt asks: *"Which column has labels? Which columns have year data? What are the units?"*
-- Returns: `item_col=0, year_cols={2024: 15}, units_multiplier=1000000`
+**Phase 2: Document Understanding**
+- **Scout Agent**: Identifies document structure (headings, tables, keywords)
+- **Discovery Agent (LLM)**: Asks "What are this company's business segments?"
+- **Table Kind Gate**: Rejects wrong tables (unearned revenue, leases) using regex patterns
+- **Table Selection Agent (LLM)**: Picks the best revenue disaggregation table
 
-**5. Deterministic Extraction** — No LLM, pure code:
-- Parses the HTML table into a grid
-- Uses `mappings.py` to assign items to segments (e.g., "LinkedIn" → "Productivity and Business Processes")
-- Extracts values, handles accounting negatives `(500)`, validates totals
+**Phase 3: Table Extraction**
+- **Layout Agent (LLM)**: Determines which column has labels, which has 2024 values
+- **Deterministic Extraction**: Parses table without LLM, applies mappings, validates totals
+- No LLM guessing at numbers—pure code extraction with fallback strategies
 
-**6. Footnote Extraction** — Company-language descriptions:
-- Detects footnote markers in labels: "Online stores (1)", "AWS (2)"
-- Searches for `_____` separator followed by `(N) Includes...` pattern
-- Extracts verbatim footnote text as description
-- Fallback: LLM searches Item 1, MD&A, Notes sections
+**Phase 4: Description Extraction**
+Two options:
+- **Legacy (default)**: Search for footnote markers, extract from `_____` separator patterns
+- **RAG (--use-rag)**: Embed entire 10-K, semantic search for relevant chunks, LLM summarizes
 
-**7. Description Agents (Optional)** — Enrich with context:
-- CSV2: Summarizes each segment from bounded 10-K text
-- CSV3: Extracts detailed items with evidence validation
+**Phase 5: Output Generation**
+- Clean footnote markers ("Online stores (1)" → "Online stores")
+- Assign Revenue Groups using company mappings
+- Convert to millions, write CSV1
+
+### Key Design Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| **Deterministic extraction** | LLMs can't reliably extract numbers; use code instead |
+| **Self-consistent validation** | Compare to table's own "Total" row, not just external API |
+| **Tiered LLM models** | gpt-4.1-mini for volume (fast), gpt-4.1 for descriptions (quality) |
+| **Footnote priority** | Company's own footnote text is more accurate than LLM paraphrase |
+| **RAG optional** | Semantic search helps when footnotes aren't structured (NVDA) |
 
 ---
 
-## Part 2: Technical Details
+## Part 2: Technical Reference
 
-### Key Files
+### Key Functions by Phase
 
-| File | Purpose |
-|------|---------|
-| `pipeline.py` | Main orchestration, loops over tickers, CSV1 output |
-| `react_agents.py` | All LLM agent functions + footnote extraction |
-| `extraction/core.py` | Deterministic extraction logic |
-| `extraction/matching.py` | Fuzzy segment name matching |
-| `extraction/validation.py` | Revenue sum validation |
-| `mappings.py` | Item-to-segment mappings per company |
-| `table_candidates.py` | HTML parsing, table extraction |
-| `table_kind.py` | Deterministic gates (reject unearned revenue, etc.) |
+#### Phase 1: Document Acquisition
 
-### LLM Configuration (Tiered Approach)
+| Function | File | Description |
+|----------|------|-------------|
+| `download_latest_10k()` | `sec_edgar.py` | Downloads 10-K from SEC EDGAR |
+| `find_primary_document_html()` | `table_candidates.py` | Locates main HTML file |
+| `_html_text_for_llm()` | `pipeline.py` | Extracts text, caches result |
 
-| Task | Model | Purpose |
-|------|-------|---------|
-| Scout, Discover, Table Select, Layout | `gpt-4.1-mini` | High volume, speed |
-| Line descriptions (CSV1) | `gpt-4.1` | Quality descriptions |
-| Segment descriptions (CSV2) | `gpt-4.1` | Quality summaries |
-| Item expansion (CSV3) | `gpt-4.1` | Evidence-based extraction |
+#### Phase 2: Document Understanding
 
-### Footnote Extraction Logic
+| Function | File | Description |
+|----------|------|-------------|
+| `document_scout()` | `react_agents.py` | Extracts headings, snippets |
+| `extract_keyword_windows()` | `react_agents.py` | Finds text around keywords |
+| `discover_primary_business_lines()` | `react_agents.py` | LLM identifies segments |
+| `tablekind_gate()` | `table_kind.py` | Rejects non-revenue tables |
+| `select_revenue_disaggregation_table()` | `react_agents.py` | LLM picks best table |
 
-```
-1. Check if revenue line has footnote marker: "Online stores (1)"
-2. Find label in 10-K text, look for "_____" separator within 3000 chars
-3. Extract "(1) Includes..." pattern after separator (up to 600 chars)
-4. If not found, search Item 8 section for separator + footnotes
-5. Fallback: LLM searches Item 1 → MD&A → Notes → Full text
-```
+#### Phase 3: Table Extraction
 
-### Table Selection Logic
+| Function | File | Description |
+|----------|------|-------------|
+| `extract_table_grid_normalized()` | `react_agents.py` | Parses HTML table to grid |
+| `infer_disaggregation_layout()` | `react_agents.py` | LLM infers table structure |
+| `detect_dimension()` | `extraction/core.py` | Classifies table type |
+| `extract_revenue_unified()` | `extraction/core.py` | Extracts all rows with types |
+| `get_segment_for_item()` | `mappings.py` | Maps items to segments |
+| `validate_extraction()` | `extraction/validation.py` | Validates sum vs total |
 
-```
-1. Extract all <table> elements from HTML
-2. Score by: numeric_ratio, keyword_hits, location (Item 8 preferred)
-3. Apply negative gates (reject: unearned revenue, leases, derivatives)
-4. LLM selects best match from top 80 candidates
-5. If validation fails, retry with next-best candidate (max 3 iterations)
-```
+#### Phase 4: Description Extraction
 
-### Validation Rules
+**Legacy (default):**
 
-**Revenue Extraction (internal)**:
-```
-|segment_sum + adjustment_sum - table_total| / table_total < 2%
-```
-- Adjustments (hedging, corporate) are included for validation only
-- If no table total found, falls back to SEC CompanyFacts API
+| Function | File | Description |
+|----------|------|-------------|
+| `describe_revenue_lines()` | `react_agents.py` | Keyword search + LLM |
+| `_extract_footnote_for_label()` | `react_agents.py` | Finds footnote definitions |
+| `_extract_section()` | `react_agents.py` | Extracts Item 1/7/8 sections |
 
-**CSV3 Evidence Validation**:
-- Each item must have `evidence_span` found in source text (70%+ word match)
-- OR item name must appear in source text
-- Items failing validation are rejected and logged
+**RAG (--use-rag):**
 
-### Output Schema
+| Function | File | Description |
+|----------|------|-------------|
+| `detect_toc_regions()` | `rag/chunking.py` | Identifies TOC areas |
+| `chunk_10k_structured()` | `rag/chunking.py` | Creates chunks with metadata |
+| `embed_chunks()` | `rag/index.py` | Calls OpenAI embeddings API |
+| `TwoTierIndex.build()` | `rag/index.py` | Builds FAISS indexes |
+| `TwoTierIndex.retrieve()` | `rag/index.py` | Semantic search with boosting |
+| `check_evidence_gate()` | `rag/generation.py` | Validates chunk quality |
+| `extract_candidate_products()` | `rag/generation.py` | Deterministic product extraction |
+| `generate_description_with_evidence()` | `rag/generation.py` | LLM with evidence validation |
+| `write_csv1_qa_artifact()` | `rag/qa.py` | Writes coverage metrics |
 
-**CSV1** (primary output — revenue lines with descriptions):
-```
-Company Name, Ticker, Fiscal Year, Revenue Group (Reportable Segment), 
-Revenue Line, Line Item description (company language), Revenue ($m)
-```
+#### Phase 5: Output Generation
 
-Example row:
-```csv
-AMAZON COM INC,AMZN,2024,Product/Service disclosure,Online stores,
-"Includes product sales and digital media content where we record revenue gross...",247029.0
-```
+| Function | File | Description |
+|----------|------|-------------|
+| `_clean_revenue_line()` | `pipeline.py` | Strips footnote markers |
+| `_get_revenue_group()` | `pipeline.py` | Assigns Revenue Group |
+| `_to_millions()` | `pipeline.py` | Converts to $M |
+| `_write_csv()` | `pipeline.py` | Writes CSV file |
 
-**CSV2** (segment descriptions, optional):
-```
-Company, Ticker, Segment, Segment description, Key products/services, Primary source, Link
-```
+---
 
-**CSV3** (detailed items, optional):
-```
-Company, Ticker, Segment, Business item, Short description, Long description, Evidence span, Link
-```
+### API Usage
 
-### Adding New Companies
+| API | Endpoint | Purpose | Rate Limit |
+|-----|----------|---------|------------|
+| SEC EDGAR | `sec.gov/cgi-bin/browse-edgar` | Download 10-K filings | 10 req/sec |
+| SEC CompanyFacts | `data.sec.gov/api/xbrl/companyfacts/` | External revenue validation | 10 req/sec |
+| OpenAI Chat | `api.openai.com/v1/chat/completions` | LLM agents | 60 req/min |
+| OpenAI Embeddings | `api.openai.com/v1/embeddings` | RAG embeddings | 3000 req/min |
 
-For companies where item-to-segment mapping isn't automatic:
+---
 
-1. Add mapping to `mappings.py`:
+### LLM Configuration
+
+| Agent | Model | Tokens (in/out) | Purpose |
+|-------|-------|-----------------|---------|
+| Discovery | `gpt-4.1-mini` | ~3000/500 | Identify segments |
+| Table Selection | `gpt-4.1-mini` | ~8000/500 | Pick revenue table |
+| Layout Inference | `gpt-4.1-mini` | ~2000/500 | Understand table structure |
+| Description | `gpt-4.1` | ~4000/600 | Generate company-language descriptions |
+| RAG Generation | `gpt-4.1` | ~3000/500 | Summarize from retrieved chunks |
+
+---
+
+### Key Regex Patterns
+
+#### Table Kind Gating (`table_kind.py`)
+
 ```python
-NEWCO_ITEM_TO_SEGMENT = {
-    "Product A": "Segment 1",
-    "Product B": "Segment 2",
+STRICT_NEGATIVE_PATTERNS = [
+    re.compile(r"(?:unearned|deferred)\s+revenue", re.IGNORECASE),
+    re.compile(r"remaining\s+performance\s+obligation", re.IGNORECASE),
+    re.compile(r"contract\s+(?:liability|liabilities)", re.IGNORECASE),
+]
+
+NEGATIVE_PATTERNS = [
+    re.compile(r"lease\s+(?:liability|payment|income|asset)", re.IGNORECASE),
+    re.compile(r"derivative|hedge|fair\s+value\s+measurement", re.IGNORECASE),
+    re.compile(r"(?:accounts|notes)\s+(?:payable|receivable)", re.IGNORECASE),
+]
+```
+
+#### Dimension Detection (`extraction/core.py`)
+
+```python
+DIMENSION_PATTERNS = {
+    "product_service": [
+        re.compile(r"revenue\s+by\s+(?:product|service)", re.IGNORECASE),
+        re.compile(r"net\s+sales\s+by\s+(?:product|category)", re.IGNORECASE),
+    ],
+    "segment": [
+        re.compile(r"(?:reportable\s+)?segment", re.IGNORECASE),
+        re.compile(r"operating\s+segment", re.IGNORECASE),
+    ],
+    "end_market": [
+        re.compile(r"end\s+market", re.IGNORECASE),
+        re.compile(r"revenue\s+by\s+market", re.IGNORECASE),
+    ],
 }
 ```
 
-2. Update `get_segment_for_item()` to use it.
+#### Row Classification (`extraction/core.py`)
 
-For most companies, the LLM agents handle mapping automatically.
+```python
+TOTAL_ROW_PATTERNS = [
+    re.compile(r"^total\s+(?:net\s+)?(?:revenue|sales)", re.IGNORECASE),
+    re.compile(r"^total\s+net\s+sales", re.IGNORECASE),
+]
+
+ADJUSTMENT_PATTERNS = [
+    re.compile(r"hedge|hedging", re.IGNORECASE),
+    re.compile(r"corporate", re.IGNORECASE),
+    re.compile(r"intersegment|elimination", re.IGNORECASE),
+]
+```
+
+#### Footnote Extraction (`react_agents.py`)
+
+```python
+# Footnote marker in label
+FOOTNOTE_MARKER_RE = re.compile(r"\((\d+)\)\s*$")
+
+# Separator line (5+ underscores)
+SEPARATOR_RE = re.compile(r"_{5,}")
+
+# Footnote definition after separator
+FOOTNOTE_DEF_RE = re.compile(r"\((\d+)\)\s+([A-Z].*?)(?=\(\d+\)|$)", re.DOTALL)
+```
+
+#### TOC Detection (`rag/chunking.py`)
+
+```python
+# Dense Item listings indicate TOC
+TOC_ITEM_RE = re.compile(r"Item\s+\d+[A-Z]?\s*[\.\s]{2,}", re.IGNORECASE)
+
+# Section headers
+SECTION_PATTERNS = {
+    'item1': re.compile(r'ITEM\s*1[^0-9A-Z].*?BUSINESS', re.IGNORECASE),
+    'item7': re.compile(r'ITEM\s*7[^A-Z].*?MANAGEMENT.{0,30}DISCUSSION', re.IGNORECASE),
+    'note_segment': re.compile(r'NOTE\s*\d+\s*[-–—]?\s*(SEGMENT|OPERATING)', re.IGNORECASE),
+}
+```
+
+#### Product Extraction (`rag/generation.py`)
+
+```python
+# Capitalized multi-word phrases
+CAP_PHRASE_RE = re.compile(r'\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})\b')
+
+# Trademarks
+TRADEMARK_RE = re.compile(r'(\b\w+[®™])')
+
+# Model numbers
+MODEL_RE = re.compile(r'\b([A-Z]{1,4}\d{2,4}[A-Z]?)\b')
+
+# "including X, Y, Z" patterns
+INCLUDING_RE = re.compile(r'includ(?:es?|ing)\s+([A-Z][^,\.]{2,40})', re.IGNORECASE)
+```
+
+---
+
+### Data Structures
+
+#### ExtractedRow (`extraction/core.py`)
+
+```python
+@dataclass
+class ExtractedRow:
+    item: str           # "iPhone", "Azure"
+    segment: str        # "Product", "Intelligent Cloud"
+    value: int          # 209586000000 (base units)
+    row_type: str       # "revenue_item" | "total" | "subtotal" | "adjustment"
+    dimension: str      # "product_service" | "segment" | "end_market"
+```
+
+#### ExtractionResult (`extraction/core.py`)
+
+```python
+@dataclass
+class ExtractionResult:
+    year: int                              # 2024
+    dimension: str                         # "product_service"
+    rows: List[ExtractedRow]               # All extracted rows
+    table_total: Optional[int]             # Total from table's own row
+    segment_revenues: Dict[str, int]       # {"iPhone": 209586000000}
+    adjustment_revenues: Dict[str, int]    # {"Hedging": -1500000000}
+```
+
+#### Chunk (`rag/chunking.py`)
+
+```python
+@dataclass
+class Chunk:
+    chunk_id: str           # "chunk_0042"
+    text: str               # 800 chars of 10-K text
+    section: str            # "item1" | "note_segment" | "other"
+    heading: Optional[str]  # "Segment Information"
+    char_range: tuple       # (12000, 12800)
+    is_toc: bool           # True if in Table of Contents
+```
+
+#### DescriptionResult (`rag/generation.py`)
+
+```python
+@dataclass
+class DescriptionResult:
+    revenue_line: str              # "Compute"
+    description: str               # "1-2 sentences"
+    products_services_list: list   # ["DGX", "H100"]
+    evidence_chunk_ids: list       # ["chunk_0142"]
+    evidence_quotes: list          # ["exact text..."]
+    retrieval_tier: str            # "tier1_local" | "tier2_full"
+    validated: bool                # True if quotes verified
+    evidence_gate_passed: bool     # True if quality gate passed
+```
 
 ---
 
 ## Running the Pipeline
 
+### Basic Usage
+
 ```bash
-# Single ticker (CSV1 only - fast mode)
-python -m revseg.pipeline --tickers MSFT --out-dir data/outputs --csv1-only
+# CSV1 only (fastest)
+python -m revseg.pipeline --tickers MSFT,AAPL,GOOGL --csv1-only
 
-# Multiple tickers with all outputs
-python -m revseg.pipeline --tickers AAPL,MSFT,GOOGL --out-dir data/outputs
+# With RAG-based descriptions (better for NVDA-style filings)
+python -m revseg.pipeline --tickers MSFT,AAPL,GOOGL --csv1-only --use-rag
 
-# Custom models
-python -m revseg.pipeline --tickers AMZN --model-fast gpt-4.1-mini --model-quality gpt-4.1
+# Full output (CSV1 + CSV2 + CSV3)
+python -m revseg.pipeline --tickers MSFT,AAPL,GOOGL
 ```
 
 ### Command Line Options
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `--tickers` | (required) | Comma-separated ticker symbols |
+| `--tickers` | (required) | Comma-separated tickers |
 | `--out-dir` | `data/outputs` | Output directory |
-| `--csv1-only` | `false` | Skip CSV2/CSV3 to save tokens |
-| `--model-fast` | `gpt-4.1-mini` | Model for high-volume tasks |
-| `--model-quality` | `gpt-4.1` | Model for quality-critical tasks |
-| `--max-react-iters` | `3` | Max retries for table selection |
+| `--csv1-only` | `false` | Skip CSV2/CSV3 |
+| `--use-rag` | `false` | Use RAG for descriptions |
+| `--model-fast` | `gpt-4.1-mini` | Model for volume tasks |
+| `--model-quality` | `gpt-4.1` | Model for descriptions |
 
-### Artifacts
+### Output Files
 
-Each run produces artifacts in `data/artifacts/{TICKER}/`:
-- `scout.json` — Document structure analysis
-- `disagg_layout.json` — Inferred table layout
-- `disagg_extracted.json` — Raw extraction results
-- `csv1_line_descriptions.json` — Footnote/LLM descriptions
-- `csv2_llm.json`, `csv3_llm.json` — LLM responses (if not --csv1-only)
-- `trace.jsonl` — Full execution trace for debugging
+```
+data/
+├── outputs/
+│   ├── csv1_segment_revenue.csv      # Primary output
+│   ├── csv2_segment_descriptions.csv # (if not --csv1-only)
+│   ├── csv3_segment_items.csv        # (if not --csv1-only)
+│   └── run_report.json               # Execution summary
+├── artifacts/{ticker}/
+│   ├── scout.json                    # Document structure
+│   ├── disagg_layout.json            # Table layout
+│   ├── disagg_extracted.json         # Raw extraction
+│   ├── csv1_line_descriptions.json   # Descriptions
+│   ├── {ticker}_csv1_desc_coverage.json  # (if --use-rag)
+│   └── trace.jsonl                   # Debug trace
+└── embeddings/{ticker}/              # (if --use-rag)
+    ├── full.faiss                    # FAISS index
+    └── metadata.json                 # Chunk metadata
+```
 
 ---
 
-## Performance Characteristics
+## Performance
 
-| Ticker Count | Mode | Approx. Time | LLM Calls |
-|--------------|------|--------------|-----------|
-| 1 | csv1-only | ~20 sec | ~5 |
-| 1 | full | ~45 sec | ~8 |
-| 6 | csv1-only | ~2 min | ~30 |
-| 6 | full | ~4 min | ~48 |
+| Mode | 1 Ticker | 6 Tickers | LLM Calls |
+|------|----------|-----------|-----------|
+| `--csv1-only` | ~25 sec | ~2.5 min | ~4-5/ticker |
+| `--csv1-only --use-rag` | ~45 sec | ~4 min | ~5-6/ticker + embeddings |
+| Full | ~50 sec | ~5 min | ~8-10/ticker |
 
-*Times vary based on LLM response latency and 10-K document size.*
+### RAG Results (6 Tickers)
+
+| Ticker | Coverage | Lines | Notes |
+|--------|----------|-------|-------|
+| AAPL | 100% | 5/5 | Footnotes extracted |
+| MSFT | 100% | 10/10 | Note 18 segment descriptions |
+| GOOGL | 100% | 6/6 | MD&A + Notes |
+| AMZN | 43% | 3/7 | Some footnotes not chunked correctly |
+| META | 100% | 3/3 | Item 1 descriptions |
+| NVDA | 83% | 5/6 | Narrative style, RAG helps significantly |
+
+---
+
+## Troubleshooting
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| Wrong table selected | Gate patterns too permissive | Add patterns to `table_kind.py` |
+| Validation fails | Missing adjustment rows | Add to `is_adjustment_item()` in mappings |
+| Double-counting | Subtotal included | Add to `is_subtotal_row()` in mappings |
+| Empty descriptions | Footnotes not found | Enable `--use-rag` |
+| Low RAG coverage | Thresholds too high | Adjust in `rag/index.py` |
