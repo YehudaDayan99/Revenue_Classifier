@@ -39,6 +39,144 @@ _LABEL_EXPANSIONS: Dict[str, List[str]] = {
     "aws": ["aws", "amazon web services", "cloud services"],
 }
 
+# Patterns for identifying numeric/currency cells
+_CURRENCY_NUM_RE = re.compile(r"^[\s$€£¥(),.0-9\-]+$")
+_PURE_NUMBER_RE = re.compile(r"^[\s0-9,.\-()]+$")
+
+
+def choose_item_col(
+    grid: List[List[str]],
+    header_rows: Optional[List[int]] = None,
+    llm_proposed_col: Optional[int] = None,
+) -> Tuple[int, str]:
+    """
+    Deterministically select the best label/item column in a table grid.
+    
+    Ranks columns by:
+    1. numeric_ratio (lower = better for label column)
+    2. alpha_ratio (higher = better)
+    3. uniqueness (labels tend to be diverse)
+    4. mean string length (labels typically > 2 chars)
+    
+    Args:
+        grid: Table grid as list of lists
+        header_rows: Row indices to skip (headers)
+        llm_proposed_col: Column proposed by LLM (will validate)
+    
+    Returns:
+        (best_col_index, reason_string)
+    """
+    if not grid:
+        return (0, "empty grid, defaulting to 0")
+    
+    header_rows = set(header_rows or [])
+    
+    # Compute metrics for each column
+    col_scores = []
+    n_cols = max(len(row) for row in grid) if grid else 0
+    
+    for col_idx in range(n_cols):
+        cells = []
+        for row_idx, row in enumerate(grid):
+            if row_idx in header_rows:
+                continue
+            if col_idx < len(row):
+                cell = str(row[col_idx]).strip()
+                if cell:
+                    cells.append(cell)
+        
+        if not cells:
+            col_scores.append({
+                "col": col_idx,
+                "numeric_ratio": 1.0,
+                "alpha_ratio": 0.0,
+                "uniqueness": 0.0,
+                "mean_len": 0.0,
+                "score": -999,
+            })
+            continue
+        
+        # Metric 1: numeric_ratio (lower = better for label column)
+        numeric_count = sum(1 for c in cells if _CURRENCY_NUM_RE.match(c))
+        numeric_ratio = numeric_count / len(cells)
+        
+        # Metric 2: alpha_ratio (contains letters, higher = better)
+        alpha_count = sum(1 for c in cells if any(ch.isalpha() for ch in c))
+        alpha_ratio = alpha_count / len(cells)
+        
+        # Metric 3: uniqueness (unique values / total, higher = better for labels)
+        unique_values = len(set(c.lower() for c in cells))
+        uniqueness = unique_values / len(cells) if cells else 0
+        
+        # Metric 4: mean string length (labels tend to be longer than numbers)
+        mean_len = sum(len(c) for c in cells) / len(cells) if cells else 0
+        
+        # Combined score: 
+        # - Penalize high numeric_ratio heavily (-5x weight)
+        # - Reward alpha_ratio (+3x weight)
+        # - Reward uniqueness slightly (+1x weight)
+        # - Reward reasonable length (+0.05x weight)
+        score = (-5 * numeric_ratio) + (3 * alpha_ratio) + (1 * uniqueness) + (0.05 * mean_len)
+        
+        col_scores.append({
+            "col": col_idx,
+            "numeric_ratio": round(numeric_ratio, 3),
+            "alpha_ratio": round(alpha_ratio, 3),
+            "uniqueness": round(uniqueness, 3),
+            "mean_len": round(mean_len, 1),
+            "score": round(score, 3),
+        })
+    
+    if not col_scores:
+        return (0, "no columns found, defaulting to 0")
+    
+    # Sort by score descending
+    col_scores.sort(key=lambda x: x["score"], reverse=True)
+    heuristic_best = col_scores[0]
+    
+    # Validate LLM's proposed column
+    if llm_proposed_col is not None and 0 <= llm_proposed_col < len(col_scores):
+        llm_col_data = next((c for c in col_scores if c["col"] == llm_proposed_col), None)
+        
+        if llm_col_data:
+            # Accept LLM choice if:
+            # 1. numeric_ratio < 0.5 (not mostly numbers)
+            # 2. alpha_ratio > 0.3 (has some text)
+            if llm_col_data["numeric_ratio"] < 0.5 and llm_col_data["alpha_ratio"] > 0.3:
+                return (llm_proposed_col, f"LLM choice validated (num={llm_col_data['numeric_ratio']}, alpha={llm_col_data['alpha_ratio']})")
+            else:
+                # LLM choice failed validation, override with heuristic best
+                return (
+                    heuristic_best["col"],
+                    f"LLM col {llm_proposed_col} OVERRIDDEN (num={llm_col_data['numeric_ratio']:.2f}, alpha={llm_col_data['alpha_ratio']:.2f}) → col {heuristic_best['col']} (score={heuristic_best['score']:.2f})"
+                )
+    
+    # No LLM proposal or invalid index, use heuristic
+    return (heuristic_best["col"], f"heuristic best (score={heuristic_best['score']:.2f})")
+
+
+def validate_extracted_labels(labels: List[str], threshold: float = 0.5) -> Tuple[bool, str]:
+    """
+    Validate that extracted revenue line labels are not mostly numeric/currency.
+    
+    Args:
+        labels: List of extracted revenue line labels
+        threshold: Maximum allowed ratio of numeric labels (default 50%)
+    
+    Returns:
+        (is_valid, reason)
+    """
+    if not labels:
+        return (False, "no labels extracted")
+    
+    numeric_count = sum(1 for label in labels if _CURRENCY_NUM_RE.match(label.strip()))
+    numeric_ratio = numeric_count / len(labels)
+    
+    if numeric_ratio > threshold:
+        return (False, f"FAIL: {numeric_ratio*100:.0f}% of labels are numeric/currency (threshold: {threshold*100:.0f}%)")
+    
+    return (True, f"OK: {numeric_ratio*100:.0f}% numeric labels")
+
 
 def _clean(s: str) -> str:
     return _WS_RE.sub(" ", (s or "").strip())
@@ -100,6 +238,389 @@ def _expand_search_terms(label: str) -> List[str]:
 
 # Pattern to extract footnote markers from labels like "Online stores (1)"
 _FOOTNOTE_MARKER_RE = re.compile(r'\((\d+)\)\s*$')
+
+
+# ========================================================================
+# Fix A: Accounting/driver sentence filter
+# ========================================================================
+_ACCOUNTING_DENY_PATTERNS = [
+    # Revenue recognition / accounting language
+    r"\bperformance obligation\b",
+    r"\bstand-alone selling price\b",
+    r"\bssp\b",
+    r"\ballocated\b",
+    r"\brecognized\b",
+    r"\bdeferred\b",
+    r"\bamortization\b",
+    r"\bcontract liabilit",
+    r"\bunearned\b",
+    r"\bASC\s+\d",
+    r"\bGAAP\b",
+    r"\brevenue recognition\b",
+    # Reporting mechanics
+    r"\brecord revenue\b",
+    r"\bgross\b.*\bnet of\b",
+    r"\bconsolidated\b",
+    r"\breclassification\b",
+    # Table/reference mechanics
+    r"\bsee note\b",
+    r"\brefer to\b",
+    r"\bin the table\b",
+    r"\bas shown\b",
+    # Performance drivers (MD&A-style) - we want product definitions, not performance
+    r"\bincreased due to\b",
+    r"\bdecreased due to\b",
+    r"\bprimarily due to\b",
+    r"\bhigher sales of\b",
+    r"\blower sales of\b",
+    r"\bdriven by\b",
+    r"\bprimarily driven\b",
+    r"\bcompared to\b.*\bprior\b",
+    r"\byear over year\b",
+    r"\bfrom a year ago\b",
+]
+_ACCOUNTING_DENY_RE = re.compile("|".join(_ACCOUNTING_DENY_PATTERNS), re.IGNORECASE)
+
+
+def strip_accounting_sentences(text: str) -> str:
+    """
+    Remove sentences containing accounting/regulatory or performance driver language.
+    
+    This ensures descriptions focus on WHAT the product/service IS,
+    not HOW it performed or accounting treatment.
+    """
+    if not text:
+        return ""
+    
+    # Split into sentences (handling abbreviations like "Inc.")
+    sentences = re.split(r'(?<=[.!?])\s+(?=[A-Z])', text)
+    clean_sentences = []
+    
+    for sentence in sentences:
+        if not _ACCOUNTING_DENY_RE.search(sentence):
+            clean_sentences.append(sentence)
+    
+    result = " ".join(clean_sentences).strip()
+    return result
+
+
+# ========================================================================
+# P0: Heading-based definition extraction (AAPL Services fix)
+# ========================================================================
+def _extract_heading_based_definition(
+    html_text: str,
+    label: str,
+    section_text: Optional[str] = None,
+) -> Optional[str]:
+    """
+    Extract definition for a label that appears as a heading in Item 1.
+    
+    For Apple-style 10-Ks where products/services have dedicated headings
+    (e.g., <b>Services</b>, <strong>iPhone</strong>) followed by descriptive paragraphs.
+    
+    Phase 3 enhancement: For parent headings like "Services" that have subheadings
+    (Advertising, AppleCare, etc.), aggregate ALL child content until a true
+    peer heading (another major product category like "iPhone", "Mac").
+    
+    Strategy:
+    1. Find label as a HEADING (bold/strong/h1-h3 tag)
+    2. Identify known major section headings (peer headings to stop at)
+    3. Continue collecting content past child subheadings
+    4. Stop only at a peer heading or max chars
+    5. Apply accounting sentence filter
+    
+    Args:
+        html_text: Full HTML text of the filing
+        label: Revenue line label to find (e.g., "Services", "iPhone")
+        section_text: Optional pre-extracted section (Item 1) to search within
+        
+    Returns:
+        Definition text if found, None otherwise
+    """
+    # Use section_text if provided, otherwise search full HTML
+    search_text = section_text if section_text else html_text
+    if not search_text:
+        return None
+    
+    # Escape label for regex (handle special chars)
+    label_escaped = re.escape(label.strip())
+    
+    # Known major product/service headings (peer level) - used to stop aggregation
+    # These are typically the top-level revenue line items
+    PEER_HEADINGS = {
+        'iphone', 'mac', 'ipad', 'services', 'wearables', 'home', 'accessories',
+        'wearables, home and accessories', 'products', 'total net sales',
+        # Generic peer markers
+        'item 2', 'item 3', 'business', 'properties', 'legal proceedings',
+    }
+    
+    # Known child subheadings (not peer level) - continue past these
+    # These are subsections within a major category
+    CHILD_SUBHEADINGS = {
+        'advertising', 'apple care', 'applecare', 'cloud services', 
+        'digital content', 'payment services', 'other services',
+        'app store', 'apple music', 'apple tv+', 'apple arcade', 'apple news+',
+        'apple fitness+', 'icloud', 'apple card', 'apple pay',
+    }
+    
+    heading_tags = ['b', 'strong', 'h1', 'h2', 'h3', 'h4']
+    
+    for tag in heading_tags:
+        pattern = rf'<{tag}[^>]*>\s*{label_escaped}\s*</{tag}>'
+        match = re.search(pattern, search_text, re.IGNORECASE)
+        
+        if match:
+            start_pos = match.end()
+            remaining_text = search_text[start_pos:]
+            
+            # Pattern to find ANY heading (we'll check if it's peer or child)
+            any_heading_pattern = rf'<(?:{"|".join(heading_tags)})[^>]*>([A-Z][^<]{{1,100}})</(?:{"|".join(heading_tags)})>'
+            
+            # Find ALL headings in the remaining text
+            content_end = len(remaining_text)
+            max_content = 15000  # Allow up to 15k chars for parent sections with subsections
+            
+            for heading_match in re.finditer(any_heading_pattern, remaining_text[:max_content], re.IGNORECASE):
+                heading_text = heading_match.group(1).strip().lower()
+                
+                # Check if this is a peer heading (stop point)
+                is_peer = heading_text in PEER_HEADINGS
+                # Also treat it as peer if it's a different major product (single capitalized word > 3 chars)
+                # that's NOT in the child list
+                is_major_section = (
+                    len(heading_text.split()) <= 2 and  # Short heading (1-2 words)
+                    heading_text not in CHILD_SUBHEADINGS and
+                    heading_text != label.strip().lower() and  # Not the label itself
+                    heading_match.start() > 200  # Must be at least 200 chars in
+                )
+                
+                if is_peer or is_major_section:
+                    content_end = heading_match.start()
+                    break
+            
+            # Extract content
+            content = remaining_text[:min(content_end, max_content)]
+            
+            # Parse HTML to extract clean text
+            try:
+                soup = BeautifulSoup(content, 'lxml')
+                text_content = soup.get_text(separator=' ', strip=True)
+            except Exception:
+                text_content = re.sub(r'<[^>]+>', ' ', content)
+            
+            # Clean and filter
+            cleaned = _clean(text_content)
+            filtered = strip_accounting_sentences(cleaned)
+            
+            if filtered and len(filtered) >= 50:
+                # For parent sections with subsections, allow longer descriptions
+                # but still summarize to key sentences
+                sentences = re.split(r'(?<=[.!?])\s+(?=[A-Z])', filtered)
+                if len(sentences) > 6:
+                    # Take first 6 sentences for comprehensive summary
+                    filtered = ' '.join(sentences[:6])
+                return filtered[:1500]  # Increased cap for parent sections
+    
+    # Also try finding the label in a slightly different format:
+    # Sometimes it's: <span style="font-weight:bold">Services</span>
+    bold_style_pattern = rf'<[^>]*(?:font-weight\s*:\s*bold|font-weight\s*:\s*700)[^>]*>\s*{label_escaped}\s*</[^>]+>'
+    match = re.search(bold_style_pattern, search_text, re.IGNORECASE)
+    
+    if match:
+        start_pos = match.end()
+        content = search_text[start_pos:start_pos + 8000]
+        
+        # Fix: Strip leading orphan closing tags (like </div></span>) that confuse BS4
+        # These occur because we start extraction after the opening tag's closing >
+        content = re.sub(r'^(?:</\w+>)+\s*', '', content)
+        
+        try:
+            soup = BeautifulSoup(content, 'lxml')
+            text_content = soup.get_text(separator=' ', strip=True)
+        except Exception:
+            text_content = re.sub(r'<[^>]+>', ' ', content)
+        
+        cleaned = _clean(text_content)
+        filtered = strip_accounting_sentences(cleaned)
+        
+        if filtered and len(filtered) >= 50:
+            sentences = re.split(r'(?<=[.!?])\s+(?=[A-Z])', filtered)
+            if len(sentences) > 6:
+                filtered = ' '.join(sentences[:6])
+            return filtered[:1500]
+    
+    return None
+
+
+# ========================================================================
+# Phase 2: DOM-based table-local context and footnote extraction
+# ========================================================================
+def build_table_local_context_dom(table_elem, html: str, n_siblings: int = 5) -> str:
+    """
+    Build table-local context using DOM adjacency for robust footnote extraction.
+    
+    This addresses the issue where footnote markers/parentheses are split across 
+    HTML tags, making regex on raw HTML unreliable.
+    
+    Strategy:
+    1. Get the table element
+    2. Collect preceding sibling blocks (for captions/headers)
+    3. Collect following sibling blocks (where footnotes typically appear)
+    4. Return normalized text using get_text()
+    
+    Args:
+        table_elem: BeautifulSoup table element
+        html: Full HTML string (used as fallback)
+        n_siblings: Number of sibling elements to collect on each side
+        
+    Returns:
+        Normalized text from table-local context
+    """
+    if table_elem is None:
+        return ""
+    
+    parts = []
+    
+    # Collect preceding siblings (captions, headers)
+    preceding = []
+    sibling = table_elem.find_previous_sibling()
+    count = 0
+    while sibling and count < n_siblings:
+        if sibling.name in ('div', 'p', 'span', 'td', 'tr', 'table'):
+            text = sibling.get_text(" ", strip=True)
+            if text and len(text) < 5000:  # Skip very long blocks
+                preceding.append(text)
+        sibling = sibling.find_previous_sibling()
+        count += 1
+    
+    # Reverse to maintain order
+    for text in reversed(preceding):
+        parts.append(text)
+    
+    # Get table text
+    table_text = table_elem.get_text(" ", strip=True)
+    parts.append(table_text)
+    
+    # Collect following siblings (footnotes typically appear here)
+    sibling = table_elem.find_next_sibling()
+    count = 0
+    while sibling and count < n_siblings:
+        if sibling.name in ('div', 'p', 'span', 'td', 'tr', 'table'):
+            text = sibling.get_text(" ", strip=True)
+            if text and len(text) < 5000:
+                parts.append(text)
+                # Check for footnote separator pattern (end of footnote area)
+                if '___' in text and count > 2:
+                    break
+        sibling = sibling.find_next_sibling()
+        count += 1
+    
+    return "\n".join(parts)
+
+
+def extract_footnotes_from_dom_context(table_elem, html: str) -> Dict[str, str]:
+    """
+    Extract footnote definitions from table-local context using DOM + normalized text.
+    
+    This is more robust than regex on raw HTML because it handles:
+    - Footnote markers split across tags
+    - Whitespace normalization
+    - iXBRL tag complexity
+    
+    Args:
+        table_elem: BeautifulSoup table element
+        html: Full HTML string
+        
+    Returns:
+        Dict mapping footnote number to definition text
+    """
+    # Build normalized text from table-local context
+    context_text = build_table_local_context_dom(table_elem, html)
+    
+    if not context_text:
+        return {}
+    
+    # Extract footnotes from normalized text
+    return _extract_footnotes_from_text(context_text, prioritize_includes=True)
+
+
+# ========================================================================
+# Fix D: Extract footnote IDs from table DOM (handles iXBRL superscripts)
+# ========================================================================
+def extract_footnote_ids_from_table(table_elem) -> Dict[str, List[str]]:
+    """
+    Extract footnote IDs from table row labels using DOM parsing.
+    
+    This handles iXBRL HTML where superscripts (<sup>) or anchors (<a>) 
+    are used for footnote markers but get stripped during text extraction.
+    
+    Args:
+        table_elem: BeautifulSoup table element
+        
+    Returns:
+        Dict mapping row label text → list of footnote IDs found in that cell
+        e.g. {"Online stores": ["1"], "Third-party seller services": ["3"]}
+    """
+    if table_elem is None:
+        return {}
+    
+    label_to_footnotes: Dict[str, List[str]] = {}
+    
+    for row in table_elem.find_all("tr"):
+        cells = row.find_all(["td", "th"])
+        if not cells:
+            continue
+        
+        # First non-empty cell is typically the label
+        label_cell = None
+        for cell in cells:
+            text = cell.get_text(strip=True)
+            if text and len(text) > 1:  # Skip empty or single-char cells
+                label_cell = cell
+                break
+        
+        if not label_cell:
+            continue
+        
+        # Get clean label text (without footnote markers)
+        label_text = label_cell.get_text(strip=True)
+        # Remove trailing footnote markers from text
+        label_clean = _FOOTNOTE_MARKER_RE.sub('', label_text).strip()
+        
+        # Find footnote markers in DOM: <sup>, <a>, ix:footnoteReference
+        footnote_ids: List[str] = []
+        
+        # Check <sup> tags
+        for sup in label_cell.find_all("sup"):
+            fn_id = sup.get_text(strip=True)
+            if fn_id and (fn_id.isdigit() or fn_id in "123456789"):
+                footnote_ids.append(fn_id)
+        
+        # Check <a> anchors with href like "#footnote_1"
+        for anchor in label_cell.find_all("a"):
+            href = anchor.get("href", "")
+            anchor_text = anchor.get_text(strip=True)
+            # href="#fn_1" or anchor text is a number
+            if anchor_text and anchor_text.isdigit():
+                footnote_ids.append(anchor_text)
+            elif "#" in href:
+                # Extract number from href like #footnote_1, #fn1, etc.
+                fn_match = re.search(r'(\d+)', href)
+                if fn_match:
+                    footnote_ids.append(fn_match.group(1))
+        
+        # Check for ix:footnoteReference (iXBRL specific)
+        for fn_ref in label_cell.find_all(lambda tag: 'footnote' in tag.name.lower()):
+            ref_text = fn_ref.get_text(strip=True)
+            if ref_text and ref_text.isdigit():
+                footnote_ids.append(ref_text)
+        
+        if label_clean and footnote_ids:
+            # Deduplicate while preserving order
+            unique_ids = list(dict.fromkeys(footnote_ids))
+            label_to_footnotes[label_clean] = unique_ids
+    
+    return label_to_footnotes
 
 
 def _extract_footnotes_from_text(text: str, prioritize_includes: bool = True) -> Dict[str, str]:
@@ -1380,21 +1901,38 @@ def describe_revenue_lines(
     revenue_lines: List[Dict[str, Any]],
     table_context: Dict[str, str],
     html_text: str,
+    html_raw: Optional[str] = None,
     max_chars_per_line: int = 5000,
+    footnote_id_map: Optional[Dict[str, List[str]]] = None,
+    dom_footnotes: Optional[Dict[str, str]] = None,
 ) -> Dict[str, Any]:
     """
     Generate company-language descriptions for each revenue line.
     
-    Enhanced with section-aware priority search:
-    1. Item 1 Business (primary source for product/service descriptions)
-    2. MD&A (Item 7) - management discussion
-    3. Notes to Financial Statements (Item 8)
-    4. Full text fallback
+    Enhanced with:
+    - DOM-based footnote ID recovery (handles iXBRL superscripts)
+    - Phase 2: DOM-based footnote extraction using normalized text
+    - Phase 3: Raw HTML for heading extraction (html_text is plain text!)
+    - Section-aware priority search (Item 1 > Item 8; MD&A excluded)
+    - Accounting/driver sentence filtering
+    
+    Priority for evidence:
+    1. DOM-extracted footnotes (highest priority - most reliable for AMZN-style)
+    2. Table footnotes from regex (fallback)
+    3. Heading-based extraction in Item 1 (AAPL-style product descriptions)
+    4. Notes to Financial Statements (Item 8, if definitional)
+    5. Full text fallback
+    
+    NOTE: MD&A (Item 7) is intentionally excluded - it contains performance
+    drivers ("increased due to...") not product definitions.
     
     Args:
         revenue_lines: List of dicts with 'item' (revenue line label) and 'value'
         table_context: Dict with 'caption', 'heading', 'nearby_text' from accepted table
-        html_text: Full filing text for evidence retrieval
+        html_text: Full filing text for evidence retrieval (plain text, tags removed)
+        html_raw: Raw HTML for heading extraction (Phase 3 - keeps tags for pattern matching)
+        footnote_id_map: Optional dict from DOM extraction mapping labels to footnote IDs
+        dom_footnotes: Optional dict from Phase 2 DOM-based extraction mapping footnote IDs to definitions
         
     Returns:
         Dict with 'rows' containing line descriptions
@@ -1409,26 +1947,87 @@ def describe_revenue_lines(
         table_context.get("nearby_text", ""),
     ])
     
-    # STEP 1: Try to extract footnote definitions for lines with footnote markers
-    # This is the most reliable source for AMZN-style disclosures
+    # Initialize optional parameters
+    if footnote_id_map is None:
+        footnote_id_map = {}
+    if dom_footnotes is None:
+        dom_footnotes = {}
+    
+    # Phase 4: Track provenance for each description
+    # Structure: {item_label: {"description": str, "source": str, "evidence_snippet": str, "footnote_id": str|None}}
+    provenance: Dict[str, Dict[str, Any]] = {}
+    
+    # STEP 1: Try to extract footnote definitions
+    # Priority: DOM-extracted > regex table-local > regex full-text
     footnote_descriptions: Dict[str, str] = {}
+    
+    # Phase 2: Use DOM-extracted footnotes as highest priority
+    # These are extracted using normalized text (get_text()) which handles split tags
+    all_footnotes = dict(dom_footnotes)  # Start with DOM footnotes
+    
+    # Fallback: Also extract via regex (less reliable but catches some cases)
+    regex_footnotes = _extract_footnotes_from_text(html_text)
+    table_context_footnotes = _extract_footnotes_from_text(table_context_text)
+    
+    # Merge, preferring DOM > table-context > full-text
+    for fn_id, fn_text in regex_footnotes.items():
+        if fn_id not in all_footnotes:
+            all_footnotes[fn_id] = fn_text
+    for fn_id, fn_text in table_context_footnotes.items():
+        if fn_id not in all_footnotes or len(fn_text) > len(all_footnotes.get(fn_id, "")):
+            all_footnotes[fn_id] = fn_text
+    
     for line_info in revenue_lines:
         item_label = line_info.get("item", "")
         if not item_label:
             continue
         
-        footnote_desc = _extract_footnote_for_label(item_label, html_text, table_context_text)
-        if footnote_desc:
-            footnote_descriptions[item_label] = footnote_desc
+        # Clean label for lookup (remove existing markers)
+        label_clean = _FOOTNOTE_MARKER_RE.sub('', item_label).strip()
+        
+        # Approach A: Check DOM-extracted footnote IDs (handles iXBRL superscripts)
+        fn_ids = footnote_id_map.get(label_clean, [])
+        if not fn_ids:
+            fn_ids = footnote_id_map.get(item_label, [])
+        
+        for fn_id in fn_ids:
+            if fn_id in all_footnotes:
+                desc = strip_accounting_sentences(all_footnotes[fn_id])
+                if desc and len(desc) >= 20:
+                    footnote_descriptions[item_label] = desc
+                    # Phase 4: Record provenance
+                    provenance[item_label] = {
+                        "description": desc,
+                        "source": "table_footnote_dom",
+                        "evidence_snippet": all_footnotes[fn_id][:500],
+                        "footnote_id": fn_id,
+                    }
+                    break
+        
+        # Approach B: Fall back to regex detection if not found via DOM
+        if item_label not in footnote_descriptions:
+            footnote_desc = _extract_footnote_for_label(item_label, html_text, table_context_text)
+            if footnote_desc:
+                desc = strip_accounting_sentences(footnote_desc)
+                if desc and len(desc) >= 20:
+                    footnote_descriptions[item_label] = desc
+                    # Phase 4: Record provenance
+                    fn_match = _FOOTNOTE_MARKER_RE.search(item_label)
+                    provenance[item_label] = {
+                        "description": desc,
+                        "source": "table_footnote_regex",
+                        "evidence_snippet": footnote_desc[:500],
+                        "footnote_id": fn_match.group(1) if fn_match else None,
+                    }
     
-    # Lines that still need LLM-based description extraction
-    lines_needing_llm = [
+    # Lines that still need description extraction (not found in footnotes)
+    lines_needing_more = [
         line_info for line_info in revenue_lines
         if line_info.get("item", "") not in footnote_descriptions
     ]
     
-    # If we got footnotes for all lines, skip LLM entirely
-    if not lines_needing_llm:
+    # If we got footnotes for all lines, skip further extraction
+    if not lines_needing_more:
         return {
             "rows": [
                 {"revenue_line": line_info.get("item", ""), "description": footnote_descriptions.get(line_info.get("item", ""), "")}
@@ -1436,16 +2035,76 @@ def describe_revenue_lines(
             ]
         }
     
+    # STEP 1.5: Heading-based extraction for AAPL Services-style labels
+    # This handles cases where the label is a heading in Item 1 Business
+    # (e.g., <b>Services</b> followed by subsection descriptions)
+    # Phase 3 fix: Use html_raw (raw HTML with tags) for heading extraction
+    #              html_text is plain text with tags removed - can't match heading patterns!
+    search_html = html_raw if html_raw else html_text
+    item1_section = _extract_section(search_html, _ITEM1_RE, max_chars=80000)
+    
+    heading_descriptions: Dict[str, str] = {}
+    for line_info in lines_needing_more:
+        item_label = line_info.get("item", "")
+        if not item_label:
+            continue
+        
+        # Clean label (remove footnote markers like "(1)")
+        label_clean = _FOOTNOTE_MARKER_RE.sub('', item_label).strip()
+        
+        # Try heading-based extraction in Item 1 (most reliable for product definitions)
+        # First try with section, then fallback to full HTML if not found
+        heading_desc = _extract_heading_based_definition(search_html, label_clean, item1_section)
+        source_section = "item1" if item1_section and heading_desc else None
+        
+        # If not found in section, try full HTML (handles styled spans outside Item 1)
+        if not heading_desc:
+            heading_desc = _extract_heading_based_definition(search_html, label_clean, None)
+            source_section = "html_heading" if heading_desc else None
+        
+        if heading_desc and len(heading_desc) >= 50:
+            heading_descriptions[item_label] = heading_desc
+            # Phase 4: Record provenance for heading-based extraction
+            provenance[item_label] = {
+                "description": heading_desc,
+                "source": f"heading_based_{source_section}" if source_section else "heading_based",
+                "evidence_snippet": heading_desc[:500],
+                "footnote_id": None,
+            }
+            print(f"[heading-based] Found definition for '{label_clean}': {heading_desc[:80]}...", flush=True)
+    
+    # Merge: footnotes take priority, then headings
+    for item, desc in heading_descriptions.items():
+        if item not in footnote_descriptions:
+            footnote_descriptions[item] = desc
+    
+    # Lines that still need LLM-based description extraction
+    lines_needing_llm = [
+        line_info for line_info in revenue_lines
+        if line_info.get("item", "") not in footnote_descriptions
+    ]
+    
+    # If we now have all descriptions, skip LLM
+    if not lines_needing_llm:
+        return {
+            "rows": [
+                {"revenue_line": line_info.get("item", ""), "description": footnote_descriptions.get(line_info.get("item", ""), "")}
+                for line_info in revenue_lines
+            ],
+            "provenance": provenance,  # Phase 4: Include provenance
+        }
+    
     # STEP 2: Section-aware search for remaining lines
     # Pre-extract major sections for priority search
-    item1_section = _extract_section(html_text, _ITEM1_RE, max_chars=80000)
-    item7_section = _extract_section(html_text, _ITEM7_RE, max_chars=80000)
+    # NOTE: Item 7 (MD&A) is intentionally EXCLUDED - it contains performance
+    # drivers ("increased/decreased due to...") not product definitions.
+    # item1_section already extracted above
     item8_section = _extract_section(html_text, _ITEM8_RE, max_chars=80000)
     
-    # Priority order: Item 1 → MD&A → Notes → Full text
+    # Priority order: Item 1 (Business) → Item 8 (Notes) → Full text
+    # MD&A (Item 7) excluded as it contains drivers, not definitions
     sections_priority = [
         ("item1", item1_section),
-        ("item7", item7_section),
         ("item8", item8_section),
         ("full", html_text),
     ]
@@ -1513,14 +2172,21 @@ def describe_revenue_lines(
     
     if lines_needing_llm and evidence_by_line:
         system = (
-            "You are extracting product/service descriptions from SEC 10-K filings.\n\n"
+            "You are extracting product/service DEFINITIONS from SEC 10-K filings.\n\n"
             "CRITICAL RULES:\n"
-            "1. Use ONLY company language from the provided evidence text.\n"
-            "2. Each description should be 1-2 sentences explaining what the revenue line includes.\n"
-            "3. Quote or closely paraphrase the company's own words.\n"
-            "4. Focus on the [ITEM1] and [ITEM7] sections which contain business descriptions.\n"
-            "5. If no description is found in the evidence, return an empty string.\n"
-            "6. Do NOT invent or infer descriptions not present in the text.\n\n"
+            "1. Describe WHAT the product/service IS, not how it performed.\n"
+            "2. Use company language from the evidence text.\n"
+            "3. Each description should be 1-2 sentences explaining what the revenue line includes.\n"
+            "4. PREFER definitions that look like:\n"
+            "   - 'X is the Company's line of...'\n"
+            "   - 'Includes...'\n"
+            "   - 'Provides...services such as...'\n"
+            "5. EXCLUDE the following - return empty string if only this type of text is found:\n"
+            "   - Accounting language: 'recognized', 'deferred', 'amortization', 'performance obligation'\n"
+            "   - Performance drivers: 'increased due to', 'decreased due to', 'primarily driven by'\n"
+            "   - YoY comparisons: 'compared to prior year', 'from a year ago'\n"
+            "6. If no product/service definition is found, return an empty string.\n"
+            "7. Do NOT invent or infer descriptions.\n\n"
             "Output STRICT JSON ONLY."
         )
         
@@ -1539,10 +2205,11 @@ def describe_revenue_lines(
                 "fiscal_year": fiscal_year,
                 "revenue_lines": lines_data,
                 "instructions": (
-                    "For each revenue_line, extract a description from evidence_text using company language. "
-                    "Priority sources: [ITEM1] for business descriptions, [ITEM7] for MD&A context, [TABLE CONTEXT] for footnotes. "
-                    "Focus on what products/services are included in this revenue category. "
-                    "If the evidence doesn't describe this line, return empty string."
+                    "For each revenue_line, extract a PRODUCT/SERVICE DEFINITION from evidence_text. "
+                    "Priority: [TABLE CONTEXT] for footnote definitions, [ITEM1] for business descriptions. "
+                    "Focus on WHAT the product/service IS and WHAT IT INCLUDES. "
+                    "EXCLUDE performance commentary ('increased due to...') and accounting language. "
+                    "If only performance/accounting text is found, return empty string."
                 ),
                 "output_schema": {
                     "rows": [
@@ -1564,13 +2231,35 @@ def describe_revenue_lines(
                 line = row.get("revenue_line", "")
                 desc = row.get("description", "")
                 if line:
-                    llm_descriptions[line] = desc
+                    # Apply accounting sentence filter to LLM output
+                    filtered_desc = strip_accounting_sentences(desc)
+                    llm_descriptions[line] = filtered_desc
+                    
+                    # Phase 4: Record provenance for LLM-extracted descriptions
+                    if filtered_desc and line not in provenance:
+                        evidence = evidence_by_line.get(line, "")
+                        # Determine source section from evidence markers
+                        source = "llm_section_search"
+                        if "[ITEM1]" in evidence:
+                            source = "llm_item1"
+                        elif "[ITEM8]" in evidence:
+                            source = "llm_item8"
+                        elif "[TABLE CONTEXT]" in evidence:
+                            source = "llm_table_context"
+                        
+                        provenance[line] = {
+                            "description": filtered_desc,
+                            "source": source,
+                            "evidence_snippet": evidence[:500],
+                            "footnote_id": None,
+                        }
                 
         except Exception as e:
             print(f"[{ticker}] Warning: describe_revenue_lines LLM call failed: {e}", flush=True)
     
     # STEP 3: Merge footnote descriptions with LLM descriptions
     # Footnote descriptions take priority (they are direct quotes from the filing)
+    # Both have already been filtered by strip_accounting_sentences()
     output_rows = []
     for line_info in revenue_lines:
         item = line_info.get("item", "")
@@ -1581,5 +2270,8 @@ def describe_revenue_lines(
             "description": description,
         })
     
-    return {"rows": output_rows}
+    return {
+        "rows": output_rows,
+        "provenance": provenance,  # Phase 4: Include provenance
+    }
 

@@ -1,0 +1,24 @@
+{
+  "tickers": {
+    "AAPL": {
+      "ok": true,
+      "errors": [],
+      "artifacts_dir": "C:\\Users\\yehud\\Business Classification\\data\\artifacts\\AAPL",
+      "html_path": "C:\\Users\\yehud\\Business Classification\\data\\10k\\AAPL\\2025-10-31_000032019325000079\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+      "income_statement_table_id_guess": "t0037",
+      "segment_year": 2025,
+      "n_segments": 5,
+      "validation": {
+        "ok": true,
+        "table_total": 416161000000,
+        "segment_sum": 416161000000,
+        "adjustment_sum": 0,
+        "external_total": null,
+        "delta_pct": 0.0,
+        "notes": "OK: matches table total within 0.00%"
+      }
+    }
+  },
+  "outputs_dir": "C:\\Users\\yehud\\Business Classification\\data\\outputs_phase3_test"
+}

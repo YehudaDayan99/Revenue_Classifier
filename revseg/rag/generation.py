@@ -21,6 +21,9 @@ from .index import TwoTierIndex, embed_query, PREFERRED_SECTIONS
 if TYPE_CHECKING:
     from revseg.llm_client import OpenAIChatClient
 
+# Import accounting sentence filter from react_agents
+from revseg.react_agents import strip_accounting_sentences
+
 
 @dataclass
 class DescriptionResult:
@@ -117,6 +120,19 @@ def extract_candidate_products(chunks: List[Chunk]) -> Set[str]:
         'AND', 'THE', 'FOR', 'FROM', 'WITH', 'THAT', 'HAVE', 'HAS',
         'WAS', 'WERE', 'BEEN', 'BEING', 'WILL', 'WOULD', 'COULD',
     }
+    
+    # Accounting terms to exclude (would confuse the LLM)
+    accounting_stopwords = {
+        'SSP', 'ASC', 'GAAP', 'ASU', 'IFRS', 'US', 'USD',
+        'Allocation', 'Recognition', 'Deferred', 'Amortization',
+        'Performance', 'Obligation', 'Contract', 'Liability',
+        'Principal', 'Agent', 'Transfer', 'Control', 'Price',
+        'Transaction', 'Variable', 'Consideration', 'Timing',
+        'Recognized', 'Recognizes', 'Accounting', 'Policy',
+        'Measurement', 'Fair', 'Value', 'Standard',
+    }
+    stopwords.update(accounting_stopwords)
+    
     candidates = {c for c in candidates if c not in stopwords and len(c) > 2}
     
     return candidates
@@ -230,25 +246,37 @@ def generate_description_with_evidence(
     context = "\n\n---\n\n".join(context_parts)
     
     # Step 3: LLM call with candidate products
-    system = """You are extracting product/service descriptions from SEC 10-K filings.
+    system = """You are extracting product/service DEFINITIONS from SEC 10-K filings.
 
 OUTPUT REQUIREMENTS (strict JSON):
 {
-  "description": "1-2 sentences describing what this revenue line includes. Use company language.",
+  "description": "1-2 sentences describing WHAT this revenue line IS and INCLUDES. Use company language.",
   "products_services_list": ["specific", "products", "services"],
   "evidence_chunk_ids": ["chunk_0001", "chunk_0042"],
   "evidence_quotes": ["exact quoted text supporting description"]
 }
 
-RULES:
-1. Use ONLY information from the provided chunks.
-2. Quote or closely paraphrase the company's own words.
-3. For products_services_list: FILTER the candidate_products to keep only those 
+CRITICAL RULES:
+1. Describe WHAT the product/service IS, not how it performed.
+2. Use ONLY information from the provided chunks.
+3. Quote or closely paraphrase the company's own words.
+
+4. EXCLUDE the following (return empty if only this type of text is found):
+   - Revenue recognition mechanics: "recognized when", "performance obligation", "control transfers"
+   - Accounting terms: "SSP", "ASC", "GAAP", "principal/agent", "transaction price", "allocation"
+   - Performance drivers: "increased due to", "decreased due to", "driven by", "year over year"
+   - Contract terms: "contract liability", "deferred", "unearned"
+
+5. PREFER text that uses definitional verbs:
+   - "consists of", "includes", "comprises", "provides", "offerings"
+   - "products such as", "services including"
+
+6. For products_services_list: FILTER the candidate_products to keep only those 
    that are EXPLICITLY mentioned as part of this revenue line in the chunks.
-4. Include chunk_ids for ALL chunks you used.
-5. Include EXACT quotes (10-50 words) that support your description.
-6. If no relevant information found, return empty strings/arrays.
-7. Do NOT add products not in candidate_products unless clearly stated in chunks."""
+7. Include chunk_ids for ALL chunks you used.
+8. Include EXACT quotes (10-50 words) that support your description.
+9. If no relevant definitional information found, return empty strings/arrays.
+10. Do NOT add products not in candidate_products unless clearly stated in chunks."""
 
     # Limit candidates to avoid prompt overflow
     sorted_candidates = sorted(candidate_products)[:40]
@@ -295,9 +323,18 @@ Extract description and filter products for "{revenue_line}"."""
             validated = False
             break
     
+    # Step 5: Apply accounting sentence filter to remove any remaining accounting/driver language
+    raw_description = result.get("description", "") if validated else ""
+    filtered_description = strip_accounting_sentences(raw_description) if raw_description else ""
+    
+    # If filter removes all content, return empty (description was only accounting text)
+    if raw_description and not filtered_description:
+        print(f"[RAG] Description for '{revenue_line}' was filtered out (only accounting/driver text)")
+        filtered_description = ""
+    
     return DescriptionResult(
         revenue_line=revenue_line,
-        description=result.get("description", "") if validated else "",
+        description=filtered_description,
         products_services_list=result.get("products_services_list", []) if validated else [],
         evidence_chunk_ids=result.get("evidence_chunk_ids", []) if validated else [],
         evidence_quotes=result.get("evidence_quotes", []) if validated else [],
@@ -333,10 +370,63 @@ def build_rag_query(
     if table_caption:
         query_parts.append(f"Table: {table_caption}")
     
-    query_parts.append("products and services included")
-    query_parts.append("revenue recognition segment note")
+    # Focus on definitional terms that indicate "what it is" content
+    # Key pattern: "[Label]. [Label] consists of..." - this is the definition sentence
+    query_parts.append(f'"{revenue_line} consists of" "{revenue_line} includes"')
+    query_parts.append("products and services offerings generated from")
     
     return " ".join(query_parts)
+
+
+# Definition patterns for post-retrieval boosting
+_DEFINITION_BOOST_PATTERNS = [
+    re.compile(r'\bconsists?\s+of\b', re.IGNORECASE),
+    re.compile(r'\bincludes?\b', re.IGNORECASE),
+    re.compile(r'\bcomprises?\b', re.IGNORECASE),
+    re.compile(r'\bgenerat(?:es?|ed)\s+from\b', re.IGNORECASE),
+    re.compile(r'\bprovides?\s+(?:products?|services?)\b', re.IGNORECASE),
+    re.compile(r'\bsales?\s+of\b', re.IGNORECASE),
+]
+
+
+def _boost_definitional_chunks(
+    chunks: List[Chunk],
+    scores: List[float],
+    label: str,
+    boost_factor: float = 1.25
+) -> Tuple[List[Chunk], List[float]]:
+    """
+    Re-rank chunks by boosting those with BOTH the label AND a definition pattern.
+    
+    This addresses the META "Other revenue" problem where semantic search returns
+    chunks that mention "other revenue" in tables/performance text but not the
+    actual definition "Other revenue consists of WhatsApp Business Platform...".
+    """
+    if not chunks:
+        return chunks, scores
+    
+    label_lower = label.lower()
+    boosted = []
+    
+    for chunk, score in zip(chunks, scores):
+        text_lower = chunk.text.lower()
+        
+        # Check if chunk contains the exact label
+        has_label = label_lower in text_lower
+        
+        # Check if chunk has a definition pattern
+        has_definition = any(p.search(chunk.text) for p in _DEFINITION_BOOST_PATTERNS)
+        
+        # Boost if both conditions are met
+        if has_label and has_definition:
+            boosted.append((chunk, score * boost_factor))
+        else:
+            boosted.append((chunk, score))
+    
+    # Re-sort by boosted score
+    boosted.sort(key=lambda x: -x[1])
+    
+    return [c for c, _ in boosted], [s for _, s in boosted]
 
 
 def describe_revenue_lines_rag(
@@ -398,8 +488,20 @@ def describe_revenue_lines_rag(
             ))
             continue
         
-        # Retrieve chunks
-        chunks, scores, tier = index.retrieve(query_embedding, top_k=5)
+        # Retrieve chunks (over-fetch then boost+filter)
+        chunks, scores, tier = index.retrieve(query_embedding, top_k=10)
+        
+        # P1: Post-retrieval boost for definitional chunks
+        # This addresses generic labels like "Other revenue" where the definition
+        # chunk may have lower raw semantic score than table/performance mentions
+        chunks, scores = _boost_definitional_chunks(chunks, scores, item_label)
+        
+        # Trim to top_k after boosting
+        chunks = chunks[:5]
+        scores = scores[:5]
+        
+        # Optional debug: uncomment to see what's being retrieved
+        # print(f"[RAG DEBUG] {item_label}: {len(chunks)} chunks (tier={tier}), top={scores[0]:.3f}" if chunks else f"[RAG DEBUG] {item_label}: NO CHUNKS")
         
         # Generate description
         result = generate_description_with_evidence(

@@ -12,5 +12,5 @@
   "total_row_regex": "(?i)^total net sales$",
   "exclude_row_regex": "",
   "units_multiplier": 1000000,
-  "notes": "No separate segment column; first column is product/item; year columns are recent fiscal years 2025, 2024, 2023; total row identified by 'Total net sales' label; units in millions."
+  "notes": "No separate segment column; item column is first column with product names; year columns correspond to recent fiscal years 2025, 2024, 2023; total row identified by 'Total net sales' label; units in millions."
 }

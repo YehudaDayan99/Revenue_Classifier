@@ -2,5 +2,5 @@
   "table_id": "t0069",
   "confidence": 0.95,
   "selected_dimension": "product_service",
-  "rationale": "This table disaggregates revenue by product/service lines including Online stores, Physical stores, Third-party seller services, Subscription services, Advertising services, AWS, Other, and includes a Consolidated total revenue row. It matches the preferred product/service dimension for Amazon and contains recent fiscal years (2023, 2024). It is more granular than segment-level tables and includes total revenue, fulfilling all critical constraints."
+  "rationale": "This table disaggregates Amazon's revenue by product and service lines including Online stores, Physical stores, Third-party seller services, Subscription services, Advertising services, AWS, and Other, and includes a Consolidated total revenue row. It matches the preferred product/service dimension and provides recent fiscal years (2023, 2024). It is more granular than segment-only tables and aligns with the preferred disaggregation criteria."
 }

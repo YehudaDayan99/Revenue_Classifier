@@ -17,12 +17,10 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0207",
-        "chunk_0261",
-        "chunk_0262"
+        "chunk_0200"
       ],
-      "products_found": 1,
-      "description_preview": "iPhone revenue includes net sales from Apple's iPhone products, with increases in 2025 primarily due"
+      "products_found": 5,
+      "description_preview": "iPhone revenue consists of sales of Apple's iPhone line of smartphones, including various models suc"
     },
     {
       "revenue_line": "Mac",
@@ -31,10 +29,10 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0200"
+        "chunk_0035"
       ],
-      "products_found": 2,
-      "description_preview": "The Mac revenue line includes net sales from the Company's line of Mac computers, such as MacBook Pr"
+      "products_found": 7,
+      "description_preview": "Mac is the Company’s line of personal computers based on its macOS operating system, which includes "
     },
     {
       "revenue_line": "iPad",
@@ -43,10 +41,11 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0208"
+        "chunk_0208",
+        "chunk_0200"
       ],
-      "products_found": 1,
-      "description_preview": "The iPad revenue line includes net sales from various iPad models, with increases in 2025 primarily "
+      "products_found": 4,
+      "description_preview": "iPad net sales include revenue from the sale of iPad devices, including models such as iPad Air, iPa"
     },
     {
       "revenue_line": "Wearables, Home and Accessories",
@@ -55,10 +54,10 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0208"
+        "chunk_0036"
       ],
-      "products_found": 2,
-      "description_preview": "Wearables, Home and Accessories net sales include revenue from Apple's wearable devices, home produc"
+      "products_found": 8,
+      "description_preview": "Wearables, Home and Accessories consists of Apple's line of wireless headphones (including AirPods, "
     },
     {
       "revenue_line": "Services (1)",
@@ -71,8 +70,8 @@
         "chunk_0207",
         "chunk_0209"
       ],
-      "products_found": 2,
-      "description_preview": "Services net sales include amortization of the deferred value of services bundled in the sales price"
+      "products_found": 1,
+      "description_preview": "Services also include revenue from advertising, the App Store, and cloud services."
     }
   ]
 }

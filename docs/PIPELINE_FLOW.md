@@ -221,19 +221,33 @@
 │   │  │  Function: describe_revenue_lines() in react_agents.py                           │  │ │
 │   │  │                                                                                   │  │ │
 │   │  │  Process:                                                                         │  │ │
-│   │  │  1. FOOTNOTE EXTRACTION (first priority)                                          │  │ │
-│   │  │     • Detect marker in label: "Online stores (1)" → footnote #1                  │  │ │
+│   │  │  1. DOM-BASED FOOTNOTE ID RECOVERY (new - handles iXBRL)                          │  │ │
+│   │  │     • Function: extract_footnote_ids_from_table()                                │  │ │
+│   │  │     • Parse <sup>, <a> tags in table cells to recover footnote markers           │  │ │
+│   │  │     • Maps: {"Online stores": ["1"], "AWS": ["3"]}                               │  │ │
+│   │  │     • Solves: AMZN footnotes lost during text extraction                         │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  2. FOOTNOTE EXTRACTION (first priority)                                          │  │ │
+│   │  │     • Use DOM-recovered IDs OR regex marker: "Online stores (1)"                 │  │ │
 │   │  │     • Search for separator: r"_{5,}" (5+ underscores)                            │  │ │
-│   │  │     • Extract: r"\(1\)\s+([A-Z].*?)(?=\(\d+\)|$)" → footnote text                │  │ │
+│   │  │     • Extract: r"\(1\)\s+(Includes|Consists|Represents.*?)(?=\(\d+\)|$)"         │  │ │
+│   │  │     • Apply: strip_accounting_sentences() to remove accounting language          │  │ │
 │   │  │                                                                                   │  │ │
-│   │  │  2. SECTION-AWARE SEARCH (fallback)                                               │  │ │
-│   │  │     • Extract sections: Item 1 (Business), Item 7 (MD&A), Item 8 (Notes)         │  │ │
-│   │  │     • Regex: r"ITEM\s*1[^0-9A-Z].*?BUSINESS" to find boundaries                  │  │ │
-│   │  │     • Search for revenue line label in sections, extract ±2500 char window       │  │ │
+│   │  │  3. SECTION-AWARE SEARCH (fallback)                                               │  │ │
+│   │  │     • Priority: Item 1 (Business) → Item 8 (Notes) → Full text                   │  │ │
+│   │  │     • NOTE: Item 7 (MD&A) EXCLUDED - contains performance drivers not definitions│  │ │
+│   │  │     • Search for revenue line label, extract ±2500 char window                   │  │ │
 │   │  │                                                                                   │  │ │
-│   │  │  3. LLM SUMMARIZATION (LLM Call #4)                                               │  │ │
-│   │  │     • Send evidence snippets to gpt-4.1                                           │  │ │
-│   │  │     • Prompt: "Extract 1-2 sentence description using company language"          │  │ │
+│   │  │  4. ACCOUNTING SENTENCE FILTER (new)                                              │  │ │
+│   │  │     • Function: strip_accounting_sentences()                                      │  │ │
+│   │  │     • Removes sentences with: "recognized", "deferred", "amortization",          │  │ │
+│   │  │       "performance obligation", "increased due to", "driven by", etc.            │  │ │
+│   │  │     • Applied to: footnote text + LLM output                                     │  │ │
+│   │  │                                                                                   │  │ │
+│   │  │  5. LLM SUMMARIZATION (LLM Call #4)                                               │  │ │
+│   │  │     • Model: gpt-4.1                                                              │  │ │
+│   │  │     • Prompt: "Extract PRODUCT/SERVICE DEFINITION. Describe WHAT IT IS, not      │  │ │
+│   │  │       how it performed. EXCLUDE: accounting language, performance drivers."       │  │ │
 │   │  │     • Output: { "rows": [{ "revenue_line": "...", "description": "..." }] }      │  │ │
 │   │  └─────────────────────────────────────────────────────────────────────────────────┘  │ │
 │   │                                                                                        │ │
@@ -264,6 +278,8 @@
 │   │  │  │    • 800 chars per chunk, 100 char overlap                                  ││  │ │
 │   │  │  │    • Each chunk has: section, heading, char_range, is_toc                   ││  │ │
 │   │  │  │    • ~400-600 chunks per 10-K                                               ││  │ │
+│   │  │  │    • P1: note_revenue chunks sub-classified via classify_note_revenue_chunk()│  │ │
+│   │  │  │      → note_revenue_sources (definitions) OR note_revenue_recognition       ││  │ │
 │   │  │  │                                                                             ││  │ │
 │   │  │  │ d) Embedding Generation                                                     ││  │ │
 │   │  │  │    API: OpenAI text-embedding-3-small (1536 dims)                           ││  │ │
@@ -291,12 +307,21 @@
 │   │  │  │    Function: TwoTierIndex.retrieve()                                        ││  │ │
 │   │  │  │    • Tier 1: table-local, threshold=0.55, if score≥threshold → use         ││  │ │
 │   │  │  │    • Tier 2: full-filing, threshold=0.45, section boosting                  ││  │ │
-│   │  │  │      - Boost 1.15x: note_*, item1, item7, table_footnote                    ││  │ │
+│   │  │  │      - Boost 1.15x: note_revenue_sources, note_segment, item1, table_footnote│  │ │
+│   │  │  │      - BLOCKED: note_revenue_recognition (P1: accounting mechanics)        ││  │ │
 │   │  │  │      - Reduce 0.75x: item1a (risk factors), liquidity                       ││  │ │
 │   │  │  │    • MMR deduplication (remove chunks with >85% text similarity)            ││  │ │
-│   │  │  │    Output: top 5 chunks with scores                                         ││  │ │
+│   │  │  │    Output: top 10 chunks (before boost), then top 5 after                   ││  │ │
 │   │  │  │                                                                             ││  │ │
-│   │  │  │ c) Evidence Gate                                                            ││  │ │
+│   │  │  │ c) P1: Definitional Chunk Boost                                            ││  │ │
+│   │  │  │    Function: _boost_definitional_chunks()                                   ││  │ │
+│   │  │  │    • After retrieval, re-rank by boosting chunks with BOTH:                 ││  │ │
+│   │  │  │      - The revenue line label (e.g., "Other revenue")                       ││  │ │
+│   │  │  │      - Definition patterns: "consists of", "includes", "comprises"          ││  │ │
+│   │  │  │    • Boost factor: 1.25x                                                    ││  │ │
+│   │  │  │    • Fixes: META "Other revenue" (generic mentions → actual definition)     ││  │ │
+│   │  │  │                                                                             ││  │ │
+│   │  │  │ d) Evidence Gate                                                            ││  │ │
 │   │  │  │    Function: check_evidence_gate()                                          ││  │ │
 │   │  │  │    Pass if: tier1_local OR ≥1 chunk from preferred_section OR max_score≥0.55│  │ │
 │   │  │  │    Fail → return empty description (don't hallucinate)                      ││  │ │
@@ -494,9 +519,14 @@ Two options:
 
 | Function | File | Description |
 |----------|------|-------------|
-| `describe_revenue_lines()` | `react_agents.py` | Keyword search + LLM |
+| `describe_revenue_lines()` | `react_agents.py` | Main orchestrator: DOM + keyword + LLM |
+| `extract_footnote_ids_from_table()` | `react_agents.py` | **NEW**: Recovers footnote IDs from DOM |
 | `_extract_footnote_for_label()` | `react_agents.py` | Finds footnote definitions |
-| `_extract_section()` | `react_agents.py` | Extracts Item 1/7/8 sections |
+| `_extract_footnotes_from_text()` | `react_agents.py` | Batch extracts all footnotes |
+| `strip_accounting_sentences()` | `react_agents.py` | **NEW**: Removes accounting/driver text |
+| `_extract_section()` | `react_agents.py` | Extracts Item 1/8 sections (Item 7 excluded) |
+| `extract_footnotes_from_dom_context()` | `react_agents.py` | **P2**: DOM-based footnote extraction |
+| `_extract_heading_based_definition()` | `react_agents.py` | **P3**: Finds definitions under headings |
 
 **RAG (--use-rag):**
 
@@ -504,9 +534,11 @@ Two options:
 |----------|------|-------------|
 | `detect_toc_regions()` | `rag/chunking.py` | Identifies TOC areas |
 | `chunk_10k_structured()` | `rag/chunking.py` | Creates chunks with metadata |
+| `classify_note_revenue_chunk()` | `rag/chunking.py` | **P1**: Separates sources from recognition |
 | `embed_chunks()` | `rag/index.py` | Calls OpenAI embeddings API |
 | `TwoTierIndex.build()` | `rag/index.py` | Builds FAISS indexes |
 | `TwoTierIndex.retrieve()` | `rag/index.py` | Semantic search with boosting |
+| `_boost_definitional_chunks()` | `rag/generation.py` | **P1**: Re-ranks by definition patterns |
 | `check_evidence_gate()` | `rag/generation.py` | Validates chunk quality |
 | `extract_candidate_products()` | `rag/generation.py` | Deterministic product extraction |
 | `generate_description_with_evidence()` | `rag/generation.py` | LLM with evidence validation |
@@ -607,8 +639,22 @@ FOOTNOTE_MARKER_RE = re.compile(r"\((\d+)\)\s*$")
 # Separator line (5+ underscores)
 SEPARATOR_RE = re.compile(r"_{5,}")
 
-# Footnote definition after separator
-FOOTNOTE_DEF_RE = re.compile(r"\((\d+)\)\s+([A-Z].*?)(?=\(\d+\)|$)", re.DOTALL)
+# Footnote definition after separator (prioritizes "Includes" pattern)
+FOOTNOTE_DEF_RE = re.compile(r"\((\d+)\)\s+(Includes|Consists|Represents\s+.*?)(?=\(\d+\)|$)", re.DOTALL)
+```
+
+#### Accounting Sentence Filter (`react_agents.py`)
+
+```python
+# Deny patterns - sentences containing these are removed from descriptions
+ACCOUNTING_DENY_PATTERNS = [
+    # Revenue recognition / accounting
+    r"\bperformance obligation\b", r"\brecognized\b", r"\bdeferred\b",
+    r"\bamortization\b", r"\bcontract liabilit", r"\bASC\s+\d", r"\bGAAP\b",
+    # Performance drivers (MD&A-style)
+    r"\bincreased due to\b", r"\bdecreased due to\b", r"\bprimarily driven\b",
+    r"\bhigher sales of\b", r"\blower sales of\b", r"\bcompared to\b.*\bprior\b",
+]
 ```
 
 #### TOC Detection (`rag/chunking.py`)
@@ -622,7 +668,27 @@ SECTION_PATTERNS = {
     'item1': re.compile(r'ITEM\s*1[^0-9A-Z].*?BUSINESS', re.IGNORECASE),
     'item7': re.compile(r'ITEM\s*7[^A-Z].*?MANAGEMENT.{0,30}DISCUSSION', re.IGNORECASE),
     'note_segment': re.compile(r'NOTE\s*\d+\s*[-–—]?\s*(SEGMENT|OPERATING)', re.IGNORECASE),
+    'note_revenue': re.compile(r'NOTE\s*\d+\s*[-–—]?\s*REVENUE', re.IGNORECASE),
 }
+```
+
+#### P1: Note Revenue Classification (`rag/chunking.py`)
+
+```python
+# Definition patterns → note_revenue_sources (keep for retrieval)
+DEFINITION_PATTERNS = [
+    re.compile(r'\bconsists?\s+of\b', re.IGNORECASE),
+    re.compile(r'\bincludes?\b.*\b(?:products?|services?)\b', re.IGNORECASE),
+    re.compile(r'\bgenerat(?:es?|ed)\s+from\b', re.IGNORECASE),
+]
+
+# Accounting patterns → note_revenue_recognition (block from retrieval)
+ACCOUNTING_PATTERNS = [
+    re.compile(r'\bperformance\s+obligat', re.IGNORECASE),
+    re.compile(r'\brecogniz(?:es?|ed|ing)\s+(?:revenue|when|upon)\b', re.IGNORECASE),
+    re.compile(r'\bSSP\b|\bstand-alone\s+selling\s+price\b', re.IGNORECASE),
+    re.compile(r'\bASC\s+\d{3}\b', re.IGNORECASE),
+]
 ```
 
 #### Product Extraction (`rag/generation.py`)
@@ -740,12 +806,53 @@ data/
 │   ├── disagg_layout.json            # Table layout
 │   ├── disagg_extracted.json         # Raw extraction
 │   ├── csv1_line_descriptions.json   # Descriptions
+│   ├── csv1_desc_provenance.json     # Provenance tracking (source, evidence)
 │   ├── {ticker}_csv1_desc_coverage.json  # (if --use-rag)
 │   └── trace.jsonl                   # Debug trace
 └── embeddings/{ticker}/              # (if --use-rag)
     ├── full.faiss                    # FAISS index
     └── metadata.json                 # Chunk metadata
 ```
+
+### Provenance Artifact (`csv1_desc_provenance.json`)
+
+**Phase 4 addition**: Each ticker now produces a provenance artifact tracking the source of each description:
+
+```json
+{
+  "ticker": "AMZN",
+  "company_name": "AMAZON COM INC",
+  "fiscal_year": 2024,
+  "line_provenance": [
+    {
+      "revenue_line": "Online stores (1)",
+      "description": "We leverage our retail infrastructure...",
+      "source_section": "table_footnote_regex",
+      "evidence_snippet": "Includes product sales and digital media content...",
+      "footnote_id": "1",
+      "table_id": "t0069"
+    },
+    {
+      "revenue_line": "AWS",
+      "description": "AWS offers a broad set of on-demand technology services...",
+      "source_section": "llm_table_context",
+      "evidence_snippet": "[TABLE CONTEXT] ...",
+      "footnote_id": null,
+      "table_id": "t0069"
+    }
+  ]
+}
+```
+
+**Source sections** (priority order):
+1. `table_footnote_dom` - DOM-extracted footnotes (most reliable)
+2. `table_footnote_regex` - Regex-extracted footnotes
+3. `heading_based_item1` - Label found as heading in Item 1
+4. `heading_based_html_heading` - Label found as heading elsewhere
+5. `llm_table_context` - LLM extracted from table context
+6. `llm_item1` - LLM extracted from Item 1 (Business)
+7. `llm_item8` - LLM extracted from Item 8 (Notes)
+8. `tier1_local` / `tier2_full` - RAG retrieval tiers (if `--use-rag`)
 
 ---
 
@@ -757,16 +864,41 @@ data/
 | `--csv1-only --use-rag` | ~45 sec | ~4 min | ~5-6/ticker + embeddings |
 | Full | ~50 sec | ~5 min | ~8-10/ticker |
 
-### RAG Results (6 Tickers)
+### Latest Results (v18 - Post P0/P1 with RAG)
 
-| Ticker | Coverage | Lines | Notes |
-|--------|----------|-------|-------|
-| AAPL | 100% | 5/5 | Footnotes extracted |
-| MSFT | 100% | 10/10 | Note 18 segment descriptions |
-| GOOGL | 100% | 6/6 | MD&A + Notes |
-| AMZN | 43% | 3/7 | Some footnotes not chunked correctly |
-| META | 100% | 3/3 | Item 1 descriptions |
-| NVDA | 83% | 5/6 | Narrative style, RAG helps significantly |
+| Ticker | Coverage | Lines | Mode | Notes |
+|--------|----------|-------|------|-------|
+| AAPL | **100%** | 5/5 | RAG | Services description incomplete (missing sub-categories) |
+| MSFT | **100%** | 10/10 | RAG | Full coverage, high quality descriptions |
+| GOOGL | 83.3% | 5/6 | RAG | "Google Network" missing (needs AdMob/AdSense query) |
+| AMZN | 71.4% | 5/7 | RAG | Subscription services, Other missing (footnote extraction) |
+| META | **100%** | **3/3** | RAG | **Fixed with P1**: Other revenue now has description |
+| NVDA | **0%** | 0/6 | RAG | **TABLE EXTRACTION BUG**: Labels showing as $ amounts |
+
+### P1 Fixes Implemented
+
+1. **Note 2 Classification** (`rag/chunking.py`):
+   - `classify_note_revenue_chunk()` separates `note_revenue_sources` from `note_revenue_recognition`
+   - Blocks accounting mechanics from retrieval
+
+2. **Definitional Chunk Boost** (`rag/generation.py`):
+   - `_boost_definitional_chunks()` re-ranks chunks with BOTH label AND definition patterns
+   - Fixed META "Other revenue" (was generic, now finds "consists of WhatsApp Business Platform...")
+
+3. **Blocked Sections** (`rag/index.py`):
+   - `BLOCKED_SECTIONS = {'note_revenue_recognition'}`
+   - `PREFERRED_SECTIONS` removed `item7` (MD&A has performance drivers, not definitions)
+
+### Known Gaps (Require Future Development)
+
+| Issue | Affected | Root Cause | Proposed Fix | Effort |
+|-------|----------|------------|--------------|--------|
+| **NVDA label extraction** | NVDA | Layout inference picks wrong column as label | Validate label_col is not numeric | Low |
+| **Subscription/Other footnotes** | AMZN | Footnotes (5) and (6) not retrieved | Enhance DOM footnote parsing | Medium |
+| **Google Network** | GOOGL | Query too generic for AdMob/AdSense | Add domain terms to query | Low |
+| **Services richness** | AAPL | Only partial capture of 6 sub-categories | Sub-heading aggregation | Medium |
+
+See `docs/DEV_PROPOSAL.md` for detailed fix plan.
 
 ---
 

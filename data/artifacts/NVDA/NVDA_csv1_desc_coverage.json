@@ -2,79 +2,79 @@
   "ticker": "NVDA",
   "fiscal_year": 2025,
   "total_lines": 6,
-  "lines_with_description": 5,
-  "coverage_pct": 83.3,
+  "lines_with_description": 3,
+  "coverage_pct": 50.0,
   "missing_labels": [
-    "OEM and Other"
+    "$32,016",
+    "$15,068",
+    "$5,083"
   ],
   "tier1_count": 0,
-  "tier2_count": 5,
+  "tier2_count": 3,
   "failed_gate_count": 0,
   "validation_failed_count": 0,
   "line_details": [
     {
-      "revenue_line": "Compute",
+      "revenue_line": "$116,193",
       "has_description": true,
       "retrieval_tier": "tier2_full",
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
         "chunk_0343",
-        "chunk_0380"
+        "chunk_0583"
       ],
-      "products_found": 3,
-      "description_preview": "The Compute revenue line includes revenue from data center compute platforms for accelerated computi"
+      "products_found": 4,
+      "description_preview": "The Compute & Networking revenue line consists of NVIDIA's data center compute and networking platfo"
     },
     {
-      "revenue_line": "Networking",
+      "revenue_line": "$82,875",
       "has_description": true,
       "retrieval_tier": "tier2_full",
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0380"
+        "chunk_0343",
+        "chunk_0583"
       ],
-      "products_found": 1,
-      "description_preview": "The Networking revenue line includes revenue from Data Center networking, which grew 51% driven by E"
+      "products_found": 2,
+      "description_preview": "This revenue line represents the operating income from NVIDIA's Compute & Networking segment, which "
     },
     {
-      "revenue_line": "Gaming",
+      "revenue_line": "$47,405",
       "has_description": true,
       "retrieval_tier": "tier2_full",
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
+        "chunk_0583",
         "chunk_0381"
       ],
-      "products_found": 1,
-      "description_preview": "The Gaming revenue line within the Graphics segment includes revenue from products sold to customers"
+      "products_found": 6,
+      "description_preview": "This revenue line represents the Compute & Networking segment, which includes products and solutions"
     },
     {
-      "revenue_line": "Professional Visualization",
-      "has_description": true,
+      "revenue_line": "$32,016",
+      "has_description": false,
       "retrieval_tier": "tier2_full",
       "evidence_gate_passed": true,
       "validated": true,
-      "top_chunk_ids": [
-        "chunk_0362"
-      ],
-      "products_found": 1,
-      "description_preview": "Professional Visualization revenue includes sales of Ada RTX GPU workstations used for generative AI"
+      "top_chunk_ids": [],
+      "products_found": 0,
+      "description_preview": ""
     },
     {
-      "revenue_line": "Automotive",
-      "has_description": true,
+      "revenue_line": "$15,068",
+      "has_description": false,
       "retrieval_tier": "tier2_full",
       "evidence_gate_passed": true,
       "validated": true,
-      "top_chunk_ids": [
-        "chunk_0363"
-      ],
-      "products_found": 1,
-      "description_preview": "Automotive revenue for fiscal year 2025 was up 55% from a year ago, driven by sales of our self-driv"
+      "top_chunk_ids": [],
+      "products_found": 0,
+      "description_preview": ""
     },
     {
-      "revenue_line": "OEM and Other",
+      "revenue_line": "$5,083",
       "has_description": false,
       "retrieval_tier": "tier2_full",
       "evidence_gate_passed": true,

@@ -2,11 +2,13 @@
   "ticker": "GOOGL",
   "fiscal_year": 2024,
   "total_lines": 6,
-  "lines_with_description": 6,
-  "coverage_pct": 100.0,
-  "missing_labels": [],
+  "lines_with_description": 5,
+  "coverage_pct": 83.3,
+  "missing_labels": [
+    "Google Network"
+  ],
   "tier1_count": 0,
-  "tier2_count": 6,
+  "tier2_count": 5,
   "failed_gate_count": 0,
   "validation_failed_count": 0,
   "line_details": [
@@ -19,7 +21,7 @@
       "top_chunk_ids": [
         "chunk_0295"
       ],
-      "products_found": 3,
+      "products_found": 1,
       "description_preview": "Google Search & other includes revenues generated on Google search properties, including revenues fr"
     },
     {
@@ -32,20 +34,17 @@
         "chunk_0317"
       ],
       "products_found": 1,
-      "description_preview": "YouTube ads revenue consists of advertising revenues generated from YouTube, including brand adverti"
+      "description_preview": "YouTube ads revenue consists of advertising revenues generated from ads shown on YouTube, including "
     },
     {
       "revenue_line": "Google Network",
-      "has_description": true,
+      "has_description": false,
       "retrieval_tier": "tier2_full",
       "evidence_gate_passed": true,
       "validated": true,
-      "top_chunk_ids": [
-        "chunk_0476",
-        "chunk_0295"
-      ],
-      "products_found": 1,
-      "description_preview": "Google Network revenues are part of Google advertising revenues within Google Services, but the spec"
+      "top_chunk_ids": [],
+      "products_found": 0,
+      "description_preview": ""
     },
     {
       "revenue_line": "Google subscriptions, platforms, and devices",
@@ -54,10 +53,12 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0300"
+        "chunk_0300",
+        "chunk_0428",
+        "chunk_0429"
       ],
       "products_found": 7,
-      "description_preview": "Google subscriptions, platforms, and devices revenues are comprised of consumer subscriptions (prima"
+      "description_preview": "Google subscriptions, platforms, and devices revenues consist of consumer subscriptions (primarily f"
     },
     {
       "revenue_line": "Google Cloud",
@@ -66,10 +67,11 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0320"
+        "chunk_0591",
+        "chunk_0301"
       ],
       "products_found": 2,
-      "description_preview": "Google Cloud revenues primarily include revenues from Google Cloud Platform, largely from infrastruc"
+      "description_preview": "Google Cloud includes infrastructure and platform services, applications, and other services for ent"
     },
     {
       "revenue_line": "Other Bets",
@@ -78,11 +80,10 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0592",
-        "chunk_0280"
+        "chunk_0592"
       ],
       "products_found": 1,
-      "description_preview": "Other Bets is a combination of multiple operating segments that are not individually material, and r"
+      "description_preview": "Other Bets is a combination of multiple operating segments that are not individually material, and g"
     }
   ]
 }

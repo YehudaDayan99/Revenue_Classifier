@@ -2,16 +2,14 @@
   "ticker": "AMZN",
   "fiscal_year": 2024,
   "total_lines": 7,
-  "lines_with_description": 3,
-  "coverage_pct": 42.9,
+  "lines_with_description": 5,
+  "coverage_pct": 71.4,
   "missing_labels": [
-    "Third-party seller services (3)",
-    "Advertising services (4)",
-    "AWS",
+    "Subscription services (5)",
     "Other (6)"
   ],
   "tier1_count": 0,
-  "tier2_count": 3,
+  "tier2_count": 5,
   "failed_gate_count": 0,
   "validation_failed_count": 0,
   "line_details": [
@@ -25,7 +23,7 @@
         "chunk_0052"
       ],
       "products_found": 1,
-      "description_preview": "The 'Online stores' revenue line includes sales to consumers through Amazon's online stores, offerin"
+      "description_preview": "Online stores revenue consists of sales of products to consumers through Amazon's online and mobile "
     },
     {
       "revenue_line": "Physical stores (2)",
@@ -37,42 +35,34 @@
         "chunk_0052"
       ],
       "products_found": 1,
-      "description_preview": "Physical stores revenue includes sales to consumers through Amazon's physical retail locations, focu"
+      "description_preview": "Physical stores revenue consists of sales to consumers through the company's physical retail locatio"
     },
     {
       "revenue_line": "Third-party seller services (3)",
-      "has_description": false,
-      "retrieval_tier": "tier2_full",
-      "evidence_gate_passed": true,
-      "validated": true,
-      "top_chunk_ids": [],
-      "products_found": 0,
-      "description_preview": ""
-    },
-    {
-      "revenue_line": "Advertising services (4)",
-      "has_description": false,
-      "retrieval_tier": "tier2_full",
-      "evidence_gate_passed": true,
-      "validated": true,
-      "top_chunk_ids": [],
-      "products_found": 0,
-      "description_preview": ""
-    },
-    {
-      "revenue_line": "Subscription services (5)",
       "has_description": true,
       "retrieval_tier": "tier2_full",
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0461"
+        "chunk_0054"
       ],
-      "products_found": 5,
-      "description_preview": "Subscription services revenue includes digital media content subscriptions that provide unlimited vi"
+      "products_found": 1,
+      "description_preview": "Third-party seller services consist of programs that enable sellers to grow their businesses, sell t"
     },
     {
-      "revenue_line": "AWS",
+      "revenue_line": "Advertising services (4)",
+      "has_description": true,
+      "retrieval_tier": "tier2_full",
+      "evidence_gate_passed": true,
+      "validated": true,
+      "top_chunk_ids": [
+        "chunk_0055"
+      ],
+      "products_found": 3,
+      "description_preview": "Advertising services consists of providing advertising solutions to sellers, vendors, publishers, au"
+    },
+    {
+      "revenue_line": "Subscription services (5)",
       "has_description": false,
       "retrieval_tier": "tier2_full",
       "evidence_gate_passed": true,
@@ -80,6 +70,18 @@
       "top_chunk_ids": [],
       "products_found": 0,
       "description_preview": ""
+    },
+    {
+      "revenue_line": "AWS",
+      "has_description": true,
+      "retrieval_tier": "tier2_full",
+      "evidence_gate_passed": true,
+      "validated": true,
+      "top_chunk_ids": [
+        "chunk_0054"
+      ],
+      "products_found": 7,
+      "description_preview": "AWS consists of a broad set of on-demand technology services provided to developers and enterprises "
     },
     {
       "revenue_line": "Other (6)",

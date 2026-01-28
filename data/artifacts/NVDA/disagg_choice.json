@@ -1,6 +1,6 @@
 {
   "table_id": "t0055",
-  "confidence": 0.9,
+  "confidence": 0.8,
   "selected_dimension": "segment",
-  "rationale": "This table disaggregates revenue by business lines labeled as 'Compute & Networking' and 'Graphics', which match the company's reported segments. It includes multiple recent fiscal years (2023, 2024, 2025) and has a Total Revenue row. Although the inferred dimension is unknown, the nearby text context indicates it presents details of reportable segments and the 'All Other' category. No product/service-level table was found in the candidates, so this segment-level table is the best available choice."
+  "rationale": "The table t0055 presents details of reportable segments and includes a Total Revenue row for recent fiscal years (2023-2025). Although the inferred dimension is unknown, the nearby text context indicates it is a segment breakdown. No product/service disaggregation table is found in the snippets. This table is the best available disaggregation of revenue by business lines with total revenue included."
 }

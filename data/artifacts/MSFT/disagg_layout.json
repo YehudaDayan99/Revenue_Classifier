@@ -8,11 +8,10 @@
   },
   "header_rows": [
     1,
-    4,
-    5
+    4
   ],
   "total_row_regex": "^Total$",
   "exclude_row_regex": "",
   "units_multiplier": 1000000,
-  "notes": "Item/Product names are in the first column; years 2023-2025 appear in columns 3,7,11; no segment column; Total row labeled exactly 'Total'; units in millions."
+  "notes": "No segment column; first column is product/item; year columns are recent fiscal years with values; Total row labeled exactly 'Total'."
 }

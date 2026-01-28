@@ -1,0 +1,47 @@
+{
+  "ticker": "AAPL",
+  "company_name": "Apple Inc.",
+  "fiscal_year": 2025,
+  "line_provenance": [
+    {
+      "revenue_line": "Services (1)",
+      "description": "Advertising The Company’s advertising services include third-party licensing arrangements and the Company’s own advertising platforms. AppleCare The Company offers a portfolio of fee-based service and support products under the AppleCare ® brand. The offerings provide priority access to Apple technical support, access to the global Apple authorized service network for repair and replacement services, and in many cases additional coverage for instances of accidental damage or theft and loss, depending on the country and type of product. Cloud Services The Company’s cloud services store and keep customers’ content up-to-date and available across multiple Apple devices and Windows personal computers. Digital Content The Company operates various platforms, including the App Store ® , that allow customers to discover and download applications and digital content, such as books, music, video, games and podcasts. The Company also offers digital content through subscription-based services, including Apple Arcade ® , a game service; Apple Fitness+ ® , a personalized fitness service; Apple Music ® , which offers users a curated listening experience with on-demand radio stations; Apple News+ ® , a news and magazine service; and Apple TV ® , which offers exclusive original content and live sports.",
+      "source_section": "heading_based_html_heading",
+      "evidence_snippet": "Advertising The Company’s advertising services include third-party licensing arrangements and the Company’s own advertising platforms. AppleCare The Company offers a portfolio of fee-based service and support products under the AppleCare ® brand. The offerings provide priority access to Apple technical support, access to the global Apple authorized service network for repair and replacement services, and in many cases additional coverage for instances of accidental damage or theft and loss, depe",
+      "footnote_id": null,
+      "table_id": "t0015"
+    },
+    {
+      "revenue_line": "iPhone",
+      "description": "iPhone is the Company’s line of smartphones based on its iOS operating system. The iPhone line includes iPhone 17 Pro, iPhone Air™, iPhone 17, iPhone 16 and iPhone 16e.",
+      "source_section": "llm_table_context",
+      "evidence_snippet": "[TABLE CONTEXT]   Phone, partially offset by higher net sales of Mac. Japan Japan net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone, Services and iPad. Rest of Asia Pacific Rest of Asia Pacific net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone, Services and Mac. Apple Inc. | 2025 Form 10-K | 22 Products and Services Performance The following table shows net sales by category for 2025, 2024 and 2023 (dollars in ",
+      "footnote_id": null,
+      "table_id": "t0015"
+    },
+    {
+      "revenue_line": "Mac",
+      "description": "Mac is the Company’s line of personal computers based on its macOS operating system. The Mac line includes laptops MacBook Air and MacBook Pro, as well as desktops iMac, Mac mini, Mac Studio and Mac Pro.",
+      "source_section": "llm_table_context",
+      "evidence_snippet": "[TABLE CONTEXT]   Phone, partially offset by higher net sales of Mac. Japan Japan net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone, Services and iPad. Rest of Asia Pacific Rest of Asia Pacific net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone, Services and Mac. Apple Inc. | 2025 Form 10-K | 22 Products and Services Performance The following table shows net sales by category for 2025, 2024 and 2023 (dollars in ",
+      "footnote_id": null,
+      "table_id": "t0015"
+    },
+    {
+      "revenue_line": "iPad",
+      "description": "iPad is the Company’s line of multipurpose tablets based on its iPadOS operating system. The iPad line includes iPad Pro, iPad Air, iPad and iPad mini.",
+      "source_section": "llm_table_context",
+      "evidence_snippet": "[TABLE CONTEXT]   Phone, partially offset by higher net sales of Mac. Japan Japan net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone, Services and iPad. Rest of Asia Pacific Rest of Asia Pacific net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone, Services and Mac. Apple Inc. | 2025 Form 10-K | 22 Products and Services Performance The following table shows net sales by category for 2025, 2024 and 2023 (dollars in ",
+      "footnote_id": null,
+      "table_id": "t0015"
+    },
+    {
+      "revenue_line": "Wearables, Home and Accessories",
+      "description": "Wearables includes smartwatches, wireless headphones and spatial computers. Home includes Apple TV 4K, the Company’s media streaming and gaming device, and HomePod and HomePod mini, high-fidelity wireless smart speakers; Accessories includes Apple-branded and third-party accessories.",
+      "source_section": "llm_table_context",
+      "evidence_snippet": "[TABLE CONTEXT]   Phone, partially offset by higher net sales of Mac. Japan Japan net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone, Services and iPad. Rest of Asia Pacific Rest of Asia Pacific net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone, Services and Mac. Apple Inc. | 2025 Form 10-K | 22 Products and Services Performance The following table shows net sales by category for 2025, 2024 and 2023 (dollars in ",
+      "footnote_id": null,
+      "table_id": "t0015"
+    }
+  ]
+}

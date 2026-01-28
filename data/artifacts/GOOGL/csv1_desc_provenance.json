@@ -1,0 +1,55 @@
+{
+  "ticker": "GOOGL",
+  "company_name": "Alphabet Inc.",
+  "fiscal_year": 2024,
+  "line_provenance": [
+    {
+      "revenue_line": "Google subscriptions, platforms, and devices",
+      "description": "Google subscriptions, platforms, and devices revenues consist of revenues from: 57. Table of Contents Alphabet Inc. • consumer subscriptions, which primarily include revenues from YouTube services, such as YouTube TV, YouTube Music and Premium, and NFL Sunday Ticket, as well as Google One; • platforms, which primarily include revenues from Google Play sales of apps and in-app purchases; • devices, which primarily include sales of the Pixel family of devices; and • other products and services. Google Cloud Revenues Google Cloud revenues consist of revenues from: • Google Cloud Platform, which generates consumption-based fees and subscriptions for infrastructure, platform, and other services. These services provide access to solutions such as AI offerings including our AI infrastructure, Vertex AI platform, and Gemini for Google Cloud; cybersecurity; and data and analytics; • Google Workspace, which includes subscriptions for cloud-based communication and collaboration tools for enterprises, such as Calendar, Gmail, Docs, Drive, and Meet, with integrated features like Gemini for Google Workspace; and • other enterprise services. Our cloud services are generally provided on either a consumption or subscription basis and may have contract terms longer than a year. Arrangements with Multiple Performance Obligations Our contracts with customers may include multiple performance obligations.",
+      "source_section": "heading_based_html_heading",
+      "evidence_snippet": "Google subscriptions, platforms, and devices revenues consist of revenues from: 57. Table of Contents Alphabet Inc. • consumer subscriptions, which primarily include revenues from YouTube services, such as YouTube TV, YouTube Music and Premium, and NFL Sunday Ticket, as well as Google One; • platforms, which primarily include revenues from Google Play sales of apps and in-app purchases; • devices, which primarily include sales of the Pixel family of devices; and • other products and services. Go",
+      "footnote_id": null,
+      "table_id": "t0099"
+    },
+    {
+      "revenue_line": "Google Cloud",
+      "description": "Through our Google Cloud Platform and Google Workspace offerings, Google Cloud generates revenues primarily from consumption-based fees and subscriptions for infrastructure, platform, applications, and other cloud services. Customers use Google Cloud in multiple ways such as: • AI-optimized Infrastructure: provides open, reliable, and scalable compute, networking, and storage to enable customers to run workloads anywhere — on our Cloud, at the edge, or in their data centers. It can be used to migrate and modernize IT systems and to train and serve various types of AI models. • Developer Platform: provides developers, through the Vertex AI platform, the ability to train, tune, augment, test, and deploy applications using Gemini and other leading generative AI models. We offer widely used first-party, third-party, and open models along with services such as vector search, grounding, and distillation to further improve the cost and quality of models. • Cybersecurity: provides AI powered cybersecurity solutions to help customers analyze, detect, protect, and respond to a broad range of cybersecurity threats, to further strengthen security outcomes, prioritize which threats to investigate, and identify attack paths, as well as accelerate resolution of cybersecurity threats. 7. Table of Contents Alphabet Inc. • Data and Analytics: provides a variety of different types of databases — relational, key-value, and in-memory — to store and manage data for different types of applications ",
+      "source_section": "heading_based_html_heading",
+      "evidence_snippet": "Through our Google Cloud Platform and Google Workspace offerings, Google Cloud generates revenues primarily from consumption-based fees and subscriptions for infrastructure, platform, applications, and other cloud services. Customers use Google Cloud in multiple ways such as: • AI-optimized Infrastructure: provides open, reliable, and scalable compute, networking, and storage to enable customers to run workloads anywhere — on our Cloud, at the edge, or in their data centers. It can be used to mi",
+      "footnote_id": null,
+      "table_id": "t0099"
+    },
+    {
+      "revenue_line": "Other Bets",
+      "description": "Across Alphabet, we are also using technology to try to solve big problems that affect a wide variety of industries, including transportation and health technology. Alphabet’s investment in the portfolio of Other Bets includes businesses that are at various stages of development, ranging from those in the R&D phase to those that are in the beginning stages of commercialization. Our goal is for them to become thriving, successful businesses. Other Bets operate as independent companies and some of them have their own boards with independent members and outside investors. While these early-stage businesses naturally come with considerable uncertainty, some of them are already generating revenue and making important strides in their industries. Revenues from Other Bets are generated primarily from the sale of healthcare-related services, and internet services.",
+      "source_section": "heading_based_html_heading",
+      "evidence_snippet": "Across Alphabet, we are also using technology to try to solve big problems that affect a wide variety of industries, including transportation and health technology. Alphabet’s investment in the portfolio of Other Bets includes businesses that are at various stages of development, ranging from those in the R&D phase to those that are in the beginning stages of commercialization. Our goal is for them to become thriving, successful businesses. Other Bets operate as independent companies and some of",
+      "footnote_id": null,
+      "table_id": "t0099"
+    },
+    {
+      "revenue_line": "Google Search & other",
+      "description": "Google Search & other includes revenues generated on Google search properties (including revenues from traffic generated by search distribution partners who use Google.com as their default search in browsers, toolbars, etc.), and other Google owned and operated properties like Gmail, Google Maps, and Google Play.",
+      "source_section": "llm_table_context",
+      "evidence_snippet": "[TABLE CONTEXT]    264,590 Google subscriptions, platforms, and devices 29,055 34,688 40,340 Google Services total 253,528 272,543 304,930 Google Cloud 26,280 33,088 43,229 Other Bets 1,068 1,527 1,648 Hedging gains (losses) 1,960 236 211 Total revenues $ 282,836 $ 307,394 $ 350,018 The following table presents revenues disaggregated by type (in millions): Year Ended December 31, 2022 2023 2024 Google Search & other $ 162,450 $ 175,033 $ 198,084 YouTube ads 29,243 31,510 36,147 Google Network 32",
+      "footnote_id": null,
+      "table_id": "t0099"
+    },
+    {
+      "revenue_line": "YouTube ads",
+      "description": "YouTube ads includes revenues generated on YouTube properties.",
+      "source_section": "llm_table_context",
+      "evidence_snippet": "[TABLE CONTEXT]    264,590 Google subscriptions, platforms, and devices 29,055 34,688 40,340 Google Services total 253,528 272,543 304,930 Google Cloud 26,280 33,088 43,229 Other Bets 1,068 1,527 1,648 Hedging gains (losses) 1,960 236 211 Total revenues $ 282,836 $ 307,394 $ 350,018 The following table presents revenues disaggregated by type (in millions): Year Ended December 31, 2022 2023 2024 Google Search & other $ 162,450 $ 175,033 $ 198,084 YouTube ads 29,243 31,510 36,147 Google Network 32",
+      "footnote_id": null,
+      "table_id": "t0099"
+    },
+    {
+      "revenue_line": "Google Network",
+      "description": "Google Network includes revenues generated on Google Network properties participating in AdMob, AdSense, and Google Ad Manager.",
+      "source_section": "llm_table_context",
+      "evidence_snippet": "[TABLE CONTEXT]    264,590 Google subscriptions, platforms, and devices 29,055 34,688 40,340 Google Services total 253,528 272,543 304,930 Google Cloud 26,280 33,088 43,229 Other Bets 1,068 1,527 1,648 Hedging gains (losses) 1,960 236 211 Total revenues $ 282,836 $ 307,394 $ 350,018 The following table presents revenues disaggregated by type (in millions): Year Ended December 31, 2022 2023 2024 Google Search & other $ 162,450 $ 175,033 $ 198,084 YouTube ads 29,243 31,510 36,147 Google Network 32",
+      "footnote_id": null,
+      "table_id": "t0099"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+Company Name,Ticker,Fiscal Year,Revenue Group (Reportable Segment),Revenue Line,Line Item description (company language),Revenue ($m)
+Apple Inc.,AAPL,2025,Product/Service disclosure,iPhone,"iPhone is the Company’s line of smartphones based on its iOS operating system. The iPhone line includes iPhone 17 Pro, iPhone Air™, iPhone 17, iPhone 16 and iPhone 16e.",209586.0
+Apple Inc.,AAPL,2025,Product/Service disclosure,Services,,109158.0
+Apple Inc.,AAPL,2025,Product/Service disclosure,"Wearables, Home and Accessories","Wearables includes smartwatches, wireless headphones and spatial computers. Home includes Apple TV 4K, the Company’s media streaming and gaming device, and HomePod and HomePod mini, high-fidelity wireless smart speakers; Accessories includes Apple-branded and third-party accessories.",35686.0
+Apple Inc.,AAPL,2025,Product/Service disclosure,Mac,"Mac is the Company’s line of personal computers based on its macOS operating system. The Mac line includes laptops MacBook Air and MacBook Pro, as well as desktops iMac, Mac mini, Mac Studio and Mac Pro.",33708.0
+Apple Inc.,AAPL,2025,Product/Service disclosure,iPad,"iPad is the Company’s line of multipurpose tablets based on its iPadOS operating system. The iPad line includes iPad Pro, iPad Air, iPad and iPad mini.",28023.0
+AMAZON COM INC,AMZN,2024,Product/Service disclosure,Online stores,"We leverage our retail infrastructure to offer a wide selection of consumable and durable goods that includes media products available in both a physical and digital format, such as books, videos, games, music, and software. These product sales include digital products sold on a transactional basis. Digital media content subscriptions that provide unlimited viewing or usage rights are included in “Subscription services.”",247029.0
+AMAZON COM INC,AMZN,2024,Product/Service disclosure,Third-party seller services,"Includes commissions and any related fulfillment and shipping fees, and other third-party seller services.",156146.0
+AMAZON COM INC,AMZN,2024,Product/Service disclosure,AWS,"AWS offers a broad set of on-demand technology services, including compute, storage, database, analytics, and machine learning, and other services.",107556.0
+AMAZON COM INC,AMZN,2024,Product/Service disclosure,Advertising services,"Includes sales of advertising services to sellers, vendors, publishers, authors, and others, through programs such as sponsored ads, display, and video advertising.",56214.0
+AMAZON COM INC,AMZN,2024,Product/Service disclosure,Subscription services,"Includes annual and monthly fees associated with Amazon Prime memberships, as well as digital video, audiobook, digital music, e-book, and other non-AWS subscription services.",44374.0
+AMAZON COM INC,AMZN,2024,Product/Service disclosure,Physical stores,Includes product sales where our customers physically select items in a store.,21215.0
+AMAZON COM INC,AMZN,2024,Product/Service disclosure,Other,"Includes sales related to various other offerings, such as healthcare services, certain licensing and distribution of video content, and shipping services, and our co-branded credit card agreements.",5425.0
+"Meta Platforms, Inc.",META,2024,Family of Apps (FoA),Advertising,,160633.0
+"Meta Platforms, Inc.",META,2024,Reality Labs,Reality Labs,"Reality Labs generates revenue from sales of consumer hardware products, software, and content.",2146.0
+"Meta Platforms, Inc.",META,2024,Family of Apps (FoA),Other revenue,,1722.0
+NVIDIA CORP,NVDA,2025,Compute & Networking,Compute,,102196.0
+NVIDIA CORP,NVDA,2025,Compute & Networking,Networking,,12990.0
+NVIDIA CORP,NVDA,2025,Graphics,Gaming,,11350.0
+NVIDIA CORP,NVDA,2025,Graphics,Professional Visualization,,1878.0
+NVIDIA CORP,NVDA,2025,Product/Service disclosure,Automotive,,1694.0
+NVIDIA CORP,NVDA,2025,Product/Service disclosure,OEM and Other,,389.0

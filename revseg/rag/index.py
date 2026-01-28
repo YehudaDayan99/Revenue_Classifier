@@ -82,7 +82,11 @@ def embed_query(query: str, api_key: Optional[str] = None) -> List[float]:
 
 
 # Preferred sections for description extraction
-PREFERRED_SECTIONS = {'note_revenue', 'note_segment', 'item1', 'item7', 'table_footnote', 'table_before'}
+# P1: Added note_revenue_sources (definitional content), removed item7 (MD&A - drivers/performance)
+PREFERRED_SECTIONS = {'note_revenue_sources', 'note_revenue', 'note_segment', 'item1', 'table_footnote', 'table_before'}
+
+# P1: Sections to BLOCK from retrieval (accounting/recognition mechanics)
+BLOCKED_SECTIONS = {'note_revenue_recognition'}
 
 
 class TwoTierIndex:
@@ -184,12 +188,15 @@ class TwoTierIndex:
             k = min(top_k, self.local_index.ntotal)
             scores, indices = self.local_index.search(query, k)
             
-            # Filter by threshold and exclude TOC chunks
+            # Filter by threshold and exclude TOC / blocked section chunks
             valid = []
             for idx, score in zip(indices[0], scores[0]):
                 if idx < 0 or idx >= len(self.local_chunks):
                     continue
                 chunk = self.local_chunks[idx]
+                # P1: Skip blocked sections (accounting/recognition mechanics)
+                if chunk.section in BLOCKED_SECTIONS:
+                    continue
                 if score >= local_threshold and not chunk.is_toc:
                     valid.append((chunk, float(score)))
             
@@ -217,6 +224,10 @@ class TwoTierIndex:
             
             # Skip TOC chunks
             if chunk.is_toc:
+                continue
+            
+            # P1: Skip blocked sections (accounting/recognition mechanics)
+            if chunk.section in BLOCKED_SECTIONS:
                 continue
             
             adjusted_score = float(score)

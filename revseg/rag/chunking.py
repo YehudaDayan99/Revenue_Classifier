@@ -293,6 +293,81 @@ SECTION_PATTERNS = {
 # Sections to deprioritize for description extraction
 DEPRIORITIZE_SECTIONS = {'item1a', 'risk_factors', 'liquidity', 'capex'}
 
+# =============================================================================
+# P1: Note 2 (Revenue) Sub-classification
+# =============================================================================
+
+# Patterns indicating DEFINITION content (what the revenue IS) - keep these
+DEFINITION_PATTERNS = [
+    re.compile(r'\bconsists?\s+of\b', re.IGNORECASE),
+    re.compile(r'\bincludes?\b.*\b(?:products?|services?|offerings?)\b', re.IGNORECASE),
+    re.compile(r'\bgenerat(?:es?|ed)\s+(?:from|by)\b', re.IGNORECASE),
+    re.compile(r'\bcomprises?\b', re.IGNORECASE),
+    re.compile(r'\bprovides?\s+(?:products?|services?)\b', re.IGNORECASE),
+    re.compile(r'\bofferings?\s+(?:include|such as)\b', re.IGNORECASE),
+    re.compile(r'\bsales?\s+of\b', re.IGNORECASE),
+    re.compile(r'\bdelivery\s+of\b', re.IGNORECASE),
+    re.compile(r'\bsuch\s+as\b.*\b(?:products?|services?)\b', re.IGNORECASE),
+]
+
+# Patterns indicating ACCOUNTING/RECOGNITION content (how revenue is recognized) - block these
+ACCOUNTING_PATTERNS = [
+    re.compile(r'\bperformance\s+obligat', re.IGNORECASE),
+    re.compile(r'\brecogniz(?:es?|ed|ing)\s+(?:revenue|when|upon|at)\b', re.IGNORECASE),
+    re.compile(r'\bprincipal\s+(?:vs\.?|versus)\s+agent\b', re.IGNORECASE),
+    re.compile(r'\bSSP\b|\bstand-alone\s+selling\s+price\b', re.IGNORECASE),
+    re.compile(r'\bASC\s+\d{3}\b', re.IGNORECASE),
+    re.compile(r'\bcontract\s+(?:liability|liabilities|asset)\b', re.IGNORECASE),
+    re.compile(r'\ballocation\b', re.IGNORECASE),
+    re.compile(r'\bcontrol\s+transfers?\b', re.IGNORECASE),
+    re.compile(r'\bsatisf(?:ied|action)\b.*\bobligation\b', re.IGNORECASE),
+    re.compile(r'\btransaction\s+price\b', re.IGNORECASE),
+    re.compile(r'\bvariable\s+consideration\b', re.IGNORECASE),
+    re.compile(r'\bpoint\s+in\s+time\b', re.IGNORECASE),
+    re.compile(r'\bover\s+time\b.*\brecog', re.IGNORECASE),
+    re.compile(r'\bdeferred\s+revenue\b', re.IGNORECASE),
+    re.compile(r'\bunearned\s+revenue\b', re.IGNORECASE),
+    re.compile(r'\bcontract\s+cost\b', re.IGNORECASE),
+]
+
+
+def classify_note_revenue_chunk(chunk_text: str) -> str:
+    """
+    Classify a chunk within note_revenue as either:
+    - "note_revenue_sources" (product/service definitions) - KEEP for retrieval
+    - "note_revenue_recognition" (accounting mechanics) - BLOCK from retrieval
+    - "note_revenue" (ambiguous) - keep as fallback
+    
+    This is the key to META's "Other revenue" fix:
+    The definition "Other revenue consists of WhatsApp Business Platform..." 
+    is adjacent to "Revenue is recognized when performance obligations are satisfied..."
+    We need to separate these at chunk level.
+    """
+    # Count matches for each pattern type
+    definition_matches = sum(1 for p in DEFINITION_PATTERNS if p.search(chunk_text))
+    accounting_matches = sum(1 for p in ACCOUNTING_PATTERNS if p.search(chunk_text))
+    
+    # Strong signal: if accounting patterns dominate, it's recognition text
+    if accounting_matches >= 2 and accounting_matches > definition_matches:
+        return "note_revenue_recognition"
+    
+    # Strong signal: if definition patterns dominate, it's source description
+    if definition_matches >= 2 and definition_matches > accounting_matches:
+        return "note_revenue_sources"
+    
+    # Mixed or ambiguous: check for specific high-confidence indicators
+    if any(p.search(chunk_text) for p in [
+        re.compile(r'\bperformance\s+obligat', re.IGNORECASE),
+        re.compile(r'\bSSP\b', re.IGNORECASE),
+        re.compile(r'\bASC\s+606\b', re.IGNORECASE),
+        re.compile(r'\bprincipal\s+(?:vs|versus)\s+agent\b', re.IGNORECASE),
+    ]):
+        return "note_revenue_recognition"
+    
+    # Default: if no strong signal, keep as generic note_revenue
+    # This allows retrieval but without preference
+    return "note_revenue"
+
 
 def _identify_sections(text: str, toc_regions: List[Tuple[int, int]]) -> Dict[str, Tuple[int, int]]:
     """
@@ -446,6 +521,10 @@ def chunk_10k_structured(
         
         # Determine section
         section = get_section(pos)
+        
+        # P1: Sub-classify note_revenue chunks to separate definitions from accounting
+        if section == "note_revenue":
+            section = classify_note_revenue_chunk(chunk_text)
         
         # Detect if this is TOC
         is_toc = is_toc_chunk(chunk_text, pos, toc_regions)

@@ -43,6 +43,10 @@ from revseg.react_agents import (
     summarize_segment_descriptions,
     expand_key_items_per_segment,
     describe_revenue_lines,
+    extract_footnote_ids_from_table,  # Fix E: DOM-based footnote ID extraction
+    extract_footnotes_from_dom_context,  # Phase 2: DOM-based footnote extraction
+    choose_item_col,  # Phase 1: Deterministic label column selector
+    validate_extracted_labels,  # Phase 1: Post-extraction QA gate
 )
 from revseg.mappings import get_segment_for_item, is_subtotal_row, is_total_row, is_adjustment_item
 from revseg.sec_edgar import SEC_ARCHIVES_BASE, download_latest_10k
@@ -699,6 +703,20 @@ def run_pipeline(
                         business_lines=segments,
                     )
                     
+                    # Phase 1 NVDA fix: Validate/override LLM's item_col choice
+                    llm_item_col = layout.get("item_col")
+                    header_rows_list = layout.get("header_rows", [])
+                    validated_col, col_reason = choose_item_col(
+                        grid,
+                        header_rows=header_rows_list,
+                        llm_proposed_col=llm_item_col,
+                    )
+                    
+                    if validated_col != llm_item_col:
+                        print(f"[{ticker}] item_col override: {col_reason}", flush=True)
+                        layout["item_col"] = validated_col
+                        _trace_append(t_art, {"stage": "item_col_override", "llm_col": llm_item_col, "validated_col": validated_col, "reason": col_reason})
+                    
                     # Use unified extraction with fallback strategies
                     all_segments = segments + include_optional
                     result = extract_with_layout_fallback(
@@ -714,6 +732,15 @@ def run_pipeline(
                     
                     if result is None or not result.segment_revenues:
                         _trace_append(t_art, {"stage": "extract_fail", "table_id": attempt_id, "reason": "no_segments"})
+                        continue
+                    
+                    # Phase 1 QA gate: Validate extracted labels are not mostly numeric
+                    # row_type can be: "item", "segment", "unknown", "adjustment", "total"
+                    extracted_labels = [r.item for r in result.rows if r.row_type in ("item", "segment", "unknown")]
+                    labels_valid, labels_reason = validate_extracted_labels(extracted_labels, threshold=0.5)
+                    if not labels_valid:
+                        print(f"[{ticker}] REJECT table {attempt_id}: {labels_reason}", flush=True)
+                        _trace_append(t_art, {"stage": "label_qa_fail", "table_id": attempt_id, "reason": labels_reason, "sample_labels": extracted_labels[:5]})
                         continue
                     
                     # Validate using self-consistent validation
@@ -949,9 +976,58 @@ def run_pipeline(
                             for r in rag_results
                         ]
                     }
+                    
+                    # Phase 4: Save provenance artifact (RAG path)
+                    provenance_artifact = {
+                        "ticker": ticker,
+                        "company_name": company_name,
+                        "fiscal_year": year,
+                        "line_provenance": [
+                            {
+                                "revenue_line": r.revenue_line,
+                                "description": r.description,
+                                "source_section": r.retrieval_tier,
+                                "evidence_snippet": " | ".join(r.evidence_quotes[:2]) if r.evidence_quotes else "",
+                                "footnote_id": None,
+                                "table_id": table_id,
+                                "evidence_chunk_ids": r.evidence_chunk_ids,
+                                "evidence_gate_passed": r.evidence_gate_passed,
+                            }
+                            for r in rag_results
+                        ],
+                    }
+                    (t_art / "csv1_desc_provenance.json").write_text(
+                        json.dumps(provenance_artifact, indent=2, ensure_ascii=False), encoding="utf-8"
+                    )
+                    print(f"[{ticker}] Provenance artifact (RAG) saved with {len(rag_results)} entries", flush=True)
                 else:
                     # Legacy keyword-based description extraction
                     print(f"[{ticker}] extracting line item descriptions (LLM quality)...", flush=True)
+                    
+                    # Fix E&F + Phase 2: DOM-based footnote extraction
+                    # This uses normalized text from get_text() which handles split tags correctly
+                    footnote_id_map = {}
+                    dom_footnotes = {}
+                    try:
+                        html_content = html_path.read_text(encoding="utf-8", errors="ignore")
+                        soup = BeautifulSoup(html_content, "lxml")
+                        table_elem = soup.find("table", id=table_id) or soup.find("table", {"id": table_id})
+                        if table_elem:
+                            # Extract footnote IDs from row labels (handles iXBRL superscripts)
+                            footnote_id_map = extract_footnote_ids_from_table(table_elem)
+                            if footnote_id_map:
+                                print(f"[{ticker}] extracted footnote IDs from DOM: {list(footnote_id_map.keys())[:5]}...", flush=True)
+                            
+                            # Phase 2: Extract actual footnote definitions using normalized DOM text
+                            dom_footnotes = extract_footnotes_from_dom_context(table_elem, html_content)
+                            if dom_footnotes:
+                                print(f"[{ticker}] extracted {len(dom_footnotes)} footnote definitions from DOM context", flush=True)
+                    except Exception as e:
+                        print(f"[{ticker}] Warning: failed to extract footnotes from DOM: {e}", flush=True)
+                    
+                    # Phase 3 fix: Pass raw HTML for heading extraction (html_text is plain text!)
+                    html_raw = html_path.read_text(encoding="utf-8", errors="ignore") if html_path.exists() else ""
+                    
                     desc_result = describe_revenue_lines(
                         llm_quality,
                         ticker=ticker,
@@ -960,6 +1036,9 @@ def run_pipeline(
                         revenue_lines=revenue_lines_for_desc,
                         table_context=accepted_table_context,
                         html_text=html_text,
+                        html_raw=html_raw,  # Phase 3: Raw HTML for heading extraction
+                        footnote_id_map=footnote_id_map,  # Pass DOM-extracted footnote IDs
+                        dom_footnotes=dom_footnotes,  # Phase 2: Pass pre-extracted footnote definitions
                     )
                     
                     # Create description lookup
@@ -973,6 +1052,30 @@ def run_pipeline(
                 (t_art / "csv1_line_descriptions.json").write_text(
                     json.dumps(desc_result, indent=2, ensure_ascii=False), encoding="utf-8"
                 )
+                
+                # Phase 4: Save provenance artifact
+                provenance_data = desc_result.get("provenance", {})
+                if provenance_data:
+                    provenance_artifact = {
+                        "ticker": ticker,
+                        "company_name": company_name,
+                        "fiscal_year": year,
+                        "line_provenance": [
+                            {
+                                "revenue_line": line,
+                                "description": prov.get("description", ""),
+                                "source_section": prov.get("source", ""),
+                                "evidence_snippet": prov.get("evidence_snippet", ""),
+                                "footnote_id": prov.get("footnote_id"),
+                                "table_id": table_id,
+                            }
+                            for line, prov in provenance_data.items()
+                        ],
+                    }
+                    (t_art / "csv1_desc_provenance.json").write_text(
+                        json.dumps(provenance_artifact, indent=2, ensure_ascii=False), encoding="utf-8"
+                    )
+                    print(f"[{ticker}] Provenance artifact saved with {len(provenance_data)} entries", flush=True)
                 
                 # Step 5: Build CSV1 rows with new schema
                 for r in sorted(filtered_rows, key=lambda x: (-x.value, x.item)):

@@ -2,5 +2,5 @@
   "table_id": "t0031",
   "confidence": 0.9,
   "selected_dimension": "product_service",
-  "rationale": "Table t0031 contains revenue disaggregated by product/service lines including Advertising, Other revenue, Family of Apps, Reality Labs, and a Total revenue row for years 2022-2024. Although inferred_dimension is unknown, the row labels correspond to product/service categories rather than segments or geography. It provides the most granular revenue breakdown available, matching the preferred dimension type and includes recent fiscal years."
+  "rationale": "This table disaggregates revenue by product/service lines including Advertising, Other revenue, Family of Apps, Reality Labs, and includes a Total revenue row. It covers recent fiscal years 2022-2024. Although inferred_dimension is unknown, the row labels correspond to product/service categories rather than segments or geography. It provides a granular revenue breakdown consistent with product/service dimension preference and includes total revenue, meeting all critical constraints."
 }

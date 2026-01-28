@@ -17,11 +17,11 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0283",
-        "chunk_0306"
+        "chunk_0500",
+        "chunk_0499"
       ],
-      "products_found": 3,
-      "description_preview": "Server products and cloud services revenue includes sales from Azure and other cloud services, as we"
+      "products_found": 10,
+      "description_preview": "Server products and cloud services consists of Microsoft's public, private, and hybrid server produc"
     },
     {
       "revenue_line": "Microsoft 365 Commercial products and cloud services",
@@ -30,12 +30,12 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0283",
-        "chunk_0304",
-        "chunk_0508"
+        "chunk_0498",
+        "chunk_0074",
+        "chunk_0297"
       ],
-      "products_found": 3,
-      "description_preview": "Microsoft 365 Commercial products and cloud services revenue includes sales of Microsoft 365 Commerc"
+      "products_found": 11,
+      "description_preview": "Microsoft 365 Commercial products and cloud services consists of productivity, communication, and in"
     },
     {
       "revenue_line": "Gaming",
@@ -44,10 +44,11 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0299"
+        "chunk_0094",
+        "chunk_0501"
       ],
-      "products_found": 1,
-      "description_preview": "Gaming revenue within the More Personal Computing segment includes revenue from Xbox content and ser"
+      "products_found": 7,
+      "description_preview": "Gaming revenue includes Xbox hardware and Xbox content and services, comprising first- and third-par"
     },
     {
       "revenue_line": "LinkedIn",
@@ -57,10 +58,10 @@
       "validated": true,
       "top_chunk_ids": [
         "chunk_0078",
-        "chunk_0507",
-        "chunk_0283"
+        "chunk_0499",
+        "chunk_0080"
       ],
-      "products_found": 1,
+      "products_found": 5,
       "description_preview": "LinkedIn connects the world’s professionals to make them more productive and successful and transfor"
     },
     {
@@ -70,11 +71,12 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0299",
-        "chunk_0507"
+        "chunk_0094",
+        "chunk_0501",
+        "chunk_0299"
       ],
       "products_found": 2,
-      "description_preview": "Windows and Devices revenue includes sales of Windows Pro and non-Pro licenses sold through the OEM "
+      "description_preview": "Windows and Devices includes Windows OEM licensing (Windows Pro and non-Pro licenses sold through th"
     },
     {
       "revenue_line": "Search and news advertising",
@@ -83,12 +85,10 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0301",
-        "chunk_0507",
-        "chunk_0375"
+        "chunk_0095"
       ],
-      "products_found": 1,
-      "description_preview": "Search and news advertising revenue consists of sales from online advertising, including advertising"
+      "products_found": 5,
+      "description_preview": "Search and news advertising comprises advertising offerings across Bing and Copilot, Microsoft News,"
     },
     {
       "revenue_line": "Dynamics products and cloud services",
@@ -97,10 +97,10 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0283"
+        "chunk_0499"
       ],
-      "products_found": 2,
-      "description_preview": "Dynamics products and cloud services revenue includes revenue from Microsoft's Dynamics business sol"
+      "products_found": 8,
+      "description_preview": "Dynamics products and cloud services include Dynamics 365, which comprises a set of intelligent, clo"
     },
     {
       "revenue_line": "Enterprise and partner services",
@@ -109,10 +109,10 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0507"
+        "chunk_0500"
       ],
-      "products_found": 0,
-      "description_preview": "Enterprise and partner services revenue includes services provided to enterprise customers and partn"
+      "products_found": 5,
+      "description_preview": "Enterprise and partner services includes Enterprise Support Services, Industry Solutions, Nuance pro"
     },
     {
       "revenue_line": "Microsoft 365 Consumer products and cloud services",
@@ -121,10 +121,11 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
-        "chunk_0078"
+        "chunk_0498",
+        "chunk_0077"
       ],
-      "products_found": 5,
-      "description_preview": "Microsoft 365 Consumer products and cloud services revenue includes revenue from Microsoft 365 Consu"
+      "products_found": 3,
+      "description_preview": "Microsoft 365 Consumer products and cloud services include Microsoft 365 Consumer subscriptions, Off"
     },
     {
       "revenue_line": "Other",
@@ -133,10 +134,11 @@
       "evidence_gate_passed": true,
       "validated": true,
       "top_chunk_ids": [
+        "chunk_0375",
         "chunk_0507"
       ],
       "products_found": 1,
-      "description_preview": "The 'Other' revenue line includes revenue not classified under the company's significant product and"
+      "description_preview": "The 'Other' revenue line includes sales from various sources not classified under the main product a"
     }
   ]
 }
