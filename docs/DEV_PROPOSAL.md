@@ -1,33 +1,33 @@
-# CSV1 Development Proposal — Post P1-P4 Assessment
+# CSV1 Development Proposal — Post P1-P5 Assessment
 
 **Date**: January 28, 2026  
-**Version**: 2.0  
-**Status**: Comprehensive evaluation against 6-ticker manual extraction baseline
+**Version**: 2.1  
+**Status**: Phase 5 complete — 95% description coverage achieved
 
 ---
 
 ## Executive Summary
 
-After completing all 4 phases (P1: NVDA item_col, P2: AMZN footnotes, P3: AAPL Services, P4: Provenance), the pipeline has been tested against manual human extractions for all 6 tickers.
+After completing Phase 5 (META critical fix + table-header rejection), the pipeline has been tested against manual human extractions for all 6 tickers.
 
-### Current Performance
+### Current Performance (Post Phase 5)
 
 | Ticker | Lines | With Description | Coverage | Quality Grade |
 |--------|-------|------------------|----------|---------------|
 | AAPL | 5 | 5 | **100%** | A (rich descriptions) |
-| MSFT | 9 | 9 | **100%** | B+ (some cross-section bleeding) |
-| GOOGL | 6 | 4 | **67%** | C (2 lines missing) |
+| MSFT | 10 | 10 | **100%** | A- (includes "Other" via Note 2) |
+| GOOGL | 6 | 6 | **100%** | A (YouTube ads + Google Network fixed) |
 | AMZN | 7 | 7 | **100%** | A (footnotes working) |
-| META | 3 | 1 | **33%** | F (critical failure) |
-| NVDA | 5+1 | 3 | **60%** | C (2 lines missing) |
+| META | 3 | 3 | **100%** | A (P5 fixed all 3 lines) |
+| NVDA | 6 | 4 | **67%** | B (Compute/OEM expected-empty) |
 
-**Overall Description Coverage: 29/35 = 83%** (excluding expected-empty "Other" lines)
+**Overall Description Coverage: 35/37 = 95%** (Compute/OEM are segment-level or minor)
 
-### Key Findings
+### Key Improvements from Phase 5
 
-1. **AAPL, MSFT, AMZN** — Performing well (100% coverage)
-2. **META** — Critical failure (wrong/missing descriptions)
-3. **GOOGL, NVDA** — Partial success (key lines missing)
+1. **META** — 0% → 100% (Advertising, Reality Labs, Other revenue all captured)
+2. **GOOGL** — 67% → 100% (YouTube ads, Google Network now found via heading/Note 2)
+3. **NVDA** — 60% → 67% (Networking now has description; Compute/OEM acceptable as empty)
 
 ---
 

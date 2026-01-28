@@ -74,6 +74,14 @@
       "evidence_snippet": "Microsoft 365 Consumer is designed to increase personal productivity and creativity through a range of products and services. Growth depends on our ability to reach new users, add value to our core product set with new features including AI tools, and continue to expand our product and service offerings into new markets. Microsoft 365 Consumer cloud revenue and Office Consumer products revenue is mainly affected by the percentage of customers that buy Office with their new devices and the contin",
       "footnote_id": null,
       "table_id": "t0073"
+    },
+    {
+      "revenue_line": "Other",
+      "description": "sales from cloud-based solutions that provide customers with software, services, platforms, and content such as Office 365, Azure, Dynamics 365, and gaming; solution support; and consulting services.",
+      "source_section": "note2_paragraph",
+      "evidence_snippet": "sales from cloud-based solutions that provide customers with software, services, platforms, and content such as Office 365, Azure, Dynamics 365, and gaming; solution support; and consulting services.",
+      "footnote_id": null,
+      "table_id": "t0073"
     }
   ]
 }

@@ -13,5 +13,5 @@
   "total_row_regex": "Consolidated",
   "exclude_row_regex": "",
   "units_multiplier": 1000000,
-  "notes": "No segment column; first column is product/service; year columns correspond to recent fiscal years 2022, 2023, 2024; total row labeled 'Consolidated'; units in millions."
+  "notes": "No segment column; item/product in col 0; years in cols 4,10,16; total row labeled 'Consolidated'; units in millions"
 }

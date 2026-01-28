@@ -1,6 +1,6 @@
 {
-  "dimension": "reportable_segments",
+  "dimension": "product_category",
   "segments": [],
   "include_segments_optional": [],
-  "notes": "The provided snippets do not contain any information about business-line or reportable segment disclosures for NVIDIA. No segment or product category breakdown is mentioned; NVDA is generally considered to operate as a single reportable segment in recent filings."
+  "notes": "The provided snippets do not contain sufficient detail to identify NVIDIA's primary business-line dimension or its product categories/segments. Typically, NVIDIA reports by product categories such as Data Center, Gaming, Professional Visualization, and Automotive, but this is not confirmed in the provided text."
 }

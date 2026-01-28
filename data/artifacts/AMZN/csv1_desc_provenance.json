@@ -36,24 +36,24 @@
       "table_id": "t0069"
     },
     {
-      "revenue_line": "Physical stores (2)",
-      "description": "Includes product sales where our customers physically select items in a store.",
-      "source_section": "llm_table_context",
-      "evidence_snippet": "[TABLE CONTEXT]   blishers, authors, and others, through programs such as sponsored ads, display, and video advertising. (5) Includes annual and monthly fees associated with Amazon Prime memberships, as well as digital video, audiobook, digital music, e-book, and other non-AWS subscription services. Net sales by groups of similar products and services, which also have similar economic characteristics, is as follows (in millions): Year Ended December 31, 2022 2023 2024 Net Sales: Online stores (1",
-      "footnote_id": null,
-      "table_id": "t0069"
-    },
-    {
       "revenue_line": "AWS",
-      "description": "AWS offers a broad set of on-demand technology services, including compute, storage, database, analytics, and machine learning, and other services.",
-      "source_section": "llm_table_context",
-      "evidence_snippet": "[TABLE CONTEXT]   blishers, authors, and others, through programs such as sponsored ads, display, and video advertising. (5) Includes annual and monthly fees associated with Amazon Prime memberships, as well as digital video, audiobook, digital music, e-book, and other non-AWS subscription services. Net sales by groups of similar products and services, which also have similar economic characteristics, is as follows (in millions): Year Ended December 31, 2022 2023 2024 Net Sales: Online stores (1",
+      "description": "amounts earned from global sales of compute, storage, database, and other services for start-ups, enterprises, government agencies, and academic institutions.",
+      "source_section": "note2_paragraph",
+      "evidence_snippet": "amounts earned from global sales of compute, storage, database, and other services for start-ups, enterprises, government agencies, and academic institutions.",
       "footnote_id": null,
       "table_id": "t0069"
     },
     {
       "revenue_line": "Other (6)",
-      "description": "Includes sales related to various other offerings, such as healthcare services, certain licensing and distribution of video content, and shipping services, and our co-branded credit card agreements.",
+      "description": "sales related to various other offerings, such as healthcare services, certain licensing and distribution of video content, and shipping services, and our co-branded credit card agreements.",
+      "source_section": "note2_paragraph",
+      "evidence_snippet": "sales related to various other offerings, such as healthcare services, certain licensing and distribution of video content, and shipping services, and our co-branded credit card agreements.",
+      "footnote_id": null,
+      "table_id": "t0069"
+    },
+    {
+      "revenue_line": "Physical stores (2)",
+      "description": "Includes sales from Amazon's physical stores, which as of December 31, 2024, comprised 618 North America and 27 International stores.",
       "source_section": "llm_table_context",
       "evidence_snippet": "[TABLE CONTEXT]   blishers, authors, and others, through programs such as sponsored ads, display, and video advertising. (5) Includes annual and monthly fees associated with Amazon Prime memberships, as well as digital video, audiobook, digital music, e-book, and other non-AWS subscription services. Net sales by groups of similar products and services, which also have similar economic characteristics, is as follows (in millions): Year Ended December 31, 2022 2023 2024 Net Sales: Online stores (1",
       "footnote_id": null,

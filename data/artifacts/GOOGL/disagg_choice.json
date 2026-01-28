@@ -2,5 +2,5 @@
   "table_id": "t0099",
   "confidence": 0.95,
   "selected_dimension": "product_service",
-  "rationale": "This table disaggregates revenue by detailed product/service lines such as Google Search & other, YouTube ads, Google Network, Google subscriptions, platforms, and devices, Google Cloud, and Other Bets, and includes a Total revenues row. It covers recent fiscal years 2023 and 2024, is from Item 8 / Notes, and provides a granular product/service breakdown preferred over segment-only tables."
+  "rationale": "This table disaggregates revenue by detailed product/service lines such as Google Search & other, YouTube ads, Google Network, Google subscriptions, platforms, and devices, Google Cloud, and Other Bets, and includes a Total revenues row. It covers recent fiscal years (2022, 2023, 2024) and matches the preferred dimension inferred as product_service, providing a granular revenue breakdown consistent with the preference for product/service tables over segment-only tables."
 }

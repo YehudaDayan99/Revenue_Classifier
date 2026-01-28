@@ -9,8 +9,8 @@
   "header_rows": [
     1
   ],
-  "total_row_regex": "(?i)^total net sales$",
+  "total_row_regex": "(?i)^Total net sales$",
   "exclude_row_regex": "",
   "units_multiplier": 1000000,
-  "notes": "No separate segment column; item column is first column with product names; year columns correspond to recent fiscal years 2025, 2024, 2023; total row identified by 'Total net sales' label; units in millions."
+  "notes": "No separate segment column; product/item names in first column; year columns correspond to recent fiscal years 2023-2025; total row identified by exact match 'Total net sales'"
 }

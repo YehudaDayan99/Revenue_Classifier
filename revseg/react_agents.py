@@ -307,6 +307,239 @@ def strip_accounting_sentences(text: str) -> str:
 # ========================================================================
 # P0: Heading-based definition extraction (AAPL Services fix)
 # ========================================================================
+# Phase 5: Table-header contamination detection
+TABLE_HEADER_MARKERS = [
+    "Year Ended",
+    "December 31",
+    "June 30", 
+    "September 30",
+    "(in millions)",
+    "(in thousands)",
+    "% change",
+    "% Change",
+    "Total Revenue",
+    "Total Net Sales",
+    "Year-Over-Year",
+    "Fiscal Year",
+]
+
+def _is_table_header_contaminated(text: str) -> bool:
+    """
+    Check if extracted text is contaminated with table header/structure content.
+    
+    This happens when heading-based extraction captures table structure instead
+    of actual product/service definitions (e.g., META Reality Labs).
+    
+    Returns True if the text appears to be table structure, not a definition.
+    """
+    if not text:
+        return False
+    
+    # Check for table header markers
+    marker_count = sum(1 for marker in TABLE_HEADER_MARKERS if marker.lower() in text.lower())
+    
+    # If 2+ markers found, likely table header
+    if marker_count >= 2:
+        return True
+    
+    # Check for column-like patterns (e.g., "2024 2023 2022")
+    year_pattern = re.compile(r'\b20\d{2}\s+20\d{2}\s+20\d{2}\b')
+    if year_pattern.search(text):
+        return True
+    
+    # Check for dollar amounts at the start (revenue table data)
+    dollar_start = re.compile(r'^\s*\$?\s*\d{1,3}(?:,\d{3})+')
+    if dollar_start.match(text):
+        return True
+    
+    # Check for percentage patterns that indicate table data
+    pct_pattern = re.compile(r'\b\d+\s*%\s*(change|increase|decrease)\b', re.IGNORECASE)
+    if pct_pattern.search(text[:200]):  # Check first 200 chars
+        return True
+    
+    return False
+
+
+# Phase 5: Note 2 Revenue paragraph extraction (for META-style filings)
+# Patterns for prose-style definitions in Note 2 - Revenue
+NOTE2_DEFINITION_PATTERNS = [
+    # Pattern: "X revenue is generated from..." or "X revenue includes..."
+    re.compile(
+        r'(?P<label>Advertising|Other|Reality Labs|Family of Apps|Subscription|Premium|Platform)'
+        r'(?:\s+(?:revenue|revenues))?\s+'
+        r'(?:is generated from|includes|consists of|is comprised of|is derived from|represents)'
+        r'\s+(?P<definition>[^.]{20,400}\.)',
+        re.IGNORECASE | re.DOTALL
+    ),
+    # Pattern: "Revenue from X includes..." 
+    re.compile(
+        r'Revenue\s+from\s+'
+        r'(?P<label>advertising|delivery|subscriptions?|hardware|devices?|content)'
+        r'\s+(?:includes|consists of|is comprised of)'
+        r'\s+(?P<definition>[^.]{20,400}\.)',
+        re.IGNORECASE | re.DOTALL
+    ),
+    # Pattern: "X consists of revenue from..."
+    re.compile(
+        r'(?P<label>Advertising|Other revenue|Reality Labs|FoA|RL)'
+        r'\s+(?:consists of|includes)\s+'
+        r'(?:revenue from\s+)?(?P<definition>[^.]{20,400}\.)',
+        re.IGNORECASE | re.DOTALL
+    ),
+]
+
+# Note 2 section extraction pattern
+NOTE2_SECTION_PATTERN = re.compile(
+    r'(?:Note\s*2|NOTE\s*2)[^A-Za-z]*(?:Revenue|REVENUE)',
+    re.IGNORECASE
+)
+
+
+def _extract_note2_section(html_text: str, max_chars: int = 50000) -> Optional[str]:
+    """Extract Note 2 - Revenue section from the filing."""
+    match = NOTE2_SECTION_PATTERN.search(html_text)
+    if not match:
+        return None
+    
+    start = match.start()
+    # Find end by looking for Note 3 or next major section
+    end_pattern = re.compile(r'(?:Note\s*3|NOTE\s*3|Note\s*4|NOTE\s*4)', re.IGNORECASE)
+    end_match = end_pattern.search(html_text, start + 100)
+    
+    if end_match:
+        end = min(end_match.start(), start + max_chars)
+    else:
+        end = start + max_chars
+    
+    return html_text[start:end]
+
+
+def _extract_note2_paragraph_definition(
+    html_text: str,
+    label: str,
+) -> Optional[str]:
+    """
+    Extract definition for a label from Note 2 - Revenue section.
+    
+    This handles META-style filings where definitions are in prose paragraphs
+    like "Advertising revenue is generated from marketers advertising on our apps..."
+    
+    Args:
+        html_text: Full HTML text of the filing
+        label: Revenue line label to find (e.g., "Advertising", "Reality Labs")
+        
+    Returns:
+        Definition text if found, None otherwise
+    """
+    # First, try to extract Note 2 section for focused search
+    note2_section = _extract_note2_section(html_text)
+    search_text = note2_section if note2_section else html_text
+    
+    # Clean label for matching
+    label_clean = label.strip().lower()
+    
+    # Build label-specific patterns
+    label_escaped = re.escape(label.strip())
+    
+    # Phase 5: For "advertising", try the META-specific pattern FIRST
+    # This is more reliable than the generic patterns which may match wrong context
+    # NOTE: Search full html_text, not just Note 2 section, because the advertising
+    # definition may be in Item 1 Business (before Note 2)
+    if label_clean in ('advertising', 'advertising revenue'):
+        # Pattern: "substantially all of our revenue from selling advertising placements..."
+        advertising_pattern = re.compile(
+            r'(?:substantially all|majority)\s+of\s+(?:our\s+)?revenue\s+'
+            r'from\s+(?:selling\s+)?advertising\s+'
+            r'([^.]{30,400}\.(?:\s+[A-Z][^.]{20,200}\.)?)',
+            re.IGNORECASE | re.DOTALL
+        )
+        # Search full text for advertising (it may be in Item 1, not Note 2)
+        match = advertising_pattern.search(html_text)
+        if match:
+            definition = match.group(1).strip()
+            if not _is_table_header_contaminated(definition):
+                # Prepend context for clarity
+                full_desc = f"Revenue from selling advertising {definition}"
+                return strip_accounting_sentences(full_desc)
+        
+        # Alternative: look for "revenue from marketers advertising on..."
+        marketers_pattern = re.compile(
+            r'revenue\s+from\s+marketers\s+advertising\s+on\s+'
+            r'([^.]{20,300}\.)',
+            re.IGNORECASE | re.DOTALL
+        )
+        match = marketers_pattern.search(html_text)  # Search full text
+        if match:
+            definition = match.group(1).strip()
+            if not _is_table_header_contaminated(definition):
+                full_desc = f"Revenue from marketers advertising on {definition}"
+                return strip_accounting_sentences(full_desc)
+        
+        # Skip generic patterns for advertising - they match wrong context
+        return None
+    
+    # Pattern 1: Direct label match "X revenue includes..."
+    direct_pattern = re.compile(
+        rf'{label_escaped}'
+        r'(?:\s+(?:revenue|revenues|segment))?\s+'
+        r'(?:is generated from|includes|consists of|is comprised of|is derived from|represents|are generated from)'
+        r'\s+([^.]{20,500}\.)',
+        re.IGNORECASE | re.DOTALL
+    )
+    
+    match = direct_pattern.search(search_text)
+    if match:
+        definition = match.group(1).strip()
+        # Check for contamination
+        if not _is_table_header_contaminated(definition):
+            return strip_accounting_sentences(definition)
+    
+    # Pattern 2: For "Other revenue" or "Other" - special handling
+    if label_clean in ('other', 'other revenue'):
+        other_pattern = re.compile(
+            r'Other\s+(?:revenue|revenues)\s+'
+            r'(?:consists of|includes|is comprised of|represents)'
+            r'\s+([^.]{20,500}\.)',
+            re.IGNORECASE | re.DOTALL
+        )
+        match = other_pattern.search(search_text)
+        if match:
+            definition = match.group(1).strip()
+            if not _is_table_header_contaminated(definition):
+                return strip_accounting_sentences(definition)
+    
+    # Pattern 3: For segment labels like "Reality Labs" or "Family of Apps"
+    if label_clean in ('reality labs', 'rl', 'family of apps', 'foa'):
+        segment_pattern = re.compile(
+            rf'{label_escaped}'
+            r'[^.]*?'
+            r'(?:revenue|revenues)\s+'
+            r'(?:is generated from|includes|consists of|are generated from)'
+            r'\s+([^.]{20,500}\.)',
+            re.IGNORECASE | re.DOTALL
+        )
+        match = segment_pattern.search(search_text)
+        if match:
+            definition = match.group(1).strip()
+            if not _is_table_header_contaminated(definition):
+                return strip_accounting_sentences(definition)
+    
+    # Pattern 4: Look for "revenue from [label] includes"
+    revenue_from_pattern = re.compile(
+        rf'revenue\s+from\s+{label_escaped}'
+        r'\s+(?:includes|consists of|is comprised of|represents)'
+        r'\s+([^.]{20,500}\.)',
+        re.IGNORECASE | re.DOTALL
+    )
+    match = revenue_from_pattern.search(search_text)
+    if match:
+        definition = match.group(1).strip()
+        if not _is_table_header_contaminated(definition):
+            return strip_accounting_sentences(definition)
+    
+    return None
+
+
 def _extract_heading_based_definition(
     html_text: str,
     label: str,
@@ -413,6 +646,11 @@ def _extract_heading_based_definition(
             filtered = strip_accounting_sentences(cleaned)
             
             if filtered and len(filtered) >= 50:
+                # Phase 5: Check for table-header contamination before returning
+                if _is_table_header_contaminated(filtered):
+                    # Skip this match - it's table structure, not a definition
+                    continue
+                
                 # For parent sections with subsections, allow longer descriptions
                 # but still summarize to key sentences
                 sentences = re.split(r'(?<=[.!?])\s+(?=[A-Z])', filtered)
@@ -444,6 +682,10 @@ def _extract_heading_based_definition(
         filtered = strip_accounting_sentences(cleaned)
         
         if filtered and len(filtered) >= 50:
+            # Phase 5: Check for table-header contamination
+            if _is_table_header_contaminated(filtered):
+                return None  # Don't return contaminated text
+            
             sentences = re.split(r'(?<=[.!?])\s+(?=[A-Z])', filtered)
             if len(sentences) > 6:
                 filtered = ' '.join(sentences[:6])
@@ -2072,8 +2314,21 @@ def describe_revenue_lines(
                 "footnote_id": None,
             }
             print(f"[heading-based] Found definition for '{label_clean}': {heading_desc[:80]}...", flush=True)
+        else:
+            # Phase 5: Try Note 2 paragraph extraction (for META-style filings)
+            note2_desc = _extract_note2_paragraph_definition(html_text, label_clean)
+            if note2_desc and len(note2_desc) >= 30:
+                heading_descriptions[item_label] = note2_desc
+                # Phase 4: Record provenance for Note 2 extraction
+                provenance[item_label] = {
+                    "description": note2_desc,
+                    "source": "note2_paragraph",
+                    "evidence_snippet": note2_desc[:500],
+                    "footnote_id": None,
+                }
+                print(f"[note2-paragraph] Found definition for '{label_clean}': {note2_desc[:80]}...", flush=True)
     
-    # Merge: footnotes take priority, then headings
+    # Merge: footnotes take priority, then headings/note2
     for item, desc in heading_descriptions.items():
         if item not in footnote_descriptions:
             footnote_descriptions[item] = desc

@@ -4,6 +4,14 @@
   "fiscal_year": 2025,
   "line_provenance": [
     {
+      "revenue_line": "Networking",
+      "description": "our Data Center accelerated computing platforms and AI solutions and software; networking; automotive platforms and autonomous and electric vehicle solutions; Jetson for robotics and other embedded platforms; and DGX Cloud computing services.",
+      "source_section": "note2_paragraph",
+      "evidence_snippet": "our Data Center accelerated computing platforms and AI solutions and software; networking; automotive platforms and autonomous and electric vehicle solutions; Jetson for robotics and other embedded platforms; and DGX Cloud computing services.",
+      "footnote_id": null,
+      "table_id": "t0059"
+    },
+    {
       "revenue_line": "Gaming",
       "description": "Gaming is the largest entertainment industry, with PC gaming as the predominant platform. Many factors propel its growth, including new high production value games and franchises, the continued rise of competitive gaming, or eSports, social connectivity and the increasing popularity of game streamers, modders, or gamers who remaster games, and creators. Our gaming platforms leverage our GPUs and sophisticated software to enhance the gaming experience with smoother, higher quality graphics. We developed NVIDIA RTX to bring next generation graphics and AI to games. NVIDIA RTX features ray tracing technology for real-time, cinematic-quality rendering. Ray tracing, which has long been used for special effects in the movie industry, is a computationally intensive technique that simulates the physical behavior of light to achieve greater realism in computer-generated scenes.",
       "source_section": "heading_based_html_heading",
