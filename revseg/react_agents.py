@@ -540,6 +540,133 @@ def _extract_note2_paragraph_definition(
     return None
 
 
+# ========================================================================
+# Phase 6: Segment enumeration extraction (for NVDA-style filings)
+# ========================================================================
+
+def _extract_from_segment_enumeration(
+    html_text: str,
+    revenue_line: str,
+    revenue_group: str,
+) -> Optional[str]:
+    """
+    Extract description from segment enumeration pattern.
+    
+    Handles filings where the segment definition is:
+    "{Segment} includes X; Y; Z" and revenue lines are components (X, Y, Z).
+    
+    Example (NVDA):
+    - revenue_group: "Compute & Networking"
+    - revenue_line: "Compute"
+    - Pattern matches: "Compute & Networking segment includes our Data Center 
+      accelerated computing platforms...; networking; automotive..."
+    - Returns: "Data Center accelerated computing platforms and AI solutions and software"
+    
+    This is a fallback for generic labels like "Compute" where the definition
+    exists only at the segment level, not as a standalone heading.
+    
+    Args:
+        html_text: Full HTML text of the filing
+        revenue_line: The specific revenue line label (e.g., "Compute")
+        revenue_group: The parent segment/group (e.g., "Compute & Networking")
+        
+    Returns:
+        Definition text if found, None otherwise
+    """
+    if not revenue_group or not revenue_line:
+        return None
+    
+    # Skip if revenue_group is a generic fallback
+    generic_groups = {'product/service disclosure', 'other', 'total'}
+    if revenue_group.lower().strip() in generic_groups:
+        return None
+    
+    # Build multiple regex patterns to handle HTML encoding variations
+    # "Compute & Networking" might appear as:
+    # - "Compute & Networking" (plain)
+    # - "Compute &amp; Networking" (HTML encoded)
+    # - "ComputeAndNetworking" (no space/symbol)
+    group_stripped = revenue_group.strip()
+    
+    # Create variations of the group name for matching
+    group_patterns = []
+    
+    # 1. Plain escaped version
+    group_patterns.append(re.escape(group_stripped))
+    
+    # 2. HTML-encoded ampersand version (Compute & Networking -> Compute &amp; Networking)
+    if '&' in group_stripped:
+        html_encoded = group_stripped.replace('&', '&amp;')
+        group_patterns.append(re.escape(html_encoded))
+    
+    # 3. No-symbol version (Compute & Networking -> ComputeAndNetworking)
+    no_symbol = re.sub(r'\s*&\s*', 'And', group_stripped)
+    no_symbol = re.sub(r'\s+', '', no_symbol)  # Remove spaces
+    if no_symbol != group_stripped:
+        group_patterns.append(re.escape(no_symbol))
+    
+    # Try each pattern variation
+    for group_escaped in group_patterns:
+        # Pattern: "{group} segment includes X; Y; Z" or "{group} includes X; Y; Z"
+        pattern = re.compile(
+            rf'{group_escaped}\s*(?:segment\s+)?includes?\s+'
+            r'(?:our\s+)?'
+            r'([^.]{50,600})',  # Capture the enumeration (allow semicolons)
+            re.IGNORECASE | re.DOTALL
+        )
+        
+        match = pattern.search(html_text)
+        if match:
+            break
+    else:
+        # No pattern matched
+        return None
+    
+    # Extract the enumeration from the matched pattern
+    enumeration = match.group(1).strip()
+    
+    # Split by semicolons to get individual items
+    items = [item.strip() for item in enumeration.split(';') if item.strip()]
+    
+    if not items:
+        return None
+    
+    line_lower = revenue_line.lower().strip()
+    
+    # For "Compute" - typically the first item (Data Center / AI platforms)
+    if line_lower == 'compute':
+        # First item is usually the compute/data center description
+        desc = items[0]
+        # Clean up any trailing conjunctions
+        desc = re.sub(r'\s+and\s*$', '', desc, flags=re.IGNORECASE)
+        if len(desc) >= 20:
+            return strip_accounting_sentences(desc)
+    
+    # For "Networking" - look for item containing "network"
+    if line_lower == 'networking':
+        for item in items:
+            if 'network' in item.lower() and 'compute' not in item.lower():
+                return strip_accounting_sentences(item)
+        
+        # Fallback: Look for detailed networking description elsewhere
+        networking_pattern = re.compile(
+            r'(?:our\s+)?networking\s+offerings?\s+include[s]?\s+'
+            r'([^.]{30,400}\.)',
+            re.IGNORECASE
+        )
+        nm = networking_pattern.search(html_text)
+        if nm:
+            return strip_accounting_sentences(nm.group(1).strip())
+    
+    # For other generic labels, try to find a matching item by keyword
+    for item in items:
+        # Check if the revenue_line keyword appears in this item
+        if line_lower in item.lower():
+            return strip_accounting_sentences(item)
+    
+    return None
+
+
 def _extract_heading_based_definition(
     html_text: str,
     label: str,
@@ -2515,11 +2642,36 @@ def describe_revenue_lines(
     # STEP 3: Merge footnote descriptions with LLM descriptions
     # Footnote descriptions take priority (they are direct quotes from the filing)
     # Both have already been filtered by strip_accounting_sentences()
+    # Phase 6: Add segment enumeration fallback for NVDA-style filings
     output_rows = []
     for line_info in revenue_lines:
         item = line_info.get("item", "")
-        # Priority: footnote > LLM
+        revenue_group = line_info.get("revenue_group", "")
+        
+        # Priority: footnote > LLM > segment_enumeration
         description = footnote_descriptions.get(item, "") or llm_descriptions.get(item, "")
+        
+        # Phase 6: Fallback to segment enumeration extraction
+        # For generic labels like "Compute" that exist only in segment narratives
+        if not description and revenue_group:
+            try:
+                # Use html_raw if available (has HTML structure for pattern matching)
+                search_html = html_raw if html_raw else html_text
+                enum_desc = _extract_from_segment_enumeration(search_html, item, revenue_group)
+                if enum_desc:
+                    description = enum_desc
+                    # Record provenance for segment enumeration extraction
+                    if item not in provenance:
+                        provenance[item] = {
+                            "description": enum_desc,
+                            "source": "segment_enumeration",
+                            "evidence_snippet": f"Extracted from '{revenue_group}' segment definition",
+                            "footnote_id": None,
+                        }
+                    print(f"[{ticker}] Phase 6: Extracted description for '{item}' from segment enumeration", flush=True)
+            except Exception as e:
+                print(f"[{ticker}] Warning: segment enumeration extraction failed for '{item}': {e}", flush=True)
+        
         output_rows.append({
             "revenue_line": item,
             "description": description,

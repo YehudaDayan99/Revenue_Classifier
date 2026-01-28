@@ -1,6 +1,9 @@
 {
-  "dimension": "product_category",
-  "segments": [],
+  "dimension": "reportable_segments",
+  "segments": [
+    "Graphics",
+    "Compute & Networking"
+  ],
   "include_segments_optional": [],
-  "notes": "The provided snippets do not contain sufficient detail to identify NVIDIA's primary business-line dimension or its product categories/segments. Typically, NVIDIA reports by product categories such as Data Center, Gaming, Professional Visualization, and Automotive, but this is not confirmed in the provided text."
+  "notes": "NVIDIA primarily reports financial results by two reportable segments: Graphics and Compute & Networking. No evidence of corporate adjustments included in total revenues."
 }

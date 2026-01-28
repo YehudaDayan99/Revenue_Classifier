@@ -34,6 +34,14 @@
       "evidence_snippet": "Automotive is comprised of platform solutions for automated driving from the cloud to the car. Leveraging our technology leadership in AI and building on our long-standing automotive relationships, we are delivering a complete end-to-end solution for the AV market under the DRIVE Hyperion brand. We have demonstrated multiple applications of AI within the car: AI can drive the car itself as a pilot in fully autonomous mode or it can also be a co-pilot, assisting the human driver while creating a ",
       "footnote_id": null,
       "table_id": "t0059"
+    },
+    {
+      "revenue_line": "Compute",
+      "description": "Data Center accelerated computing platforms and AI solutions and software",
+      "source_section": "segment_enumeration",
+      "evidence_snippet": "Extracted from 'Compute & Networking' segment definition",
+      "footnote_id": null,
+      "table_id": "t0059"
     }
   ]
 }

@@ -867,8 +867,13 @@ def run_pipeline(
                             filtered_rows.append(r)
                 
                 # Step 3: Build revenue lines list for description extraction
+                # Include revenue_group for segment enumeration fallback (Phase 6)
                 revenue_lines_for_desc = [
-                    {"item": r.item, "value": r.value}
+                    {
+                        "item": r.item,
+                        "value": r.value,
+                        "revenue_group": _get_revenue_group(ticker, _clean_revenue_line(r.item), r.dimension, r.segment),
+                    }
                     for r in filtered_rows
                 ]
                 

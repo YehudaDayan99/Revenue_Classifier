@@ -1,5 +1,5 @@
 {
-  "segment_col": null,
+  "segment_col": 0,
   "item_col": 0,
   "year_cols": {
     "2025": 4,
@@ -8,11 +8,10 @@
   },
   "header_rows": [
     1,
-    2,
     4
   ],
-  "total_row_regex": "(?i)^Total revenue$",
+  "total_row_regex": "^Total revenue$",
   "exclude_row_regex": "",
   "units_multiplier": 1000000,
-  "notes": "No separate segment column; first column is product/item; year columns correspond to recent fiscal years with values in millions; total row labeled 'Total revenue'."
+  "notes": "Segment and Item columns are the same (column 0). Year columns correspond to recent fiscal years 2025, 2024, 2023 with financial data in millions. Total row identified by exact label 'Total revenue'."
 }
