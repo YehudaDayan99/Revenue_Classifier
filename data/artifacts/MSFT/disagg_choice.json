@@ -1,6 +1,0 @@
-{
-  "table_id": "t0073",
-  "confidence": 0.95,
-  "selected_dimension": "product_service",
-  "rationale": "This table disaggregates revenue by detailed product and service categories such as Server products and cloud services, Microsoft 365 Commercial products and cloud services, Gaming, LinkedIn, Windows and Devices, Search and news advertising, Dynamics products and cloud services, Enterprise and partner services, Microsoft 365 Consumer products and cloud services, Other, and includes a Total revenue row. It covers recent fiscal years 2023-2025 and aligns with the preferred product/service dimension for granular revenue breakdown."
-}

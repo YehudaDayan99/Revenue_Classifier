@@ -1,9 +1,0 @@
-{
-  "dimension": "reportable_segments",
-  "segments": [
-    "Graphics",
-    "Compute & Networking"
-  ],
-  "include_segments_optional": [],
-  "notes": "NVIDIA primarily reports financial results by two reportable segments: Graphics and Compute & Networking. No evidence of corporate adjustments included in total revenues."
-}

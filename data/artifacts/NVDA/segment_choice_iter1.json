@@ -1,6 +1,0 @@
-{
-  "table_id": "t0055",
-  "confidence": 0.95,
-  "kind": "segment_revenue",
-  "rationale": "This table contains multiple rows with segment revenue data for the latest fiscal year ended Jan 26, 2025, includes segment names and revenue figures, has units marked as (In millions), and is located near text referencing reportable segments and financial statement notes in Item 8, making it the best candidate for revenue by reportable segment."
-}

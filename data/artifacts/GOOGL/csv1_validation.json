@@ -1,9 +1,0 @@
-{
-  "ok": true,
-  "table_total": 350018000000,
-  "segment_sum": 349807000000,
-  "adjustment_sum": 211000000,
-  "external_total": null,
-  "delta_pct": 0.0,
-  "notes": "OK: matches table total within 0.00%"
-}

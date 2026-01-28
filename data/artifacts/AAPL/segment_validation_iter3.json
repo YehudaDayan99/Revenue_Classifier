@@ -1,8 +1,0 @@
-{
-  "ok": false,
-  "total_revenue_usd": null,
-  "sum_segments_usd": 206575000000,
-  "abs_delta_usd": null,
-  "pct_delta": null,
-  "notes": "No total revenue reference available; cannot validate segments-to-total."
-}

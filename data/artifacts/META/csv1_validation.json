@@ -1,9 +1,0 @@
-{
-  "ok": true,
-  "table_total": 164501000000,
-  "segment_sum": 326856000000,
-  "adjustment_sum": 0,
-  "external_total": null,
-  "delta_pct": null,
-  "notes": "ACCEPTED: 3 segments, no validation reference available"
-}

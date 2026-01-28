@@ -1,6 +1,0 @@
-{
-  "table_id": "t0012",
-  "confidence": 0.9,
-  "selected_dimension": "segment",
-  "rationale": "The table disaggregates revenue by business lines labeled as 'Compute & Networking' and 'Graphics', which correspond to the company's main segments. It includes a 'Total' row for revenue. Although the inferred dimension is 'unknown', the row labels match the known business lines for NVIDIA, and the table contains recent fiscal years (2024, 2025). No product/service level breakdown is available in the candidates, so the segment-level table is the best available. The table is from Item 8 / Notes and has year columns for recent fiscal years."
-}

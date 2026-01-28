@@ -1,6 +1,0 @@
-{"stage": "candidates", "n_candidates": 86, "income_guess": "t0023"}
-{"stage": "scout", "n_headings": 0, "n_snippets": 12}
-{"stage": "candidates", "n_candidates": 86, "income_guess": "t0023"}
-{"stage": "scout", "n_headings": 0, "n_snippets": 12}
-{"stage": "segment_select_request", "iter": 1}
-{"stage": "segment_select", "iter": 1, "choice": {"table_id": "t0012", "confidence": 0.95, "kind": "segment_revenue", "rationale": "Table t0012 contains detailed segment revenue data for Tesla, Inc. for the years ended 2024, 2023, and 2022, with clear segment labels such as Automotive sales, Automotive regulatory credits, Automotive leasing, Energy generation and storage segment revenue, and totals. It is from Item 8 / Notes to Financial Statements and includes units in millions, making it the best match for reportable segment revenue."}}

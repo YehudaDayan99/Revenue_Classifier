@@ -1,6 +1,0 @@
-{
-  "table_id": "t0110",
-  "confidence": 0.9,
-  "kind": "segment_revenue",
-  "rationale": "Table t0110 contains rows and columns with headers including 'Revenues and other income', 'Sales and other operating revenue', 'Total revenues and other income', and years 2022, 2023, 2024. It is from Item 8 Financial Statements and Supplementary Data section, matching the request for reportable segment revenue for the latest fiscal year."
-}

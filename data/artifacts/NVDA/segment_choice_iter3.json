@@ -1,6 +1,0 @@
-{
-  "table_id": "t0055",
-  "confidence": 0.95,
-  "kind": "segment_revenue",
-  "rationale": "This table contains multiple rows with segment revenue data for the years ended January 26, 2025, January 28, 2024, and January 29, 2023. It includes segment names such as Compute & Networking and Graphics, and has units marked as (In millions). It is located near text referencing reportable segments and is from Item 8 / Notes to Financial Statements, making it the best candidate for revenue by reportable segment."
-}

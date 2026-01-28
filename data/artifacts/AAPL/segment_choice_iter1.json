@@ -1,6 +1,0 @@
-{
-  "table_id": "t0014",
-  "kind": "segment_revenue",
-  "confidence": 0.5,
-  "rationale": "Chosen from TableClassifierAgent segment_revenue queue"
-}

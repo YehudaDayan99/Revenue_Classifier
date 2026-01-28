@@ -1,9 +1,0 @@
-{
-  "ok": true,
-  "table_total": null,
-  "segment_sum": 637959000000,
-  "adjustment_sum": 0,
-  "external_total": 637959000000,
-  "delta_pct": 0.0,
-  "notes": "OK: matches SEC API total within 0.00%"
-}

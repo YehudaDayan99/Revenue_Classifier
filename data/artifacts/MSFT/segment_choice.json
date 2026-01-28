@@ -1,6 +1,0 @@
-{
-  "table_id": "t0014",
-  "kind": "segment_results_of_operations",
-  "confidence": 0.6,
-  "rationale": "Deterministic heuristic pick for segment results table containing Revenue lines per segment."
-}

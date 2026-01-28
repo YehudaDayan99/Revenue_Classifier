@@ -1,9 +1,0 @@
-{
-  "dimension": "reportable_segments",
-  "segments": [
-    "Family of Apps",
-    "Reality Labs"
-  ],
-  "include_segments_optional": [],
-  "notes": "Meta reports results by two primary reportable segments: Family of Apps (FoA) and Reality Labs (RL), as shown in the segment profitability and revenue disclosures."
-}

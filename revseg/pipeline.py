@@ -469,7 +469,7 @@ def run_pipeline(
     # Default llm for backward compatibility
     llm = llm_fast
 
-    artifacts_dir = out_dir.parent / "artifacts"
+    artifacts_dir = out_dir.parent / ".artifacts"
     artifacts_dir.mkdir(parents=True, exist_ok=True)
 
     csv1_rows: List[Dict[str, Any]] = []
