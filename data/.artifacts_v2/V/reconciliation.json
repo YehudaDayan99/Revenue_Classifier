@@ -1,0 +1,18 @@
+{
+  "status": "FAIL",
+  "income_statement_total": 40000000000,
+  "extracted_total": 80000000000,
+  "gap_amount": -40000000000,
+  "gap_percent": -1.0,
+  "extracted_items": {
+    "U.S.": 15633000000,
+    "International": 24367000000,
+    "Service revenue": 17539000000,
+    "Data processing revenue": 19993000000,
+    "International transaction revenue": 14166000000,
+    "Other revenue": 4053000000,
+    "Client incentives": -15751000000
+  },
+  "adjustment_items": {},
+  "notes": "Gap of $-40,000,000,000 (-100.0%): units_error - Check units multiplier (thousands vs millions vs billions)"
+}

@@ -1,0 +1,100 @@
+{
+  "ticker": "AAPL",
+  "sections": {
+    "item1_business": true,
+    "item7_mda": false,
+    "item8_notes": true,
+    "note2_revenue": false,
+    "segment_note": true
+  },
+  "priority_a_tables": [
+    {
+      "table_id": "t0014",
+      "type": "disaggregation",
+      "confidence": 0.95,
+      "caption": ""
+    },
+    {
+      "table_id": "t0015",
+      "type": "disaggregation",
+      "confidence": 0.95,
+      "caption": ""
+    }
+  ],
+  "priority_b_tables": [
+    {
+      "table_id": "t0048",
+      "type": "segment",
+      "confidence": 0.85,
+      "caption": ""
+    }
+  ],
+  "priority_c_tables": [
+    {
+      "table_id": "t0016",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0017",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0018",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0019",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0024",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0027",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0037",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0049",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0050",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0051",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0052",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    }
+  ]
+}

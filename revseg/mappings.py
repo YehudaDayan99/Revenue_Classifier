@@ -94,7 +94,14 @@ META_ITEM_TO_SEGMENT: Dict[str, str] = {
 }
 
 META_SUBTOTAL_ITEMS: set = {
-    # NOTE: "Family of Apps" is a reportable segment, NOT a subtotal - do not skip it
+    # P0.2 FIX: Family of Apps is a segment-level subtotal
+    # When granular items (Advertising, Other revenue) exist, FoA must be excluded
+    # to avoid double-counting (Advertising + Other revenue = Family of Apps total)
+    # 
+    # NOTE: Reality Labs is NOT a subtotal - it has no sub-items in the disaggregation
+    # table and should be extracted as a leaf node.
+    "Family of Apps",
+    "Family of Apps (FoA)",
     "Total revenue",
     "Total",
 }
@@ -109,16 +116,16 @@ META_REVENUE_SOURCE_ITEMS: set = {
 # Reportable segments: Compute & Networking, Graphics
 # Per ASC 280, Compute+Networking = "Compute & Networking" segment
 # Gaming+Professional Visualization = "Graphics" segment
-# Automotive and OEM and Other are not attributed to a reportable segment
+# P1.5: Automotive mapped to Compute & Networking per Item 1 segment definition
 NVDA_ITEM_TO_SEGMENT: Dict[str, str] = {
     # Compute & Networking segment (formerly Data Center)
     "Compute": "Compute & Networking",
     "Networking": "Compute & Networking",
+    "Automotive": "Compute & Networking",  # P1.5: Per Item 1 - "automotive platforms" under C&N
     # Graphics segment
     "Gaming": "Graphics",
     "Professional Visualization": "Graphics",
-    # No segment attribution for these - will use "Product/Service disclosure"
-    # "Automotive": None,
+    # OEM and Other: Keep as unmapped (will use "Product/Service disclosure" or "Other")
     # "OEM and Other": None,
 }
 

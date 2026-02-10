@@ -1,0 +1,99 @@
+{
+  "ticker": "META",
+  "sections": {
+    "item1_business": true,
+    "item7_mda": true,
+    "item8_notes": true,
+    "note2_revenue": true,
+    "segment_note": true
+  },
+  "priority_a_tables": [
+    {
+      "table_id": "t0007",
+      "type": "disaggregation",
+      "confidence": 0.95,
+      "caption": ""
+    },
+    {
+      "table_id": "t0011",
+      "type": "disaggregation",
+      "confidence": 0.95,
+      "caption": ""
+    },
+    {
+      "table_id": "t0016",
+      "type": "disaggregation",
+      "confidence": 0.95,
+      "caption": ""
+    },
+    {
+      "table_id": "t0031",
+      "type": "disaggregation",
+      "confidence": 0.95,
+      "caption": ""
+    },
+    {
+      "table_id": "t0032",
+      "type": "disaggregation",
+      "confidence": 0.95,
+      "caption": ""
+    },
+    {
+      "table_id": "t0047",
+      "type": "disaggregation",
+      "confidence": 0.95,
+      "caption": ""
+    }
+  ],
+  "priority_b_tables": [],
+  "priority_c_tables": [
+    {
+      "table_id": "t0008",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0012",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0013",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0014",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0015",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0033",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0034",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0063",
+      "type": "geography",
+      "confidence": 0.5,
+      "caption": ""
+    }
+  ]
+}

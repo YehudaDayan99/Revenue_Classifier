@@ -1,0 +1,41 @@
+{
+  "tickers": {
+    "V": {
+      "ok": true,
+      "errors": [],
+      "phases": {
+        "income_statement": {
+          "total_revenue": 40000000000,
+          "label": "Net revenue",
+          "fiscal_year": 2025,
+          "confidence": 0.85
+        },
+        "document_scout": {
+          "priority_a_count": 0,
+          "priority_b_count": 0,
+          "priority_c_count": 6,
+          "total_tables": 6
+        },
+        "reconciliation": {
+          "status": "FAIL",
+          "income_total": 40000000000,
+          "extracted_total": 80000000000,
+          "gap_amount": -40000000000,
+          "gap_percent": -1.0,
+          "confidence": 0.1
+        }
+      },
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts_v2\\V",
+      "year": 2025,
+      "n_rows": 7,
+      "tables_used": [
+        "t0017",
+        "t0018",
+        "t0025",
+        "t0031",
+        "t0032"
+      ]
+    }
+  },
+  "outputs_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\outputs_v2_test"
+}

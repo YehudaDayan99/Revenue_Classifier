@@ -1,0 +1,93 @@
+{
+  "ticker": "NVDA",
+  "sections": {
+    "item1_business": true,
+    "item7_mda": true,
+    "item8_notes": true,
+    "note2_revenue": true,
+    "segment_note": true
+  },
+  "priority_a_tables": [],
+  "priority_b_tables": [
+    {
+      "table_id": "t0011",
+      "type": "segment",
+      "confidence": 0.85,
+      "caption": ""
+    },
+    {
+      "table_id": "t0012",
+      "type": "segment",
+      "confidence": 0.85,
+      "caption": ""
+    },
+    {
+      "table_id": "t0055",
+      "type": "segment",
+      "confidence": 0.85,
+      "caption": ""
+    }
+  ],
+  "priority_c_tables": [
+    {
+      "table_id": "t0013",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0014",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0040",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0043",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0044",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0045",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0056",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0057",
+      "type": "geography",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0058",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0059",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    }
+  ]
+}

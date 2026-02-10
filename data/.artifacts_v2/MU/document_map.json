@@ -1,0 +1,74 @@
+{
+  "ticker": "MU",
+  "sections": {
+    "item1_business": true,
+    "item7_mda": true,
+    "item8_notes": true,
+    "note2_revenue": true,
+    "segment_note": true
+  },
+  "priority_a_tables": [],
+  "priority_b_tables": [],
+  "priority_c_tables": [
+    {
+      "table_id": "t0011",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0013",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0014",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0018",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0046",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0047",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0058",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0059",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0060",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0063",
+      "type": "geography",
+      "confidence": 0.5,
+      "caption": ""
+    }
+  ]
+}

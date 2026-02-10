@@ -3,12 +3,12 @@
     "NVDA": {
       "ok": true,
       "errors": [],
-      "artifacts_dir": "C:\\Users\\yehud\\Business Classification\\data\\artifacts\\NVDA",
-      "html_path": "C:\\Users\\yehud\\Business Classification\\data\\10k\\NVDA\\2025-02-26_000104581025000023\\primary_document.html",
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\NVDA",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\NVDA\\2025-02-26_000104581025000023\\primary_document.html",
       "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm",
       "income_statement_table_id_guess": "t0009",
       "segment_year": 2025,
-      "n_segments": 4,
+      "n_segments": 3,
       "validation": {
         "ok": true,
         "table_total": 130497000000,
@@ -22,8 +22,8 @@
     "AAPL": {
       "ok": true,
       "errors": [],
-      "artifacts_dir": "C:\\Users\\yehud\\Business Classification\\data\\artifacts\\AAPL",
-      "html_path": "C:\\Users\\yehud\\Business Classification\\data\\10k\\AAPL\\2025-10-31_000032019325000079\\primary_document.html",
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\AAPL",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\AAPL\\2025-10-31_000032019325000079\\primary_document.html",
       "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
       "income_statement_table_id_guess": "t0037",
       "segment_year": 2025,
@@ -41,8 +41,8 @@
     "MSFT": {
       "ok": true,
       "errors": [],
-      "artifacts_dir": "C:\\Users\\yehud\\Business Classification\\data\\artifacts\\MSFT",
-      "html_path": "C:\\Users\\yehud\\Business Classification\\data\\10k\\MSFT\\2025-07-30_000095017025100235\\primary_document.html",
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\MSFT",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\MSFT\\2025-07-30_000095017025100235\\primary_document.html",
       "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm",
       "income_statement_table_id_guess": "t0013",
       "segment_year": 2025,
@@ -60,8 +60,8 @@
     "GOOGL": {
       "ok": true,
       "errors": [],
-      "artifacts_dir": "C:\\Users\\yehud\\Business Classification\\data\\artifacts\\GOOGL",
-      "html_path": "C:\\Users\\yehud\\Business Classification\\data\\10k\\GOOGL\\2025-02-05_000165204425000014\\primary_document.html",
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\GOOGL",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\GOOGL\\2025-02-05_000165204425000014\\primary_document.html",
       "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm",
       "income_statement_table_id_guess": "t0046",
       "segment_year": 2024,
@@ -79,41 +79,262 @@
     "AMZN": {
       "ok": true,
       "errors": [],
-      "artifacts_dir": "C:\\Users\\yehud\\Business Classification\\data\\artifacts\\AMZN",
-      "html_path": "C:\\Users\\yehud\\Business Classification\\data\\10k\\AMZN\\2025-02-07_000101872425000004\\primary_document.html",
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\AMZN",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\AMZN\\2025-02-07_000101872425000004\\primary_document.html",
       "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872425000004/amzn-20241231.htm",
       "income_statement_table_id_guess": null,
       "segment_year": 2024,
       "n_segments": 7,
       "validation": {
         "ok": true,
-        "table_total": null,
+        "table_total": 637959000000,
         "segment_sum": 637959000000,
         "adjustment_sum": 0,
         "external_total": 637959000000,
         "delta_pct": 0.0,
-        "notes": "OK: matches SEC API total within 0.00%"
+        "notes": "OK: matches table total within 0.00%"
       }
     },
     "META": {
       "ok": true,
       "errors": [],
-      "artifacts_dir": "C:\\Users\\yehud\\Business Classification\\data\\artifacts\\META",
-      "html_path": "C:\\Users\\yehud\\Business Classification\\data\\10k\\META\\2025-01-30_000132680125000017\\primary_document.html",
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\META",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\META\\2025-01-30_000132680125000017\\primary_document.html",
       "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/1326801/000132680125000017/meta-20241231.htm",
       "income_statement_table_id_guess": "t0010",
       "segment_year": 2024,
-      "n_segments": 3,
+      "n_segments": 1,
       "validation": {
         "ok": true,
         "table_total": 164501000000,
-        "segment_sum": 326856000000,
+        "segment_sum": 162355000000,
         "adjustment_sum": 0,
         "external_total": null,
-        "delta_pct": null,
-        "notes": "ACCEPTED: 3 segments, no validation reference available"
+        "delta_pct": 0.01304551340113434,
+        "notes": "OK: matches table total within 1.30%"
       }
+    },
+    "TSLA": {
+      "ok": false,
+      "errors": [
+        "No rows extracted from disaggregation table"
+      ],
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\TSLA",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\TSLA\\2025-01-30_000162828025003063\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828025003063/tsla-20241231.htm",
+      "income_statement_table_id_guess": "t0023"
+    },
+    "MA": {
+      "ok": false,
+      "errors": [
+        "No rows extracted from disaggregation table"
+      ],
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\MA",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\MA\\2025-02-12_000114139125000011\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/1141391/000114139125000011/ma-20241231.htm",
+      "income_statement_table_id_guess": "t0031"
+    },
+    "V": {
+      "ok": true,
+      "errors": [],
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\V",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\V\\2025-11-06_000140316125000089\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/1403161/000140316125000089/v-20250930.htm",
+      "income_statement_table_id_guess": "t0010",
+      "segment_year": 2025,
+      "n_segments": 4,
+      "validation": {
+        "ok": true,
+        "table_total": 55751000000,
+        "segment_sum": 55751000000,
+        "adjustment_sum": 0,
+        "external_total": null,
+        "delta_pct": 0.0,
+        "notes": "OK: matches table total within 0.00%"
+      }
+    },
+    "AVGO": {
+      "ok": true,
+      "errors": [],
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\AVGO",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\AVGO\\2025-12-18_000173016825000121\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/1730168/000173016825000121/avgo-20251102.htm",
+      "income_statement_table_id_guess": "t0073",
+      "segment_year": 2025,
+      "n_segments": 3,
+      "validation": {
+        "ok": true,
+        "table_total": 200000000,
+        "segment_sum": 200000000,
+        "adjustment_sum": 0,
+        "external_total": null,
+        "delta_pct": 0.0,
+        "notes": "OK: matches table total within 0.00%"
+      }
+    },
+    "COST": {
+      "ok": true,
+      "errors": [],
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\COST",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\COST\\2025-10-08_000090983225000101\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/909832/000090983225000101/cost-20250831.htm",
+      "income_statement_table_id_guess": "t0053",
+      "segment_year": 2025,
+      "n_segments": 4,
+      "validation": {
+        "ok": true,
+        "table_total": 269912000000,
+        "segment_sum": 269912000000,
+        "adjustment_sum": 0,
+        "external_total": 275235000000,
+        "delta_pct": 0.0,
+        "notes": "OK: matches table total within 0.00%"
+      }
+    },
+    "AMD": {
+      "ok": true,
+      "errors": [],
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\AMD",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\AMD\\2025-02-05_000000248825000012\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248825000012/amd-20241228.htm",
+      "income_statement_table_id_guess": "t0008",
+      "segment_year": 2024,
+      "n_segments": 4,
+      "validation": {
+        "ok": true,
+        "table_total": 25785000000,
+        "segment_sum": 25785000000,
+        "adjustment_sum": 0,
+        "external_total": null,
+        "delta_pct": 0.0,
+        "notes": "OK: matches table total within 0.00%"
+      }
+    },
+    "JNJ": {
+      "ok": true,
+      "errors": [],
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\JNJ",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\JNJ\\2025-02-13_000020040625000038\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/200406/000020040625000038/jnj-20241229.htm",
+      "income_statement_table_id_guess": null,
+      "segment_year": 2024,
+      "n_segments": 2,
+      "validation": {
+        "ok": true,
+        "table_total": 17232000000,
+        "segment_sum": 17232000000,
+        "adjustment_sum": 0,
+        "external_total": null,
+        "delta_pct": 0.0,
+        "notes": "OK: matches table total within 0.00%"
+      }
+    },
+    "MU": {
+      "ok": true,
+      "errors": [],
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\MU",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\MU\\2025-10-03_000072312525000028\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000028/mu-20250828.htm",
+      "income_statement_table_id_guess": "t0011",
+      "segment_year": 2025,
+      "n_segments": 5,
+      "validation": {
+        "ok": true,
+        "table_total": 10846,
+        "segment_sum": 10846,
+        "adjustment_sum": 0,
+        "external_total": null,
+        "delta_pct": 0.0,
+        "notes": "OK: matches table total within 0.00%"
+      }
+    },
+    "XOM": {
+      "ok": true,
+      "errors": [],
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\XOM",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\XOM\\2025-02-19_000003408825000010\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/34088/000003408825000010/xom-20241231.htm",
+      "income_statement_table_id_guess": "t0170",
+      "segment_year": 2024,
+      "n_segments": 2,
+      "validation": {
+        "ok": true,
+        "table_total": 339247000000,
+        "segment_sum": 339247000000,
+        "adjustment_sum": 0,
+        "external_total": 349585000000,
+        "delta_pct": 0.0,
+        "notes": "OK: matches table total within 0.00%"
+      }
+    },
+    "ORCL": {
+      "ok": true,
+      "errors": [],
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\ORCL",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\ORCL\\2025-06-18_000095017025087926\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017025087926/orcl-20250531.htm",
+      "income_statement_table_id_guess": "t0053",
+      "segment_year": 2025,
+      "n_segments": 3,
+      "validation": {
+        "ok": true,
+        "table_total": 57399000000,
+        "segment_sum": 57399000000,
+        "adjustment_sum": 0,
+        "external_total": 57399000000,
+        "delta_pct": 0.0,
+        "notes": "OK: matches table total within 0.00%"
+      }
+    },
+    "JPM": {
+      "ok": false,
+      "errors": [
+        "No rows extracted from disaggregation table"
+      ],
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\JPM",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\JPM\\2025-02-14_000001961725000270\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/19617/000001961725000270/jpm-20241231.htm",
+      "income_statement_table_id_guess": "t0117"
+    },
+    "LLY": {
+      "ok": true,
+      "errors": [],
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\LLY",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\LLY\\2025-02-19_000005947825000067\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/59478/000005947825000067/lly-20241231.htm",
+      "income_statement_table_id_guess": "t0084",
+      "segment_year": 2024,
+      "n_segments": 17,
+      "validation": {
+        "ok": true,
+        "table_total": 45042000000,
+        "segment_sum": 45042000000,
+        "adjustment_sum": 0,
+        "external_total": 45042700000,
+        "delta_pct": 0.0,
+        "notes": "OK: matches table total within 0.00%"
+      }
+    },
+    "WMT": {
+      "ok": false,
+      "errors": [
+        "No rows extracted from disaggregation table"
+      ],
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\WMT",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\WMT\\2025-03-14_000010416925000021\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/104169/000010416925000021/wmt-20250131.htm",
+      "income_statement_table_id_guess": "t0031"
+    },
+    "BRK-B": {
+      "ok": false,
+      "errors": [
+        "No rows extracted from disaggregation table"
+      ],
+      "artifacts_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\.artifacts\\BRK-B",
+      "html_path": "C:\\Users\\yehud\\Revenue Classifier\\data\\10k\\BRK-B\\2025-02-24_000095017025025210\\primary_document.html",
+      "sec_doc_url": "https://www.sec.gov/Archives/edgar/data/1067983/000095017025025210/brka-20241231.htm",
+      "income_statement_table_id_guess": "t0107"
     }
   },
-  "outputs_dir": "C:\\Users\\yehud\\Business Classification\\data\\outputs_p6_test2"
+  "outputs_dir": "C:\\Users\\yehud\\Revenue Classifier\\data\\outputs_stress_test"
 }

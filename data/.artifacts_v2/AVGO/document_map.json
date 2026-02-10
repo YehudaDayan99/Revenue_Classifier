@@ -1,0 +1,75 @@
+{
+  "ticker": "AVGO",
+  "sections": {
+    "item1_business": true,
+    "item7_mda": false,
+    "item8_notes": true,
+    "note2_revenue": true,
+    "segment_note": true
+  },
+  "priority_a_tables": [],
+  "priority_b_tables": [
+    {
+      "table_id": "t0013",
+      "type": "segment",
+      "confidence": 0.85,
+      "caption": ""
+    },
+    {
+      "table_id": "t0014",
+      "type": "segment",
+      "confidence": 0.85,
+      "caption": ""
+    }
+  ],
+  "priority_c_tables": [
+    {
+      "table_id": "t0033",
+      "type": "product_service",
+      "confidence": 0.75,
+      "caption": ""
+    },
+    {
+      "table_id": "t0012",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0025",
+      "type": "geography",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0028",
+      "type": "geography",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0035",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0041",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0042",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0071",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    }
+  ]
+}

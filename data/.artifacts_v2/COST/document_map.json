@@ -1,0 +1,68 @@
+{
+  "ticker": "COST",
+  "sections": {
+    "item1_business": true,
+    "item7_mda": true,
+    "item8_notes": true,
+    "note2_revenue": true,
+    "segment_note": true
+  },
+  "priority_a_tables": [],
+  "priority_b_tables": [],
+  "priority_c_tables": [
+    {
+      "table_id": "t0014",
+      "type": "product_service",
+      "confidence": 0.75,
+      "caption": ""
+    },
+    {
+      "table_id": "t0017",
+      "type": "product_service",
+      "confidence": 0.75,
+      "caption": ""
+    },
+    {
+      "table_id": "t0018",
+      "type": "product_service",
+      "confidence": 0.75,
+      "caption": ""
+    },
+    {
+      "table_id": "t0055",
+      "type": "product_service",
+      "confidence": 0.75,
+      "caption": ""
+    },
+    {
+      "table_id": "t0011",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0019",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0020",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0021",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    },
+    {
+      "table_id": "t0053",
+      "type": "unknown",
+      "confidence": 0.5,
+      "caption": ""
+    }
+  ]
+}

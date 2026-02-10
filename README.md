@@ -11,15 +11,16 @@ This project extracts structured revenue data from public company 10-K filings:
 
 ## Quick Start
 
-```bash
+```powershell
 # Install dependencies
 pip install requests beautifulsoup4 lxml openai
 
-# Set environment variables
-$env:SEC_USER_AGENT="YourApp/0.1 (your.email@domain.com)"
-$env:OPENAI_API_KEY="your_key_here"
+# Option 1: Use the startup script (recommended)
+.\run_pipeline.ps1
 
-# Run pipeline
+# Option 2: Manual setup
+$env:SEC_USER_AGENT = "YourApp/0.1 (your.email@domain.com)"
+$env:OPENAI_API_KEY_FILE = "path/to/your/api_key.txt"  # File containing API key
 python -m revseg.pipeline --tickers MSFT,AAPL,GOOGL --csv1-only
 ```
 
@@ -66,21 +67,26 @@ python -m revseg.pipeline --tickers MSFT,AAPL --csv1-only [options]
 | `--model-fast` | `gpt-4.1-mini` | Model for table selection |
 | `--model-quality` | `gpt-4.1` | Model for descriptions |
 
-## Current Coverage
+## Current Coverage (6 Tickers Validated)
 
-| Ticker | Coverage | Notes |
-|--------|----------|-------|
-| AAPL | 100% | 5/5 lines with descriptions |
-| MSFT | 100% | 10/10 lines with descriptions |
-| GOOGL | 100% | 6/6 lines with descriptions |
-| AMZN | 100% | 7/7 lines with descriptions |
-| META | 100% | 3/3 lines with descriptions |
-| NVDA | 83% | 5/6 lines (OEM empty - expected) |
+| Ticker | Lines | Validation | Notes |
+|--------|-------|------------|-------|
+| NVDA | 6 | ✅ 0.00% | All segments extracted |
+| AAPL | 5 | ✅ 0.00% | Product categories |
+| MSFT | 10 | ✅ 0.00% | Mapped to 3 segments |
+| GOOGL | 7 | ✅ 0.00% | Includes hedging adjustment |
+| AMZN | 7 | ✅ 0.00% | Product/service disaggregation |
+| META | 2 | ✅ 0.00% | Advertising + Other revenue |
 
 ## Documentation
 
-See `docs/PIPELINE_FLOW.md` for detailed technical documentation including:
-- Pipeline flow diagram
+| Document | Description |
+|----------|-------------|
+| [`docs/PROJECT_OVERVIEW.md`](docs/PROJECT_OVERVIEW.md) | Non-technical + technical overview |
+| [`docs/PIPELINE_FLOW.md`](docs/PIPELINE_FLOW.md) | Detailed technical reference |
+
+The Pipeline Flow includes:
+- Architecture diagram
 - LLM agent descriptions
 - Regex patterns used
 - Data structures

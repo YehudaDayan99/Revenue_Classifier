@@ -1,0 +1,10 @@
+{"stage": "phase1_document_scout", "tables_found": 6}
+{"stage": "extract_fail", "table_id": "t0007", "reason": "no_segments"}
+{"stage": "phase1_document_scout", "tables_found": 6}
+{"stage": "extract_fail", "table_id": "t0007", "reason": "no_segments"}
+{"stage": "phase0_income_anchor", "total": 40000000000, "label": "Net revenue"}
+{"stage": "phase1_document_scout", "tables_found": 6}
+{"stage": "phase0_income_anchor", "total": 40000000000, "label": "Net revenue"}
+{"stage": "phase1_document_scout", "tables_found": 6}
+{"stage": "phase0_income_anchor", "total": 40000000000, "label": "Net revenue"}
+{"stage": "phase1_document_scout", "tables_found": 6}

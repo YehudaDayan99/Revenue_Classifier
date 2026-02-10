@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "income_statement_total": 269912000000,
+  "extracted_total": 270347000000,
+  "gap_amount": -435000000,
+  "gap_percent": -0.0016116363851922109,
+  "extracted_items": {
+    "Foods and Sundries": 109564000000,
+    "Non-Foods": 71190000000,
+    "Fresh Foods": 37988000000,
+    "Warehouse Ancillary and Other Businesses": 51170000000,
+    "Other income": 435000000
+  },
+  "adjustment_items": {},
+  "notes": "Reconciled within tolerance (-0.2% gap)"
+}

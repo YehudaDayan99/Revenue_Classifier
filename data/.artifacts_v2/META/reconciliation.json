@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "income_statement_total": 164501000000,
+  "extracted_total": 164849000000,
+  "gap_amount": -348000000,
+  "gap_percent": -0.0021154886596434063,
+  "extracted_items": {
+    "Advertising": 160633000000,
+    "Other revenue": 1722000000,
+    "Reality Labs": 2146000000,
+    "Acquisitions": 357000000,
+    "Adjustments": -9000000
+  },
+  "adjustment_items": {},
+  "notes": "Reconciled within tolerance (-0.2% gap)"
+}

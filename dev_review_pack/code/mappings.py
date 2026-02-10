@@ -1,0 +1,256 @@
+"""
+Item-to-Segment mappings for companies where the disaggregation table
+does not include segment labels directly.
+
+These mappings are based on the segment definitions in each company's 10-K.
+"""
+
+from typing import Dict, Optional
+
+# MSFT: Revenue by Products and Services table has no segment column
+# Mapping based on Note 18 segment definitions in 10-K
+MSFT_ITEM_TO_SEGMENT: Dict[str, str] = {
+    # Intelligent Cloud
+    "Server products and cloud services": "Intelligent Cloud",
+    "Enterprise and partner services": "Intelligent Cloud",
+    
+    # Productivity and Business Processes
+    "Microsoft 365 Commercial products and cloud services": "Productivity and Business Processes",
+    "LinkedIn": "Productivity and Business Processes",
+    "Dynamics products and cloud services": "Productivity and Business Processes",
+    "Microsoft 365 Consumer products and cloud services": "Productivity and Business Processes",
+    
+    # More Personal Computing
+    "Gaming": "More Personal Computing",
+    "Windows and Devices": "More Personal Computing",
+    "Search and news advertising": "More Personal Computing",
+    
+    # Other/Adjustments
+    "Other": "Other",
+}
+
+# GOOGL: Item-to-segment mappings
+# Google Services is a parent segment with sub-items
+# Google Cloud and Other Bets are standalone segments
+GOOGL_ITEM_TO_SEGMENT: Dict[str, str] = {
+    # Google Services sub-items (advertising)
+    "Google Search & other": "Google Services",
+    "YouTube ads": "Google Services",
+    "Google Network": "Google Services",
+    # Google Services sub-items (subscriptions)
+    "Google subscriptions, platforms, and devices": "Google Services",
+    # Standalone segments
+    "Google Cloud": "Google Cloud",
+    "Other Bets": "Other Bets",
+}
+
+# GOOGL: Items that are subtotals (to be excluded)
+GOOGL_SUBTOTAL_ITEMS: set = {
+    "Google Services",
+    "Google Services total",
+    "Google advertising",  # Subtotal of Search + YouTube + Network
+}
+
+# GOOGL: Adjustment items
+GOOGL_ADJUSTMENT_ITEMS: set = {
+    "Hedging gains (losses)",
+    "Hedging gains",
+    "Hedging losses",
+}
+
+# AAPL: Product categories are the line items, segment is effectively "Apple"
+# No mapping needed - items are already at the right granularity
+
+# AMZN: Two disclosure dimensions exist:
+# 1. Segments: North America, International, AWS
+# 2. Product/service categories: Online stores, Physical stores, Third-party seller services,
+#    Subscription services, Advertising services, AWS, Other
+#
+# For maximum granularity, prefer the product/service table (dimension=product_service)
+AMZN_SUBTOTAL_ITEMS: set = {
+    "Consolidated",
+    "Total",
+    "Total net sales",
+}
+
+# AMZN product/service items (from "Net sales by groups of similar products and services")
+AMZN_PRODUCT_SERVICE_ITEMS: set = {
+    "Online stores",
+    "Physical stores",
+    "Third-party seller services",
+    "Subscription services",
+    "Advertising services",
+    "AWS",
+    "Other",
+}
+
+# META: Revenue sources map to segments per 10-K disclosure
+# Family of Apps generates substantially all advertising revenue
+# Reality Labs reports segment-level "Revenue"
+META_ITEM_TO_SEGMENT: Dict[str, str] = {
+    "Advertising": "Family of Apps (FoA)",
+    "Other revenue": "Family of Apps (FoA)",
+    "Revenue": "Reality Labs (RL)",  # RL's segment revenue line
+}
+
+META_SUBTOTAL_ITEMS: set = {
+    # P0.2 FIX: Family of Apps and Reality Labs are segment-level totals
+    # When granular items (Advertising, Other revenue) exist, these must be excluded
+    # to avoid double-counting (Advertising + Other revenue = Family of Apps total)
+    "Family of Apps",
+    "Family of Apps (FoA)",
+    "Reality Labs",
+    "Reality Labs (RL)",
+    "Total revenue",
+    "Total",
+}
+
+# META revenue source items (for dimension=revenue_source extraction)
+META_REVENUE_SOURCE_ITEMS: set = {
+    "Advertising",
+    "Other revenue",
+}
+
+# NVDA: Maps end market items to reportable segments per 10-K
+# Reportable segments: Compute & Networking, Graphics
+# Per ASC 280, Compute+Networking = "Compute & Networking" segment
+# Gaming+Professional Visualization = "Graphics" segment
+# P1.5: Automotive mapped to Compute & Networking per Item 1 segment definition
+NVDA_ITEM_TO_SEGMENT: Dict[str, str] = {
+    # Compute & Networking segment (formerly Data Center)
+    "Compute": "Compute & Networking",
+    "Networking": "Compute & Networking",
+    "Automotive": "Compute & Networking",  # P1.5: Per Item 1 - "automotive platforms" under C&N
+    # Graphics segment
+    "Gaming": "Graphics",
+    "Professional Visualization": "Graphics",
+    # OEM and Other: Keep as unmapped (will use "Product/Service disclosure" or "Other")
+    # "OEM and Other": None,
+}
+
+NVDA_SUBTOTAL_ITEMS: set = {
+    "Total",
+    "Total revenue",
+    "Data Center",  # Subtotal row (= Compute + Networking)
+    "Compute & Networking",  # If it appears
+    "Graphics",  # If it appears
+    "Revenue",  # Sometimes appears as a metric row
+    "Operating income",
+    "Operating income (loss)",
+    "Other segment items",
+    "Other segment items (1)",
+}
+
+
+def get_segment_for_item(ticker: str, item_label: str) -> Optional[str]:
+    """
+    Look up segment for a given item label.
+    Returns None if no mapping exists (use LLM or default to item as segment).
+    """
+    ticker_upper = ticker.upper()
+    item_clean = item_label.strip()
+    
+    # Get the appropriate mapping dict
+    mapping: Dict[str, str] = {}
+    if ticker_upper == "MSFT":
+        mapping = MSFT_ITEM_TO_SEGMENT
+    elif ticker_upper == "GOOGL":
+        mapping = GOOGL_ITEM_TO_SEGMENT
+    elif ticker_upper == "META":
+        mapping = META_ITEM_TO_SEGMENT
+    elif ticker_upper == "NVDA":
+        mapping = NVDA_ITEM_TO_SEGMENT
+    
+    if mapping:
+        # Try exact match first
+        if item_clean in mapping:
+            return mapping[item_clean]
+        # Try case-insensitive match
+        for key, segment in mapping.items():
+            if key.lower() == item_clean.lower():
+                return segment
+    
+    return None
+
+
+def is_adjustment_item(ticker: str, item_label: str) -> bool:
+    """
+    Check if an item is an adjustment line (hedging, etc.) rather than a product/service.
+    """
+    item_lower = item_label.lower().strip()
+    
+    # General adjustment patterns
+    adjustment_patterns = [
+        "hedging",
+        "hedge",
+        "corporate",
+        "elimination",
+        "reconcil",
+    ]
+    
+    for pattern in adjustment_patterns:
+        if pattern in item_lower:
+            return True
+    
+    # GOOGL-specific
+    if ticker.upper() == "GOOGL":
+        if item_label.strip() in GOOGL_ADJUSTMENT_ITEMS:
+            return True
+    
+    return False
+
+
+def is_total_row(label: str) -> bool:
+    """
+    Check if a row label indicates a total/subtotal row that should be excluded
+    from line item extraction.
+    """
+    label_lower = label.lower().strip()
+    
+    total_patterns = [
+        "total revenue",
+        "total revenues",
+        "total net sales",
+        "total net revenue",
+    ]
+    
+    for pattern in total_patterns:
+        if label_lower == pattern or label_lower.startswith(pattern):
+            return True
+    
+    return False
+
+
+def is_subtotal_row(label: str, ticker: str = "") -> bool:
+    """
+    Check if a row is a segment subtotal that should be excluded when we have
+    more granular line items.
+    """
+    label_clean = label.strip()
+    label_lower = label_clean.lower()
+    
+    ticker_upper = ticker.upper()
+    
+    # Get the appropriate subtotal set
+    subtotal_items: set = set()
+    if ticker_upper == "GOOGL":
+        subtotal_items = GOOGL_SUBTOTAL_ITEMS
+    elif ticker_upper == "AMZN":
+        subtotal_items = AMZN_SUBTOTAL_ITEMS
+    elif ticker_upper == "META":
+        subtotal_items = META_SUBTOTAL_ITEMS
+    elif ticker_upper == "NVDA":
+        subtotal_items = NVDA_SUBTOTAL_ITEMS
+    elif ticker_upper == "MSFT":
+        # MSFT: segment names in the revenue table are NOT subtotals
+        return False
+    
+    if subtotal_items:
+        if label_clean in subtotal_items:
+            return True
+        # Case-insensitive check
+        for item in subtotal_items:
+            if item.lower() == label_lower:
+                return True
+    
+    return False

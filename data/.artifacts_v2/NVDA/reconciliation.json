@@ -1,0 +1,14 @@
+{
+  "status": "FAIL",
+  "income_statement_total": 60922000000,
+  "extracted_total": 123990000000,
+  "gap_amount": -63068000000,
+  "gap_percent": -1.035225370145432,
+  "extracted_items": {
+    "All Other": -6507000000,
+    "Compute & Networking": 116193000000,
+    "Graphics": 14304000000
+  },
+  "adjustment_items": {},
+  "notes": "Gap of $-63,068,000,000 (-103.5%): units_error - Check units multiplier (thousands vs millions vs billions)"
+}

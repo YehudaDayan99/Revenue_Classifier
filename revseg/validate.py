@@ -68,7 +68,24 @@ def fetch_companyfacts_total_revenue_usd(
     data = r.json()
 
     facts = (data.get("facts") or {}).get("us-gaap") or {}
-    rev = facts.get("Revenues") or facts.get("RevenueFromContractWithCustomerExcludingAssessedTax")
+    
+    # P0.1 FIX: Multiple XBRL tag fallbacks for total revenue (order matters)
+    REVENUE_TAGS = [
+        "Revenues",
+        "RevenueFromContractWithCustomerExcludingAssessedTax",
+        "RevenueFromContractWithCustomerIncludingAssessedTax",
+        "SalesRevenueNet",
+        "SalesRevenueGoodsNet",
+        "SalesRevenueServicesNet",
+        "NetRevenues",
+    ]
+    
+    rev = None
+    for tag in REVENUE_TAGS:
+        rev = facts.get(tag)
+        if rev:
+            break
+    
     if not rev:
         return None
     units = (rev.get("units") or {}).get("USD") or []
