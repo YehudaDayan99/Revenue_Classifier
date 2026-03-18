@@ -1,0 +1,130 @@
+{
+  "tickers": {
+    "V": {
+      "lines": [
+        {
+          "segment": "Data processing revenue",
+          "line": "Data processing revenue",
+          "description": "Visa provides payment processing for both non-Visa-branded and Visa-branded card transactions. In the context of non-Visa-branded card transactions, we facilitate payment processing by providing gateway routing services to other payment networks. At the client’s request, we may provide authorization, clearing or settlement services on our network before or after we route the transaction to the other payments network. In those instances, Visa may earn data processing revenue for the specific services provided. In the context of Visa-branded card transactions on our network, we provide authorization, clearing and settlement services and may earn service, data processing, international transaction or other revenue. Depending on applicable regulations, some payment processors may or may not use our network to process Visa-branded card transactions.",
+          "revenue": 19993.0,
+          "fiscal_year": "2025"
+        },
+        {
+          "segment": "Service revenue",
+          "line": "Service revenue",
+          "description": "Earned for services provided in support of client usage of Visa’s payment services and value-added services related to certain Issuing Solutions.",
+          "revenue": 17539.0,
+          "fiscal_year": "2025"
+        },
+        {
+          "segment": "International transaction revenue",
+          "line": "International transaction revenue",
+          "description": "Visa provides payment processing for both non-Visa-branded and Visa-branded card transactions. In the context of non-Visa-branded card transactions, we facilitate payment processing by providing gateway routing services to other payment networks. At the client’s request, we may provide authorization, clearing or settlement services on our network before or after we route the transaction to the other payments network. In those instances, Visa may earn data processing revenue for the specific services provided. In the context of Visa-branded card transactions on our network, we provide authorization, clearing and settlement services and may earn service, data processing, international transaction or other revenue. Depending on applicable regulations, some payment processors may or may not use our network to process Visa-branded card transactions.",
+          "revenue": 14166.0,
+          "fiscal_year": "2025"
+        },
+        {
+          "segment": "Product/Service disclosure",
+          "line": "Other revenue",
+          "description": "Visa provides payment processing for both non-Visa-branded and Visa-branded card transactions. In the context of non-Visa-branded card transactions, we facilitate payment processing by providing gateway routing services to other payment networks. At the client’s request, we may provide authorization, clearing or settlement services on our network before or after we route the transaction to the other payments network. In those instances, Visa may earn data processing revenue for the specific services provided. In the context of Visa-branded card transactions on our network, we provide authorization, clearing and settlement services and may earn service, data processing, international transaction or other revenue. Depending on applicable regulations, some payment processors may or may not use our network to process Visa-branded card transactions.",
+          "revenue": 4053.0,
+          "fiscal_year": "2025"
+        }
+      ],
+      "html_table": "",
+      "edgar_url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001403161&type=10-K&dateb=&owner=include&count=10",
+      "metrics": {
+        "status": "UNKNOWN",
+        "extracted_total": null,
+        "expected_total": null,
+        "delta_pct": null,
+        "n_segments": 4,
+        "table_id": null,
+        "confidence": null,
+        "validation_notes": "",
+        "calculated_sum": 55751.0
+      }
+    },
+    "AVGO": {
+      "lines": [
+        {
+          "segment": "Semiconductor solutions",
+          "line": "Semiconductor solutions",
+          "description": "Our semiconductor and semiconductor-based solutions include a broad portfolio of complex digital and mixed signal devices based on silicon wafers with complementary metal oxide semiconductor (“CMOS”) transistors, III-V based devices, network interface cards (“NICs”) and other modules, switches, subsystems and, in some cases, racks. Our solutions are used in a wide array of environments, end products and applications, such as enterprise and artificial intelligence (“AI”) data centers, servers and networking and connectivity equipment, as well as storage systems, home connectivity devices, set-top boxes (“STB”), broadband access, telecommunication equipment, wireless devices and base stations, factory automation, power generation and alternative energy systems, and electronic displays. We differentiate ourselves through our high-performance design and integration capabilities, and focus on developing semiconductor products for markets that require our high quality, leading technology and integrated performance semiconductor and semiconductor-based solutions. Our semiconductor and semiconductor-based solutions also enable our customers to build and deploy AI data center infrastructure for their training and inference workloads and manage the movement of data across their AI network infrastructure based on open, flexible, standards-based Ethernet. In addition, our solutions enable accelerated compute and networking connectivity at scale, within and across AI server racks and acro",
+          "revenue": 58.0,
+          "fiscal_year": "2025"
+        },
+        {
+          "segment": "Infrastructure software",
+          "line": "Infrastructure software",
+          "description": "Our infrastructure software solutions help enterprises simplify their information technology (“IT”) environments. Many of the largest companies in the world, including most of the Fortune 500, and many government agencies rely on our infrastructure and security software solutions to modernize, optimize, and secure the most complex private cloud, hybrid cloud and edge environments. This enables scalability, agility, automation, insights, resiliency and security, making it easy for customers to run their mission-critical workloads. We also offer mission-critical FC SAN products and related software in the form of modules, switches and subsystems incorporating multiple semiconductor products. We offer five major infrastructure software portfolios: Private Cloud, Mainframe Software, Cybersecurity, Enterprise Software and FC SAN Management. Below is a description of our key portfolio offerings.",
+          "revenue": 42.0,
+          "fiscal_year": "2025"
+        }
+      ],
+      "html_table": "",
+      "edgar_url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001730168&type=10-K&dateb=&owner=include&count=10",
+      "metrics": {
+        "status": "UNKNOWN",
+        "extracted_total": null,
+        "expected_total": null,
+        "delta_pct": null,
+        "n_segments": 2,
+        "table_id": null,
+        "confidence": null,
+        "validation_notes": "",
+        "calculated_sum": 100.0
+      }
+    },
+    "COST": {
+      "lines": [
+        {
+          "segment": "Foods and Sundries",
+          "line": "Foods and Sundries",
+          "description": "(including sundries, dry grocery, candy, cooler, freezer, liquor, and tobacco) • Non-Foods (including major appliances, small electronics, health and beauty aids, hardware, lawn and garden, sporting goods, tires, toys and seasonal, automotive, stamps, tickets, apparel, furniture, domestics, housewares, special order kiosk, and jewelry) • Fresh Foods (including meat, produce, deli, and bakery) ■ Warehouse Ancillary (includes gasoline, pharmacy, optical, food court, hearing aids, and tire installation) ■ Other Businesses (includes e-commerce, business centers, travel, and other) Warehouse ancillary operate primarily within, next to or near our warehouses, encouraging more frequent shopping. The number of warehouses with gas stations varies significantly by country. We operated 747 gas stations at the end of 2025. Our gasoline business represented approximately 10% of total net sales in 2025. Our other businesses sell products and services that largely complement our warehouse operations. Our e-commerce operations give members convenience and a broader selection of goods and services.",
+          "revenue": 109564.0,
+          "fiscal_year": "2025"
+        },
+        {
+          "segment": "Non-Foods",
+          "line": "Non-Foods",
+          "description": "Non-Foods includes major appliances, small electronics, health and beauty aids, hardware, lawn and garden, sporting goods, tires, toys and seasonal, automotive, stamps, tickets, apparel, furniture, domestics, housewares, special order kiosk, and jewelry.",
+          "revenue": 71190.0,
+          "fiscal_year": "2025"
+        },
+        {
+          "segment": "Warehouse Ancillary and Other Businesses",
+          "line": "Warehouse Ancillary and Other Businesses",
+          "description": "Warehouse Ancillary includes gasoline, pharmacy, optical, food court, hearing aids, and tire installation; Other Businesses includes e-commerce, business centers, travel, and other services that largely complement warehouse operations.",
+          "revenue": 51170.0,
+          "fiscal_year": "2025"
+        },
+        {
+          "segment": "Fresh Foods",
+          "line": "Fresh Foods",
+          "description": "Fresh Foods includes meat, produce, deli, and bakery.",
+          "revenue": 37988.0,
+          "fiscal_year": "2025"
+        }
+      ],
+      "html_table": "",
+      "edgar_url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000909832&type=10-K&dateb=&owner=include&count=10",
+      "metrics": {
+        "status": "UNKNOWN",
+        "extracted_total": null,
+        "expected_total": null,
+        "delta_pct": null,
+        "n_segments": 4,
+        "table_id": null,
+        "confidence": null,
+        "validation_notes": "",
+        "calculated_sum": 269912.0
+      }
+    }
+  },
+  "summary": {
+    "total": 3,
+    "passed": 0,
+    "failed": 3
+  }
+}

@@ -313,7 +313,7 @@ def main():
     with open(args.output, "w", encoding="utf-8") as f:
         json.dump(dashboard_data, f, indent=2, ensure_ascii=False)
     
-    print(f"\n✅ Dashboard data written to: {args.output}")
+    print(f"\nDashboard data written to: {args.output}")
     print(f"\nNext steps:")
     print(f"  1. streamlit run dashboard.py")
     print(f"  2. (Optional) Cache 10-K filings to data/filings/{{TICKER}}_10K.html")
