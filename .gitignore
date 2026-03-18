@@ -34,8 +34,17 @@ env/
 # data/
 .cache/
 
-# Artifacts (debug files, gitignored)
+# Artifacts and generated data
 data/.artifacts/
+data/.artifacts_v2/
+data/debug_*/
+data/filings/
+data/outputs/
+data/outputs_*/
+data/test_skill_integration/
+data/regression_90pct/
+dashboard_data.json
+review_state.json
 
 # IDE
 .vscode/

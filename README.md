@@ -37,19 +37,30 @@ The pipeline generates `csv1_segment_revenue.csv`:
 
 ```
 Revenue Classifier/
-├── revseg/                    # Core modules
-│   ├── pipeline.py            # Main orchestration
-│   ├── react_agents.py        # LLM agents for table/description extraction
-│   ├── table_candidates.py    # HTML table extraction
-│   ├── mappings.py            # Company-specific segment mappings
-│   ├── extraction/            # Deterministic extraction logic
-│   └── rag/                   # Optional RAG-based descriptions
+├── revseg/                    # Core pipeline and extraction
+│   ├── pipeline.py            # Main orchestration (v1)
+│   ├── pipeline_v2.py         # Multi-phase pipeline with reconciliation
+│   ├── react_agents.py        # LLM agents (table selection, descriptions)
+│   ├── table_candidates.py   # HTML table extraction
+│   ├── extraction/            # Extraction logic + table_extraction skill
+│   ├── skills/table_extraction/
+│   └── ...
+├── Dashboard/                 # Manual QA / review UI
+│   ├── dashboard_v2.py        # Streamlit app (full 10-K viewer, approve/reject)
+│   ├── prepare_dashboard_data_v2.py
+│   ├── cache_filings_for_dashboard.py   # Populate data/filings for 10-K tab
+│   └── DASHBOARD_DEV.md
 ├── docs/
-│   └── PIPELINE_FLOW.md       # Detailed technical documentation
-├── data/
-│   ├── 10k/                   # Downloaded SEC filings
-│   └── outputs/               # Generated CSV files
-└── tests/                     # Unit tests
+│   ├── PIPELINE_FLOW.md       # Technical reference
+│   └── PROJECT_OVERVIEW.md
+├── data/                      # Generated & cache (most entries in .gitignore)
+│   ├── 10k/                   # Downloaded 10-K filings per ticker
+│   ├── regression_90pct/      # Pipeline output (csv, run_report.json)
+│   ├── filings/               # Cached 10-K HTML for dashboard (optional)
+│   └── lists/                 # Input lists
+├── run_pipeline.ps1           # Run pipeline with env vars
+├── dashboard_data.json        # Generated for dashboard (from prepare_dashboard_data_v2)
+└── tests/
 ```
 
 ## Command Line Options
