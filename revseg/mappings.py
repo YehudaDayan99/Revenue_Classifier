@@ -5,6 +5,7 @@ does not include segment labels directly.
 These mappings are based on the segment definitions in each company's 10-K.
 """
 
+import re
 from typing import Dict, Optional
 
 # MSFT: Revenue by Products and Services table has no segment column
@@ -222,10 +223,26 @@ def is_total_row(label: str) -> bool:
     return False
 
 
+_GENERIC_SUBTOTAL_RE = [
+    # "Total automotive revenues", "Total product revenues"
+    re.compile(r"^\s*total\s+\w+.*\brevenues?\s*$", re.IGNORECASE),
+    # "Total automotive & services and other"
+    re.compile(r"^\s*total\s+\w+.*(?:&|and)\s+\w+", re.IGNORECASE),
+    # Any "Total X" that is NOT the final roll-up
+    re.compile(
+        r"^\s*total\s+(?!revenues?\s*$|net\s+sales\s*$|net\s+revenue\s*$)\w+",
+        re.IGNORECASE,
+    ),
+]
+
+
 def is_subtotal_row(label: str, ticker: str = "") -> bool:
     """
     Check if a row is a segment subtotal that should be excluded when we have
     more granular line items.
+
+    Uses both per-ticker hardcoded sets AND generic "Total X" pattern matching
+    to catch intermediate subtotals like "Total automotive revenues".
     """
     label_clean = label.strip()
     label_lower = label_clean.lower()
@@ -249,9 +266,13 @@ def is_subtotal_row(label: str, ticker: str = "") -> bool:
     if subtotal_items:
         if label_clean in subtotal_items:
             return True
-        # Case-insensitive check
         for item in subtotal_items:
             if item.lower() == label_lower:
                 return True
+
+    # Generic pattern-based detection for any ticker
+    for pat in _GENERIC_SUBTOTAL_RE:
+        if pat.match(label_clean):
+            return True
     
     return False

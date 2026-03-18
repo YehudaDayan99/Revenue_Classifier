@@ -7,6 +7,9 @@ from typing import Any, Dict, List, Optional, Set
 
 from revseg.extraction.matching import fuzzy_match_segment, tokenize_label, normalize_segment_name
 from revseg.mappings import get_segment_for_item, is_adjustment_item, is_subtotal_row
+from revseg.skills.table_extraction.validate_item_col import choose_item_col, validate_extracted_labels
+from revseg.skills.table_extraction.validate import validate_extraction as skill_validate_extraction
+from revseg.skills.table_extraction.extract_values import deduplicate_year_columns
 
 
 @dataclass
@@ -50,6 +53,8 @@ TOTAL_PATTERNS = [
     re.compile(r"^\s*total\s+revenues?\s*$", re.IGNORECASE),
     re.compile(r"^\s*total\s*$", re.IGNORECASE),
     re.compile(r"^\s*consolidated\s+total", re.IGNORECASE),
+    re.compile(r"^\s*net\s+revenues?\s*$", re.IGNORECASE),
+    re.compile(r"^\s*total\s+net\s+revenues?\s*$", re.IGNORECASE),
 ]
 
 # Patterns for rows to skip entirely
@@ -60,6 +65,8 @@ SKIP_PATTERNS = [
     re.compile(r"\bincluded\s+in\s+deferred\b", re.IGNORECASE),
     re.compile(r"\bunearned\b", re.IGNORECASE),
     re.compile(r"^\s*$"),  # Empty
+    re.compile(r"^\s*net\s+revenue\s+by\s+", re.IGNORECASE),  # Section headers like "Net revenue by category:"
+    re.compile(r"^\s*revenue\s+by\s+", re.IGNORECASE),  # Section headers like "Revenue by geography:"
 ]
 
 # ============================================================================
@@ -431,10 +438,6 @@ def extract_revenue_unified(
     if not year_cols:
         raise ValueError("No year columns detected in table")
     
-    # Use the most recent year
-    year = max(year_cols.keys())
-    val_col = year_cols[year]
-    
     # Header rows to skip
     header_rows = set()
     for i in (layout.get("header_rows") or []):
@@ -442,6 +445,13 @@ def extract_revenue_unified(
             header_rows.add(int(i))
         except (ValueError, TypeError):
             continue
+    
+    # Fix A: Deduplicate year columns (handles $ in separate cell)
+    year_cols = deduplicate_year_columns(year_cols, grid, header_rows)
+    
+    # Use the most recent year
+    year = max(year_cols.keys())
+    val_col = year_cols[year]
     
     # Units multiplier
     units_mult = int(layout.get("units_multiplier") or 1)
@@ -634,9 +644,6 @@ def extract_line_items_granular(
     if not year_cols:
         raise ValueError("No year columns detected in table")
     
-    year = max(year_cols.keys())
-    val_col = year_cols[year]
-    
     # Header rows to skip
     header_rows = set()
     for i in (layout.get("header_rows") or []):
@@ -644,6 +651,13 @@ def extract_line_items_granular(
             header_rows.add(int(i))
         except (ValueError, TypeError):
             continue
+    
+    # Fix A: Deduplicate year columns — handles iXBRL tables where "$" is in
+    # a separate cell and the same year appears in multiple column positions.
+    year_cols = deduplicate_year_columns(year_cols, grid, header_rows)
+    
+    year = max(year_cols.keys())
+    val_col = year_cols[year]
     
     # Units multiplier
     units_mult = int(layout.get("units_multiplier") or 1)
@@ -677,9 +691,13 @@ def extract_line_items_granular(
         
         scaled_val = val * units_mult
         
-        # Check if this is the Total row
+        # Check if this is the Total row — stop extracting after first total
+        # when we already have items (tables like MA's t0063 have a second
+        # geographic section after the product-category total)
         if _is_total_row(item_label):
             table_total = scaled_val
+            if rows:
+                break
             continue
         
         # Check if this should be skipped
@@ -730,6 +748,29 @@ def extract_line_items_granular(
             dimension=row_dimension,
         ))
     
+    # Contextual subtotal detection: if "Total X revenues" exists alongside
+    # component items that start with X, mark the total as a subtotal.
+    all_item_labels = [r.item for r in rows]
+    for r in rows:
+        if r.row_type == "item":
+            label_lower = r.item.strip().lower()
+            if not label_lower.startswith("total "):
+                continue
+            # Skip the final total (already classified as "total" row_type above)
+            if re.match(r"^total\s+(revenues?|net\s+sales|net\s+revenue)\s*$", label_lower):
+                continue
+            # Extract category: "Total automotive revenues" -> "automotive"
+            cat = re.sub(r"^total\s+", "", label_lower)
+            cat = re.sub(r"\s*(revenues?|sales|income)\s*$", "", cat).strip()
+            if not cat:
+                continue
+            first_word = cat.split()[0]
+            for other in all_item_labels:
+                other_lower = other.strip().lower()
+                if other_lower != label_lower and other_lower.startswith(first_word):
+                    r.row_type = "subtotal"
+                    break
+
     # P0.2 FIX: Deduplicate segment-totals when granular items exist
     # Track which segments have granular (non-segment-level) items
     granular_dims = {"product_service", "revenue_source", "end_market", "geography"}
@@ -739,18 +780,19 @@ def extract_line_items_granular(
         if r.segment and r.dimension in granular_dims:
             segments_with_granular.add(r.segment)
     
-    # Aggregate by segment, excluding segment-level totals when granular exists
+    # Aggregate by segment, excluding segment-level totals and subtotals
     segment_revenues: Dict[str, int] = {}
     adjustment_revenues: Dict[str, int] = {}
     
     for r in rows:
+        if r.row_type in ("subtotal",):
+            continue
         if r.row_type == "adjustment":
             adjustment_revenues[r.item] = adjustment_revenues.get(r.item, 0) + r.value
         else:
             if r.segment:
-                # Skip segment-level rows if we have granular items for that segment
                 if r.dimension == "segment" and r.segment in segments_with_granular:
-                    continue  # Exclude to avoid double-counting
+                    continue
                 segment_revenues[r.segment] = segment_revenues.get(r.segment, 0) + r.value
     
     return ExtractionResult(

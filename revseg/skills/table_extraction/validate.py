@@ -1,8 +1,25 @@
-"""Validation using table's own Total row as primary reference."""
+#!/usr/bin/env python3
+"""
+Validate extracted revenue data using self-consistent checks.
+
+Validation priority:
+1. Primary: segments + adjustments ≈ table_total (from same table)
+2. Secondary: segments + adjustments ≈ external_total (from SEC API)
+3. Fallback: accept if enough segments with positive values
+
+Usage:
+    python validate.py <extraction_json> [--table-total N] [--external-total N]
+    
+Output:
+    JSON ValidationResult to stdout
+"""
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Dict, Optional
+import argparse
+import json
+import sys
+from dataclasses import dataclass, asdict
+from typing import Dict, List, Optional
 
 
 @dataclass(frozen=True)
@@ -15,6 +32,19 @@ class ValidationResult:
     external_total: Optional[int]    # From SEC API if available
     delta_pct: Optional[float]       # Percentage difference from reference
     notes: str
+
+
+# Income statement keywords that indicate wrong table
+INCOME_STATEMENT_KEYWORDS = [
+    "net income", "gross margin", "operating expense", "operating income",
+    "income from operation", "earnings per share", "diluted share", "basic share",
+    "cost of revenue", "cost of sales", "gross profit", "interest expense",
+    "interest income", "tax expense", "income tax", "depreciation",
+    "amortization", "ebitda", "net profit", "net loss",
+    "research and development", "r&d expense", "administrative expense",
+    "selling expense", "marketing expense", "total expense", "% of",
+    "eps", "per share"
+]
 
 
 def validate_extraction(
@@ -65,8 +95,7 @@ def validate_extraction(
                 notes=f"OK: matches table total within {delta_pct*100:.2f}%"
             )
         else:
-            # P0.1 FIX: If table_total is known and mismatch exceeds tolerance, FAIL immediately
-            # Do not fall through to permissive fallback - table_total is authoritative
+            # Table total mismatch - FAIL immediately, don't fall through
             return ValidationResult(
                 ok=False,
                 table_total=table_total,
@@ -93,7 +122,7 @@ def validate_extraction(
                 notes=f"OK: matches SEC API total within {delta_pct*100:.2f}%"
             )
         
-        # Also try just segment_sum (without adjustments) against external
+        # Try segment_sum only (without adjustments)
         if segment_sum > 0:
             delta_seg = abs(segment_sum - external_total)
             delta_seg_pct = delta_seg / external_total
@@ -129,27 +158,9 @@ def validate_extraction(
                 )
         
         # Check that segment names don't look like income statement or expense items
-        # Use substring matching for more robust detection
-        income_statement_keywords = [
-            "net income", "gross margin", "operating expense", "operating income",
-            "income from operation", "earnings per share", "diluted share", "basic share",
-            "cost of revenue", "cost of sales", "gross profit", "interest expense",
-            "interest income", "tax expense", "income tax", "depreciation",
-            "amortization", "ebitda", "net profit", "net loss", "net revenue",
-            "research and development", "r&d expense", "administrative expense",
-            "selling expense", "marketing expense", "total expense", "% of",
-            "eps", "per share"
-        ]
-        # Total-row labels that should NOT trigger the income statement gate
-        _TOTAL_ROW_LABELS = {
-            "net revenue", "total revenue", "total net revenue", "total revenues",
-            "net revenues", "total net revenues", "total net sales", "total sales",
-        }
         segment_names_lower = [name.lower() for name in segment_revenues.keys()]
         for name in segment_names_lower:
-            if name.strip() in _TOTAL_ROW_LABELS:
-                continue
-            for keyword in income_statement_keywords:
+            for keyword in INCOME_STATEMENT_KEYWORDS:
                 if keyword in name:
                     return ValidationResult(
                         ok=False,
@@ -185,5 +196,88 @@ def validate_extraction(
         adjustment_sum=adjustment_sum,
         external_total=external_total,
         delta_pct=delta_pct_report,
-        notes=f"FAIL: segments={len(segment_revenues)}, sum={segment_sum}, computed_total={computed_total}, table_total={table_total}, external={external_total}"
+        notes=f"FAIL: segments={len(segment_revenues)}, sum={segment_sum:,}, computed_total={computed_total:,}, table_total={table_total}, external={external_total}"
     )
+
+
+def validate_from_extraction_result(
+    extraction: Dict,
+    *,
+    external_total: Optional[int] = None,
+    tolerance_pct: float = 0.02,
+) -> ValidationResult:
+    """
+    Validate from an extraction result JSON (as produced by extract_values.py).
+    """
+    segment_revenues = extraction.get("segment_revenues", {})
+    adjustment_revenues = extraction.get("adjustment_revenues", {})
+    table_total = extraction.get("table_total")
+    
+    return validate_extraction(
+        segment_revenues=segment_revenues,
+        adjustment_revenues=adjustment_revenues,
+        table_total=table_total,
+        external_total=external_total,
+        tolerance_pct=tolerance_pct,
+    )
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Validate extracted revenue data"
+    )
+    parser.add_argument(
+        "extraction_json",
+        help="Path to extraction result JSON (or - for stdin)"
+    )
+    parser.add_argument(
+        "--table-total",
+        type=int,
+        help="Override table_total from extraction"
+    )
+    parser.add_argument(
+        "--external-total",
+        type=int,
+        help="External total revenue from SEC API"
+    )
+    parser.add_argument(
+        "--tolerance",
+        type=float,
+        default=0.02,
+        help="Tolerance percentage (default: 0.02 = 2%%)"
+    )
+    
+    args = parser.parse_args()
+    
+    try:
+        # Load extraction result
+        if args.extraction_json == "-":
+            extraction = json.load(sys.stdin)
+        else:
+            with open(args.extraction_json) as f:
+                extraction = json.load(f)
+        
+        # Override table_total if provided
+        if args.table_total is not None:
+            extraction["table_total"] = args.table_total
+        
+        # Validate
+        result = validate_from_extraction_result(
+            extraction,
+            external_total=args.external_total,
+            tolerance_pct=args.tolerance,
+        )
+        
+        # Output
+        output = asdict(result)
+        print(json.dumps(output, indent=2))
+        
+        sys.exit(0 if result.ok else 1)
+        
+    except Exception as e:
+        print(json.dumps({"error": str(e)}), file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

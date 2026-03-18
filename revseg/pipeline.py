@@ -542,6 +542,7 @@ def run_pipeline(
 
             segments: List[str] = _canonicalize_business_lines(ticker, list(discovery.get("segments") or []))
             include_optional: List[str] = list(discovery.get("include_segments_optional") or [])
+            all_segments: List[str] = segments + include_optional
             print(f"[{ticker}] business lines: {segments} (optional={include_optional})", flush=True)
 
             # Priority-0 deterministic gate: remove common non-target tables (unearned/deferred/RPO/etc.)
@@ -785,7 +786,6 @@ def run_pipeline(
                                     alt_col -= 1
                     
                     # Use unified extraction with fallback strategies
-                    all_segments = segments + include_optional
                     result = extract_with_layout_fallback(
                         grid,
                         expected_segments=all_segments,

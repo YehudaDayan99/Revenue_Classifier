@@ -12,12 +12,13 @@ class ValidationError(RuntimeError):
     pass
 
 
+_DEFAULT_SEC_USER_AGENT = "RevenueClassifier/1.0 (yehud.dayan@outlook.com)"
+
+
 def _sec_user_agent() -> str:
     ua = os.getenv("SEC_USER_AGENT")
     if not ua or "@" not in ua:
-        raise ValidationError(
-            "SEC_USER_AGENT env var must be set and include contact info (e.g., email)."
-        )
+        ua = _DEFAULT_SEC_USER_AGENT
     return ua
 
 
