@@ -23,9 +23,11 @@ from typing import Dict, Any, Optional
 import urllib.parse
 
 # --- Configuration ---
-DATA_FILE = "dashboard_data.json"
-STATE_FILE = "review_state.json"
-FILINGS_DIR = Path("data/filings")  # Local cache of 10-K HTML files
+# Resolve paths from project root (parent of Dashboard/) so they work regardless of cwd
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DATA_FILE = _PROJECT_ROOT / "dashboard_data.json"
+STATE_FILE = _PROJECT_ROOT / "review_state.json"
+FILINGS_DIR = _PROJECT_ROOT / "data" / "filings"  # Local cache of 10-K HTML files
 
 # --- State Management ---
 

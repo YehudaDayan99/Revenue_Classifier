@@ -3,23 +3,22 @@
 ## Purpose
 Manual QA interface for revenue extraction pipeline output. Reviewer cycles through tickers, compares extracted data vs original SEC 10-K filings, approves/rejects with notes.
 
-## Current State (v0.2)
-- **Streamlit app**: `dashboard.py` (~300 lines)
-- **Data prep**: `prepare_dashboard_data.py`
+## Current State (v0.5)
+- **Streamlit app**: `dashboard_v5.py` (recommended) — reactive 10-K viewer with scroll-to-source; `st.components.html()` iframe for JS execution; provenance display with evidence anchors
+- **Data prep**: `prepare_dashboard_data_v3.py` — extracts source table HTML via `table_id`, loads description provenance from `csv1_desc_provenance.json`, injects evidence anchor spans into annotated filing HTML
+- **Legacy**: `dashboard_v4.py`, `dashboard_v3.py`, `dashboard_v2.py`
 - **Persistence**: JSON files (no database)
 
-### Working Features
-- Ticker dropdown with status icons (✅/❌/⏳)
-- Side-by-side: extracted table vs original 10-K
-- Metrics cards (delta %, totals, pipeline status)
-- Approve/Reject/Notes with persistent state
-- Summary view with color-coded table
-- Prev/Next navigation
-- Export review state to JSON
+### Working Features (v0.5)
+- **Reactive 10-K viewer**: click a row in Extracted Data → viewer scrolls to source table + highlights the matching row
+- **Description provenance**: source section tag (Footnote / Item 1 / Item 8 / etc.) + evidence snippet
+- **"View source in 10-K" button**: scrolls viewer to evidence passage with highlight
+- **Single unified 10-K panel** (no tabs) — loads annotated filing (`{TICKER}_10K_annotated.html`) when available, falls back to raw
+- **Inline ticker nav**, Approve/Reject + inline notes, Summary view, Export
 
 ## Data Schema
 
-### dashboard_data.json
+### dashboard_data.json (v0.3 prep)
 ```json
 {
   "tickers": {
@@ -29,12 +28,18 @@ Manual QA interface for revenue extraction pipeline output. Reviewer cycles thro
           "line": "Compute",
           "revenue": 102196,
           "segment": "Product/Service disclosure",
-          "description": "Our Compute & Networking segment includes..."
+          "description": "Our Compute & Networking segment includes...",
+          "provenance": {
+            "source": "item1_business",
+            "evidence_snippet": "Our Compute & Networking segment...",
+            "evidence_anchor_id": "ev_compute",
+            "footnote_id": null
+          }
         }
       ],
-      "html_table": "<table>...</table>",
-      "edgar_url": "https://www.sec.gov/Archives/edgar/data/1045810/...",
-      "filing_html_path": "data/filings/NVDA_10K.html",
+      "table_id": "t0009",
+      "source_table_html": "<table id='t0009'>...</table>",
+      "edgar_url": "https://www.sec.gov/...",
       "metrics": {
         "status": "PASS",
         "delta_pct": 0.0,
@@ -65,20 +70,37 @@ Manual QA interface for revenue extraction pipeline output. Reviewer cycles thro
 
 ## Tech Stack
 - Python 3.11
-- Streamlit 1.30+
+- Streamlit 1.55+
 - Pandas
+- BeautifulSoup4 + lxml (for prep script table extraction / evidence anchors)
 - No database — JSON files for state
 - Runs locally on Windows
+
+## Usage
+From project root:
+```bash
+# 1. Prep data (v3 — with source tables + provenance + annotated filings)
+python Dashboard/prepare_dashboard_data_v3.py --input data/regression_90pct
+
+# 2. (Optional) Populate local 10-K cache if not already done
+python Dashboard/cache_filings_for_dashboard.py
+
+# 3. Launch dashboard
+python -m streamlit run Dashboard/dashboard_v5.py --server.port 8505
+```
+Open: **http://localhost:8505**
 
 ## File Locations
 ```
 Revenue Classifier/
 ├── Dashboard/
-│   ├── dashboard.py                  # Main app (v0.1)
-│   ├── dashboard_v2.py               # v0.2 app (full 10-K viewer, clickable lines)
-│   ├── prepare_dashboard_data.py     # Data prep (v0.1)
-│   ├── prepare_dashboard_data_v2.py  # Data prep v0.2 (EDGAR URLs, etc.)
-│   ├── cache_filings_for_dashboard.py # Option B: populate data/filings/
+│   ├── dashboard_v5.py               # Main app (v0.5: reactive 10-K viewer, provenance, evidence scroll)
+│   ├── dashboard_v4.py               # Legacy (compact layout, inline nav)
+│   ├── dashboard_v3.py               # Legacy (2-col + full-width description)
+│   ├── dashboard_v2.py               # Legacy (3-col layout)
+│   ├── prepare_dashboard_data_v3.py  # Data prep v3 (source tables, provenance, annotated filings)
+│   ├── prepare_dashboard_data_v2.py  # Data prep v2 (EDGAR URLs, artifacts)
+│   ├── cache_filings_for_dashboard.py # Populate data/filings/ from data/10k or EDGAR
 │   └── DASHBOARD_DEV.md              # This file
 ├── dashboard_data.json               # Generated from pipeline output
 ├── review_state.json                 # Persistent review state
@@ -88,8 +110,9 @@ Revenue Classifier/
     │   ├── run_report.json
     │   └── trace.jsonl
     ├── 10k/                          # Pipeline-downloaded 10-Ks (per ticker/date)
-    └── filings/                      # Option B: flat 10-K HTML for dashboard
+    └── filings/                      # Flat 10-K HTML for dashboard
         ├── AAPL_10K.html
+        ├── AAPL_10K_annotated.html   # With evidence anchor spans (generated by prep v3)
         ├── NVDA_10K.html
         └── ...
 ```
@@ -99,14 +122,15 @@ Revenue Classifier/
 ### P0 — Current Sprint
 - [x] Basic side-by-side view
 - [x] Approve/Reject/Notes
-- [ ] **Full 10-K viewer** — scrollable HTML/PDF of actual filing, not just extracted table
-- [ ] **Clickable line items** — click revenue line to show its description
+- [x] **Full 10-K viewer** — scrollable HTML in `st.components.html()` iframe (v0.5)
+- [x] **Clickable line items** — click row → scroll to source table + highlight (v0.5)
+- [x] **Highlight extracted table in full 10-K context** (v0.5)
+- [x] **Description provenance** — source tag + evidence snippet + "View source in 10-K" (v0.5)
 
 ### P1 — Next Sprint
-- [ ] EDGAR URL link — "Open in SEC" button per ticker
+- [x] EDGAR URL link — fallback "Open in SEC" button when no local filing
 - [ ] Keyboard shortcuts (j/k navigate, a/r approve/reject)
 - [ ] Filter by review status (pending/approved/rejected)
-- [ ] Highlight extracted table in full 10-K context
 
 ### P2 — Future
 - [ ] Diff view for re-runs (compare two extractions)
@@ -174,17 +198,18 @@ The v0.2 dashboard looks for these and embeds them in the "Full 10-K Filing" tab
 
 ---
 
-## Usage
+## Quick Start
 
 ```powershell
-# 1. Prep data from pipeline output
-python Dashboard/prepare_dashboard_data_v2.py --input data/regression_90pct --output dashboard_data.json
+# 1. Prep data (v3 — source tables + provenance + annotated filings)
+python Dashboard/prepare_dashboard_data_v3.py --input data/regression_90pct
 
-# 2. (Optional) Populate local 10-K cache for full filing view
+# 2. (Optional) Populate local 10-K cache if not already done
 python Dashboard/cache_filings_for_dashboard.py
 
-# 3. Launch dashboard (v0.2)
-python -m streamlit run Dashboard/dashboard_v2.py
+# 3. Launch dashboard v0.5
+python -m streamlit run Dashboard/dashboard_v5.py --server.port 8505
+# Open: http://localhost:8505
 ```
 
 ## Design Decisions
@@ -192,7 +217,7 @@ python -m streamlit run Dashboard/dashboard_v2.py
 1. **JSON over SQLite** — Simpler for single-user local workflow, easy to inspect/edit
 2. **No React/JS** — Streamlit-only for fast iteration, Claude can modify easily
 3. **Artifact-based** — Reads pipeline artifacts directly, no separate data pipeline
-4. **Stateless prep** — `prepare_dashboard_data.py` is idempotent, re-run anytime
+4. **Stateless prep** — `prepare_dashboard_data_v2.py` is idempotent, re-run anytime
 
 ## Known Issues
 
